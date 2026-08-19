@@ -32,7 +32,8 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 
-ASSETS_IMAGES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "assets", "images")
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+ASSETS_IMAGES_DIR = os.path.join(ROOT_DIR, "assets", "images")
 
 
 @router.message(Command("start"))
@@ -53,6 +54,14 @@ async def cmd_start(message: Message):
         reply_kb = get_main_reply_keyboard()
         answers_map = await get_session_answers_map(db, session.id)
 
+        # Send 16:9 Onboarding Banner image if available
+        onboarding_img = os.path.join(ASSETS_IMAGES_DIR, "onboarding.png")
+        if os.path.exists(onboarding_img):
+            try:
+                await message.answer_photo(FSInputFile(onboarding_img))
+            except Exception as img_err:
+                logger.error(f"Failed to send onboarding photo: {img_err}")
+
         # Show Onboarding / Consent first if pending OR no answers yet
         if session.phase == "CONSENT_PENDING" or len(answers_map) == 0:
             welcome_text = (
@@ -64,34 +73,17 @@ async def cmd_start(message: Message):
                 "💡 <i>Здесь нет «правильных» или «угодных» ответов. Вы отвечаете не перед экзаменатором, а перед собственным проекционным аппаратом.</i>\n\n"
                 "Нажмите кнопку ниже, чтобы начать первый этап CORE."
             )
-            
-            onboarding_img = os.path.join(ASSETS_IMAGES_DIR, "onboarding.png")
-            if os.path.exists(onboarding_img):
-                try:
-                    await message.answer_photo(FSInputFile(onboarding_img), caption=welcome_text, parse_mode="HTML", reply_markup=reply_kb)
-                except Exception:
-                    await message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
-            else:
-                await message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
-
+            await message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
             await message.answer("<b>Согласие на обработку данных:</b>", parse_mode="HTML", reply_markup=get_consent_keyboard())
             return
 
-        # Resume session menu with image
+        # Resume session menu
         resume_text = (
             "👁️ <b>Вы вернулись в меню системы «Инструкция к себе» V1.3.</b>\n\n"
             f"Ваше исследование находится в процессе (отвечено вопросов: <b>{len(answers_map)}</b>).\n\n"
             "• Нажмите <b>«▶️ Продолжить диагностику»</b>, чтобы перейти к очередному вопросу.\n"
             "• Нажмите <b>«🔄 Начать заново»</b>, чтобы сбросить сессию и пройти онбординг с нуля."
         )
-        onboarding_img = os.path.join(ASSETS_IMAGES_DIR, "onboarding.png")
-        if os.path.exists(onboarding_img):
-            try:
-                await message.answer_photo(FSInputFile(onboarding_img), caption=resume_text, parse_mode="HTML", reply_markup=reply_kb)
-                return
-            except Exception:
-                pass
-
         await message.answer(resume_text, parse_mode="HTML", reply_markup=reply_kb)
 
 
@@ -197,12 +189,11 @@ async def cb_confirm_restart(callback: CallbackQuery):
         onboarding_img = os.path.join(ASSETS_IMAGES_DIR, "onboarding.png")
         if os.path.exists(onboarding_img):
             try:
-                await callback.message.answer_photo(FSInputFile(onboarding_img), caption=welcome_text, parse_mode="HTML", reply_markup=reply_kb)
-            except Exception:
-                await callback.message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
-        else:
-            await callback.message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
+                await callback.message.answer_photo(FSInputFile(onboarding_img))
+            except Exception as img_err:
+                logger.error(f"Failed to send restart photo: {img_err}")
 
+        await callback.message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
         await callback.message.answer("<b>Согласие на обработку данных:</b>", parse_mode="HTML", reply_markup=get_consent_keyboard())
 
 
@@ -387,10 +378,9 @@ async def render_free_core_report(message: Message, db, session):
     core_img = os.path.join(ASSETS_IMAGES_DIR, "core_report.png")
     if os.path.exists(core_img):
         try:
-            await message.answer_photo(FSInputFile(core_img), caption=report_text, parse_mode="HTML", reply_markup=markup)
-            return
-        except Exception:
-            pass
+            await message.answer_photo(FSInputFile(core_img))
+        except Exception as img_err:
+            logger.error(f"Failed to send CORE report photo: {img_err}")
 
     await message.answer(report_text, parse_mode="HTML", reply_markup=markup)
 
