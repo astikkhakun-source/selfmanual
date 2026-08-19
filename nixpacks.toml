@@ -2,10 +2,10 @@
 python = "3.11"
 
 [phases.setup]
-nixPkgs = ["python311", "gobject-introspection", "pango", "harfbuzz", "fontconfig"]
+nixPkgs = ["python311", "gobject-introspection", "pango", "harfbuzz", "fontconfig", "libjpeg", "zlib", "dejavu_fonts", "freefont_ttf"]
 
 [phases.install]
-cmds = ["pip install -r requirements.txt"]
+cmds = ["pip install --no-cache-dir -r requirements.txt"]
 
 [start]
 cmd = "uvicorn src.api.app:app --host 0.0.0.0 --port $PORT & python run_bot.py"

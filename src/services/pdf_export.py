@@ -3,11 +3,6 @@ import logging
 from datetime import datetime, timezone
 from typing import Dict, Any
 
-from reportlab.lib.pagesizes import letter, A4
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable, PageBreak
-
 logger = logging.getLogger(__name__)
 
 TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "templates", "pdf")
@@ -29,10 +24,85 @@ CHAPTER_TITLES = {
 }
 
 
+def _get_reportlab():
+    """Lazy import of ReportLab to prevent module load crashes when reportlab is not installed."""
+    try:
+        from reportlab.lib.pagesizes import letter, A4
+        from reportlab.lib import colors
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable, PageBreak
+        from reportlab.pdfbase import pdfmetrics
+        from reportlab.pdfbase.ttfonts import TTFont
+        return {
+            "A4": A4,
+            "colors": colors,
+            "getSampleStyleSheet": getSampleStyleSheet,
+            "ParagraphStyle": ParagraphStyle,
+            "SimpleDocTemplate": SimpleDocTemplate,
+            "Paragraph": Paragraph,
+            "Spacer": Spacer,
+            "HRFlowable": HRFlowable,
+            "PageBreak": PageBreak,
+            "pdfmetrics": pdfmetrics,
+            "TTFont": TTFont,
+        }
+    except ImportError as e:
+        logger.error("ReportLab import failed: %s", e)
+        raise ImportError(
+            "Модуль 'reportlab' не найден. Убедитесь, что 'reportlab' установлен в окружении Python."
+        ) from e
+
+
+def _get_cyrillic_font(pdfmetrics, TTFont):
+    """Detect and register a Cyrillic-compatible TTF font if available."""
+    font_candidates = [
+        ("Arial", "C:/Windows/Fonts/arial.ttf"),
+        ("Arial-Bold", "C:/Windows/Fonts/arialbd.ttf"),
+        ("LiberationSans", "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"),
+        ("LiberationSans-Bold", "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"),
+        ("DejaVuSans", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+        ("DejaVuSans-Bold", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
+    ]
+    
+    reg_font = None
+    reg_bold = None
+
+    for name, path in font_candidates:
+        if os.path.exists(path):
+            try:
+                pdfmetrics.registerFont(TTFont(name, path))
+                if "Bold" in name or "bd" in name:
+                    if not reg_bold:
+                        reg_bold = name
+                else:
+                    if not reg_font:
+                        reg_font = name
+            except Exception as font_err:
+                logger.warning(f"Failed to register font {name} from {path}: {font_err}")
+
+    font_regular = reg_font or "Helvetica"
+    font_bold = reg_bold or (reg_font if reg_font else "Helvetica-Bold")
+    return font_regular, font_bold
+
+
 def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
     """
     Generate styled PDF document using ReportLab (cross-platform compatible).
     """
+    rl = _get_reportlab()
+
+    A4 = rl["A4"]
+    colors = rl["colors"]
+    getSampleStyleSheet = rl["getSampleStyleSheet"]
+    ParagraphStyle = rl["ParagraphStyle"]
+    SimpleDocTemplate = rl["SimpleDocTemplate"]
+    Paragraph = rl["Paragraph"]
+    Spacer = rl["Spacer"]
+    HRFlowable = rl["HRFlowable"]
+    PageBreak = rl["PageBreak"]
+
+    font_reg, font_bold = _get_cyrillic_font(rl["pdfmetrics"], rl["TTFont"])
+
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     pdf_filename = f"SelfManual_Report_{session_id[:8]}_{int(datetime.now(timezone.utc).timestamp())}.pdf"
     output_path = os.path.join(OUTPUT_DIR, pdf_filename)
@@ -48,37 +118,37 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
     # Custom styles
     title_style = ParagraphStyle(
         'CoverTitle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=24, leading=28,
+        fontName=font_bold, fontSize=24, leading=28,
         textColor=colors.HexColor('#2b6cb0'), alignment=1, spaceAfter=15
     )
     subtitle_style = ParagraphStyle(
         'CoverSubTitle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=14, leading=18,
+        fontName=font_reg, fontSize=14, leading=18,
         textColor=colors.HexColor('#4a5568'), alignment=1, spaceAfter=30
     )
     section_style = ParagraphStyle(
         'SectionHeader', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=14, leading=18,
+        fontName=font_bold, fontSize=14, leading=18,
         textColor=colors.HexColor('#2b6cb0'), spaceBefore=20, spaceAfter=10
     )
     heading_style = ParagraphStyle(
         'ChapterHeader', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=11, leading=14,
+        fontName=font_bold, fontSize=11, leading=14,
         textColor=colors.HexColor('#2d3748'), spaceBefore=10, spaceAfter=4
     )
     body_style = ParagraphStyle(
         'ChapterBody', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=9.5, leading=13,
+        fontName=font_reg, fontSize=9.5, leading=13,
         textColor=colors.HexColor('#1a202c'), spaceAfter=8
     )
     meta_style = ParagraphStyle(
         'MetaBox', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=9, leading=12,
+        fontName=font_reg, fontSize=9, leading=12,
         textColor=colors.HexColor('#718096'), alignment=1, spaceAfter=20
     )
     rule_style = ParagraphStyle(
         'RuleCard', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=9.5, leading=13,
+        fontName=font_reg, fontSize=9.5, leading=13,
         textColor=colors.HexColor('#2c5282'), spaceAfter=6
     )
 

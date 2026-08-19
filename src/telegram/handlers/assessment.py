@@ -246,17 +246,22 @@ async def render_full_report_and_pdf(message: Message, db, session):
 
     # Generate LLM Report & PDF
     llm_report = await generate_full_report_llm(input_package)
-    pdf_path = generate_pdf_report(session.id, llm_report)
 
     rules_text = "\n".join([f"• {r}" for r in llm_report.get("personal_rules", [])[:5]])
     full_text = (
         "<b>ПОЛНАЯ ИНСТРУКЦИЯ К СЕБЕ V1.3 ГОТОВА!</b>\n\n"
         f"<b>Ключевые правила обращения с собой:</b>\n{rules_text}\n\n"
-        "📄 Ваш детальный 12-страничный PDF-отчет сформирован и прикреплен ниже."
     )
 
-    await status_msg.edit_text(full_text, parse_mode="HTML")
+    try:
+        pdf_path = generate_pdf_report(session.id, llm_report)
+        full_text += "📄 Ваш детальный 12-страничный PDF-отчет сформирован и прикреплен ниже."
+        await status_msg.edit_text(full_text, parse_mode="HTML")
 
-    # Send PDF document directly to Telegram chat
-    pdf_file = FSInputFile(pdf_path, filename=f"Инструкция_к_себе_{session.id[:8]}.pdf")
-    await message.answer_document(pdf_file, caption="Ваш персональный PDF-отчет «Инструкция к себе» V1.3")
+        # Send PDF document directly to Telegram chat
+        pdf_file = FSInputFile(pdf_path, filename=f"Инструкция_к_себе_{session.id[:8]}.pdf")
+        await message.answer_document(pdf_file, caption="Ваш персональный PDF-отчет «Инструкция к себе» V1.3")
+    except Exception as pdf_err:
+        logger.error(f"Ошибка при генерации PDF: {pdf_err}", exc_info=True)
+        full_text += "⚠️ <i>Не удалось сформировать PDF-документ, но ваш текстовый отчёт сгенерирован выше.</i>"
+        await status_msg.edit_text(full_text, parse_mode="HTML")
