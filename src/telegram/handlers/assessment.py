@@ -51,8 +51,10 @@ async def cmd_start(message: Message):
             session = await start_new_session(db, user.id)
 
         reply_kb = get_main_reply_keyboard()
+        answers_map = await get_session_answers_map(db, session.id)
 
-        if session.phase == "CONSENT_PENDING":
+        # Show Onboarding / Consent first if pending OR no answers yet
+        if session.phase == "CONSENT_PENDING" or len(answers_map) == 0:
             welcome_text = (
                 "👁️ <b>Добро пожаловать в систему «Инструкция к себе» V1.3!</b>\n\n"
                 "Ваша личность — это не застывший набор мыслей, а сложная операционная система восприятия, постоянно редактирующая свой собственный код перед тем, как его заметит окружающая реальность.\n\n"
@@ -75,9 +77,22 @@ async def cmd_start(message: Message):
             await message.answer("<b>Согласие на обработку данных:</b>", parse_mode="HTML", reply_markup=get_consent_keyboard())
             return
 
-        # Resume session
-        await message.answer("🔄 Вы вернулись в меню системы «Инструкция к себе».", reply_markup=reply_kb)
-        await send_next_question(message, db, session)
+        # Resume session menu with image
+        resume_text = (
+            "👁️ <b>Вы вернулись в меню системы «Инструкция к себе» V1.3.</b>\n\n"
+            f"Ваше исследование находится в процессе (отвечено вопросов: <b>{len(answers_map)}</b>).\n\n"
+            "• Нажмите <b>«▶️ Продолжить диагностику»</b>, чтобы перейти к очередному вопросу.\n"
+            "• Нажмите <b>«🔄 Начать заново»</b>, чтобы сбросить сессию и пройти онбординг с нуля."
+        )
+        onboarding_img = os.path.join(ASSETS_IMAGES_DIR, "onboarding.png")
+        if os.path.exists(onboarding_img):
+            try:
+                await message.answer_photo(FSInputFile(onboarding_img), caption=resume_text, parse_mode="HTML", reply_markup=reply_kb)
+                return
+            except Exception:
+                pass
+
+        await message.answer(resume_text, parse_mode="HTML", reply_markup=reply_kb)
 
 
 @router.message(F.text == "▶️ Продолжить диагностику")
@@ -170,11 +185,24 @@ async def cb_confirm_restart(callback: CallbackQuery):
         
         reply_kb = get_main_reply_keyboard()
         welcome_text = (
-            "👋 <b>Добро пожаловать в систему «Инструкция к себе» V1.3!</b>\n\n"
-            "Это двухступенчатая система глубокой психологической самодиагностики.\n"
-            "Нажмите кнопку ниже, чтобы начать первый этап CORE (24 вопроса)."
+            "👁️ <b>Добро пожаловать в систему «Инструкция к себе» V1.3!</b>\n\n"
+            "Ваша личность — это не застывший набор мыслей, а сложная операционная система восприятия, постоянно редактирующая свой собственный код перед тем, как его заметит окружающая реальность.\n\n"
+            "<b>📌 Как устроено исследование:</b>\n"
+            "• <b>Этап 1 (CORE — Бесплатно):</b> 24 базовых + до 6 адаптивных вопросов. Алгоритм вскрывает вашу первичную архитектуру, ключевые опоры и главный парадокс вашей системы.\n"
+            "• <b>Этап 2 (DEEP — Полный отчёт):</b> Анализ 46 шкал личности, 12 профильных глав и персональная 12-страничная PDF-инструкция.\n\n"
+            "💡 <i>Здесь нет «правильных» или «угодных» ответов. Вы отвечаете не перед экзаменатором, а перед собственным проекционным аппаратом.</i>\n\n"
+            "Нажмите кнопку ниже, чтобы начать первый этап CORE."
         )
-        await callback.message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
+
+        onboarding_img = os.path.join(ASSETS_IMAGES_DIR, "onboarding.png")
+        if os.path.exists(onboarding_img):
+            try:
+                await callback.message.answer_photo(FSInputFile(onboarding_img), caption=welcome_text, parse_mode="HTML", reply_markup=reply_kb)
+            except Exception:
+                await callback.message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
+        else:
+            await callback.message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
+
         await callback.message.answer("<b>Согласие на обработку данных:</b>", parse_mode="HTML", reply_markup=get_consent_keyboard())
 
 
