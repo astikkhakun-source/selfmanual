@@ -1,0 +1,116 @@
+@page {
+    size: A4;
+    margin: 20mm 15mm 20mm 15mm;
+    @bottom-center {
+        content: "Инструкция к себе V1.3 • Стр. " counter(page) " из " counter(pages);
+        font-size: 9pt;
+        color: #718096;
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #1a202c;
+    line-height: 1.6;
+    font-size: 11pt;
+    margin: 0;
+    padding: 0;
+}
+
+.cover-page {
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    text-align: center;
+    padding-top: 60px;
+}
+
+.cover-title {
+    font-size: 28pt;
+    font-weight: 700;
+    color: #2b6cb0;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
+
+.cover-subtitle {
+    font-size: 16pt;
+    color: #4a5568;
+    margin-bottom: 40px;
+}
+
+.meta-box {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 15px 25px;
+    margin-top: 40px;
+    font-size: 10pt;
+    color: #4a5568;
+}
+
+.section-title {
+    font-size: 16pt;
+    font-weight: 700;
+    color: #2b6cb0;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 5px;
+    margin-top: 25px;
+    margin-bottom: 12px;
+    page-break-after: avoid;
+}
+
+.chapter-box {
+    background: #ffffff;
+    border-left: 4px solid #3182ce;
+    padding: 12px 18px;
+    margin-bottom: 18px;
+    page-break-inside: avoid;
+}
+
+.chapter-heading {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 6px;
+}
+
+.rule-card {
+    background: #ebf8ff;
+    border: 1px solid #bee3f8;
+    border-radius: 6px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    page-break-inside: avoid;
+}
+
+.rule-number {
+    font-weight: 700;
+    color: #2b6cb0;
+}
+
+.synthesis-card {
+    background: #edf2f7;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    page-break-inside: avoid;
+}
+
+.synthesis-label {
+    font-weight: 700;
+    color: #2c5282;
+}
+
+.disclaimer {
+    margin-top: 30px;
+    font-size: 8.5pt;
+    color: #a0aec0;
+    text-align: center;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 10px;
+}

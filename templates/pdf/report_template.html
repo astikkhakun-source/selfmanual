@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Инструкция к себе — Персональный отчет</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Cover Page -->
+    <div class="cover-page">
+        <div class="cover-title">ИНСТРУКЦИЯ К СЕБЕ</div>
+        <div class="cover-subtitle">Персональная карта психологической архитектуры</div>
+        
+        <div class="meta-box">
+            <p><strong>Дата отчета:</strong> {{ date_str }}</p>
+            <p><strong>Версия продукта:</strong> Architecture V1.3 • Scoring V1.2</p>
+            <p><strong>Идентификатор сессии:</strong> {{ session_id }}</p>
+        </div>
+    </div>
+
+    <!-- Chapter 1-12 Reports -->
+    <div class="section-title">I. Архитектура и главы самопонимания</div>
+    
+    {% for ch_key, ch_text in chapters.items() %}
+    <div class="chapter-box">
+        <div class="chapter-heading">{{ chapter_titles.get(ch_key, ch_key) }}</div>
+        <p>{{ ch_text }}</p>
+    </div>
+    {% endfor %}
+
+    <!-- 10 Personal Rules -->
+    <div class="section-title">II. 10 Персональных правил обращения с собой</div>
+    
+    {% for rule in personal_rules %}
+    <div class="rule-card">
+        <span class="rule-number">{{ rule }}</span>
+    </div>
+    {% endfor %}
+
+    <!-- Synthesis: Leverage, Trap, Resource -->
+    <div class="section-title">III. Главный синтез вашей системы</div>
+    <div class="synthesis-card">
+        <p><span class="synthesis-label">Ваша главная опора (Top Resource):</span> {{ final_synthesis.top_resource }}</p>
+        <p><span class="synthesis-label">Ваша системная ловушка (Top Trap):</span> {{ final_synthesis.top_trap }}</p>
+        <p><span class="synthesis-label">Ваш главный рычаг изменений (Top Leverage):</span> {{ final_synthesis.top_leverage }}</p>
+    </div>
+
+    <!-- Legal Disclaimer -->
+    <div class="disclaimer">
+        Данный документ является результатам психологической самодиагностики системы «Инструкция к себе» V1.3. 
+        Не является медицинским или психиатрическим диагнозом. Предназначен для глубокого самопонимания и личностной саморегуляции.
+    </div>
+
+</body>
+</html>
