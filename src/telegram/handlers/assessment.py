@@ -9,11 +9,12 @@ from aiogram.types import Message, CallbackQuery, FSInputFile
 
 from src.db.base import AsyncSessionLocal
 from src.services.config_loader import (
-    CORE_BASE_ITEMS, VFC_PAIRS, CONFIG_DIR
+    CORE_BASE_ITEMS, VFC_PAIRS, CONFIG_DIR, get_question_info
 )
 from src.services.assessment import (
     get_or_create_user, get_active_session, start_new_session,
-    save_answer, get_next_question_for_session, get_session_answers_map
+    save_answer, get_next_question_for_session, get_session_answers_map,
+    clear_session_answers_cache
 )
 from src.domain.scoring.core_engine import calculate_core_signals, evaluate_core_conflicts
 from src.domain.scoring.scales import calculate_primary_scales
@@ -148,6 +149,7 @@ async def cb_confirm_restart(callback: CallbackQuery):
         session = await get_active_session(db, user.id)
         if session:
             session.status = "CANCELLED"
+            clear_session_answers_cache(session.id)
             await db.commit()
 
         new_session = await start_new_session(db, user.id)
@@ -174,6 +176,7 @@ async def cb_cancel_restart(callback: CallbackQuery):
 @router.callback_query(F.data == "accept_consent")
 async def cb_accept_consent(callback: CallbackQuery):
     """Handle consent agreement."""
+    await callback.answer("Согласие принято!")
     async with AsyncSessionLocal() as db:
         user = await get_or_create_user(
             db,
@@ -187,16 +190,17 @@ async def cb_accept_consent(callback: CallbackQuery):
         session.phase = "CORE_IN_PROGRESS"
         await db.commit()
 
-        await callback.answer("Согласие принято!")
         await send_next_question(callback.message, db, session)
 
 
 @router.callback_query(F.data.startswith("ans:"))
 async def cb_answer_likert(callback: CallbackQuery):
-    """Handle Likert 1-7 answer selection."""
+    """Handle Likert 1-7 answer selection with instant UI response."""
+    # Acknowledge callback immediately so Telegram unlocks button spinner instantly (<10ms)
+    await callback.answer()
+
     parts = callback.data.split(":")
     if len(parts) < 4:
-        await callback.answer()
         return
 
     q_id = parts[1]
@@ -211,7 +215,7 @@ async def cb_answer_likert(callback: CallbackQuery):
         )
         session = await get_active_session(db, user.id)
         if not session:
-            await callback.answer("Сессия не найдена. Нажмите /start.")
+            await callback.message.answer("Сессия не найдена. Нажмите /start.")
             return
 
         phase = session.phase
@@ -224,16 +228,16 @@ async def cb_answer_likert(callback: CallbackQuery):
             client_event_id=client_event_id
         )
 
-        await callback.answer(f"Ответ {raw_answer} сохранен.")
         await send_next_question(callback.message, db, session, edit_existing=True)
 
 
 @router.callback_query(F.data.startswith("vfc:"))
 async def cb_answer_vfc(callback: CallbackQuery):
-    """Handle VFC 2-choice value selection."""
+    """Handle VFC 2-choice value selection with instant UI response."""
+    await callback.answer()
+
     parts = callback.data.split(":")
     if len(parts) < 4:
-        await callback.answer()
         return
 
     vfc_id = parts[1]
@@ -248,7 +252,7 @@ async def cb_answer_vfc(callback: CallbackQuery):
         )
         session = await get_active_session(db, user.id)
         if not session:
-            await callback.answer("Сессия не найдена.")
+            await callback.message.answer("Сессия не найдена.")
             return
 
         await save_answer(
@@ -261,7 +265,6 @@ async def cb_answer_vfc(callback: CallbackQuery):
             selected_value=selected_val
         )
 
-        await callback.answer("Выбор сохранен.")
         await send_next_question(callback.message, db, session, edit_existing=True)
 
 
@@ -281,12 +284,8 @@ async def send_next_question(message: Message, db, session, edit_existing: bool 
     progress = next_q.get("total_progress", 0)
     target = next_q.get("target_total", 24)
 
-    # Load question text from json config
-    q_file = os.path.join(CONFIG_DIR, "questions_v1_2.json")
-    with open(q_file, "r", encoding="utf-8") as f:
-        questions_map = json.load(f)
-
-    q_info = questions_map.get(q_id, {})
+    # Fast in-memory question text lookup (no disk I/O)
+    q_info = get_question_info(q_id)
     q_text = q_info.get("text_ru", f"Вопрос {q_id}")
 
     if next_q["phase"] == "VFC":
@@ -296,6 +295,14 @@ async def send_next_question(message: Message, db, session, edit_existing: bool 
             f"Что для вас представляет большую ценность?"
         )
         markup = get_vfc_keyboard(q_id, vfc_data, client_event_id)
+    elif next_q["phase"] == "CORE_ADAPTIVE":
+        adaptive_idx = next_q.get("adaptive_index", 1)
+        text = (
+            f"<b>Уточняющий вопрос {adaptive_idx} из 6 (Адаптивный блок CORE):</b>\n\n"
+            f"«{q_text}»\n\n"
+            f"<i>1 — Полностью не согласен ... 7 — Полностью согласен</i>"
+        )
+        markup = get_likert_keyboard(q_id, client_event_id)
     else:
         text = (
             f"<b>Вопрос {progress + 1} из {target}:</b>\n\n"

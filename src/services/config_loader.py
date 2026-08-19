@@ -4,6 +4,22 @@ from typing import Dict, List, Any, Optional
 
 CONFIG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "config")
 
+# Preload questions JSON config into RAM to avoid disk I/O on every answer click
+_QUESTIONS_FILE = os.path.join(CONFIG_DIR, "questions_v1_2.json")
+QUESTIONS_MAP: Dict[str, Any] = {}
+if os.path.exists(_QUESTIONS_FILE):
+    try:
+        with open(_QUESTIONS_FILE, "r", encoding="utf-8") as _f:
+            QUESTIONS_MAP = json.load(_f)
+    except Exception:
+        QUESTIONS_MAP = {}
+
+
+def get_question_info(question_id: str) -> Dict[str, Any]:
+    """Retrieve preloaded question dictionary by question_id."""
+    return QUESTIONS_MAP.get(question_id, {})
+
+
 # CORE Base items C01..C24 mapping to master Question IDs and target signals
 CORE_BASE_ITEMS = [
     {"core_id": "C01", "question_id": "Q018", "signal": "CS_RECOGNITION", "direction": "D"},

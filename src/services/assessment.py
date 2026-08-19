@@ -61,6 +61,22 @@ async def start_new_session(db: AsyncSession, user_id: str) -> AssessmentSession
     return session
 
 
+# In-memory RAM cache for active session answers to eliminate SQL read latency on every click
+_SESSION_ANSWERS_CACHE: Dict[str, Dict[str, int]] = {}
+
+
+def update_session_answers_cache(session_id: str, question_id: str, raw_answer: int):
+    """Instantly record answer in RAM cache."""
+    if session_id not in _SESSION_ANSWERS_CACHE:
+        _SESSION_ANSWERS_CACHE[session_id] = {}
+    _SESSION_ANSWERS_CACHE[session_id][question_id] = raw_answer
+
+
+def clear_session_answers_cache(session_id: str):
+    """Remove session from cache when cancelled or reset."""
+    _SESSION_ANSWERS_CACHE.pop(session_id, None)
+
+
 async def save_answer(
     db: AsyncSession,
     session_id: str,
@@ -72,9 +88,12 @@ async def save_answer(
     response_time_ms: int = 0
 ) -> Answer:
     """
-    Autosave answer to DB with client_event_id idempotency.
-    If answer for question already exists, update it.
+    Autosave answer with RAM cache + DB write.
     """
+    # 1. Update RAM cache instantly (<1ms)
+    update_session_answers_cache(session_id, question_id, raw_answer)
+
+    # 2. Persist to DB asynchronously
     stmt = select(Answer).where(
         Answer.session_id == session_id,
         Answer.question_id == question_id
@@ -88,7 +107,6 @@ async def save_answer(
         existing.response_time_ms = response_time_ms
         existing.client_event_id = client_event_id
         await db.commit()
-        await db.refresh(existing)
         return existing
 
     answer = Answer(
@@ -102,16 +120,20 @@ async def save_answer(
     )
     db.add(answer)
     await db.commit()
-    await db.refresh(answer)
     return answer
 
 
 async def get_session_answers_map(db: AsyncSession, session_id: str) -> Dict[str, int]:
-    """Get all raw answers dictionary for a session {question_id: raw_answer}."""
+    """Get all raw answers dictionary for a session using RAM cache fallback."""
+    if session_id in _SESSION_ANSWERS_CACHE:
+        return _SESSION_ANSWERS_CACHE[session_id]
+
     stmt = select(Answer).where(Answer.session_id == session_id)
     res = await db.execute(stmt)
     answers = res.scalars().all()
-    return {ans.question_id: ans.raw_answer for ans in answers}
+    answers_map = {ans.question_id: ans.raw_answer for ans in answers}
+    _SESSION_ANSWERS_CACHE[session_id] = answers_map
+    return answers_map
 
 
 async def get_next_question_for_session(db: AsyncSession, session: AssessmentSession) -> Optional[Dict[str, Any]]:
@@ -149,7 +171,8 @@ async def get_next_question_for_session(db: AsyncSession, session: AssessmentSes
                 "question_id": next_adaptive,
                 "phase": "CORE_ADAPTIVE",
                 "total_progress": len(answers_map),
-                "target_total": 24 + len(adaptive_history) + 1
+                "adaptive_index": len(adaptive_history) + 1,
+                "target_total": 30
             }
 
         # CORE complete! Update session status to CORE_READY
