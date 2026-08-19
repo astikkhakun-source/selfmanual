@@ -32,6 +32,9 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 
+ASSETS_IMAGES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "assets", "images")
+
+
 @router.message(Command("start"))
 async def cmd_start(message: Message):
     """Handler for /start command with onboarding explanation and bottom menu."""
@@ -59,7 +62,16 @@ async def cmd_start(message: Message):
                 "💡 <i>Здесь нет «правильных» или «угодных» ответов. Вы отвечаете не перед экзаменатором, а перед собственным проекционным аппаратом.</i>\n\n"
                 "Нажмите кнопку ниже, чтобы начать первый этап CORE."
             )
-            await message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
+            
+            onboarding_img = os.path.join(ASSETS_IMAGES_DIR, "onboarding.png")
+            if os.path.exists(onboarding_img):
+                try:
+                    await message.answer_photo(FSInputFile(onboarding_img), caption=welcome_text, parse_mode="HTML", reply_markup=reply_kb)
+                except Exception:
+                    await message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
+            else:
+                await message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
+
             await message.answer("<b>Согласие на обработку данных:</b>", parse_mode="HTML", reply_markup=get_consent_keyboard())
             return
 
@@ -330,12 +342,12 @@ async def render_free_core_report(message: Message, db, session):
     top_cf_text = conflicts.get(top_conflict_id, {}).get("headline", "Ты ищешь собственный баланс.") if top_conflict_id else "Ты ищешь баланс между автономией и предсказуемостью."
 
     report_text = (
-        "<b>БЕСПЛАТНЫЙ ОТЧЕТ CORE (Диагностика системы)</b>\n\n"
+        "🪞 <b>БЕСПЛАТНАЯ КАРТА-ОТЧЕТ CORE (Первичная архитектура)</b>\n\n"
         "<b>Ты в двух абзацах:</b>\n"
-        "Ваша первичная конфигурация показывает сочетание высокого стремления к независимости и чувствительности к внешнему признанию.\n\n"
-        f"<b>Главный инсайт:</b>\n<i>«{top_cf_text}»</i>\n\n"
+        "Ваша первичная конфигурация показывает сочетание высокого стремления к независимости и тонкой чувствительности к внешнему признанию.\n\n"
+        f"<b>Главный инсайт вашей системы:</b>\n<i>«{top_cf_text}»</i>\n\n"
         "<b>Граница знания:</b>\n"
-        "Короткая диагностика показала наиболее заметную конфигурацию. Но мы видим ЧТО, но пока не знаем ПОЧЕМУ.\n\n"
+        "Короткая диагностика показала наиболее заметную конфигурацию. Но мы видим <b>ЧТО</b> происходит в вашей операционной системе, но пока не знаем <b>ПОЧЕМУ</b>.\n\n"
         "───────────────\n"
         "<b>ЭТО БЫЛА НЕ ИНСТРУКЦИЯ. ЭТО БЫЛА ПЕРВАЯ СТРАНИЦА.</b>\n"
         "Полная «Инструкция к себе» покажет, как все 46 аспектов вашей личности связаны между собой."
@@ -343,6 +355,14 @@ async def render_free_core_report(message: Message, db, session):
 
     payment_url = create_prodamus_payment_link(user_id=session.user_id, session_id=session.id)
     markup = get_paywall_keyboard(payment_url)
+
+    core_img = os.path.join(ASSETS_IMAGES_DIR, "core_report.png")
+    if os.path.exists(core_img):
+        try:
+            await message.answer_photo(FSInputFile(core_img), caption=report_text, parse_mode="HTML", reply_markup=markup)
+            return
+        except Exception:
+            pass
 
     await message.answer(report_text, parse_mode="HTML", reply_markup=markup)
 
