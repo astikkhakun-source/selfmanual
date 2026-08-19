@@ -331,14 +331,14 @@ async def send_next_question(message: Message, db, session, edit_existing: bool 
         text = (
             f"<b>Уточняющий вопрос {adaptive_idx} из 6 (Адаптивный блок CORE):</b>\n\n"
             f"«{q_text}»\n\n"
-            f"<i>1 — Полностью не согласен ... 7 — Полностью согласен</i>"
+            f"<i>1 — полностью не согласен\n7 — полностью согласен</i>"
         )
         markup = get_likert_keyboard(q_id, client_event_id)
     else:
         text = (
             f"<b>Вопрос {progress + 1} из {target}:</b>\n\n"
             f"«{q_text}»\n\n"
-            f"<i>1 — Полностью не согласен ... 7 — Полностью согласен</i>"
+            f"<i>1 — полностью не согласен\n7 — полностью согласен</i>"
         )
         markup = get_likert_keyboard(q_id, client_event_id)
 
