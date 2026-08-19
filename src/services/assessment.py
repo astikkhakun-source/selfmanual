@@ -42,7 +42,7 @@ async def get_active_session(db: AsyncSession, user_id: str) -> Optional[Assessm
 
 
 async def start_new_session(db: AsyncSession, user_id: str) -> AssessmentSession:
-    """Start a brand new assessment session."""
+    """Start a brand new assessment session in CONSENT_PENDING phase."""
     session = AssessmentSession(
         user_id=user_id,
         versions_json={
@@ -51,7 +51,7 @@ async def start_new_session(db: AsyncSession, user_id: str) -> AssessmentSession
             "CORE_BANK_VERSION": "1.0",
             "SCORING_VERSION": "1.2"
         },
-        phase="CORE_IN_PROGRESS",
+        phase="CONSENT_PENDING",
         status="ACTIVE",
         current_position=0
     )

@@ -23,7 +23,8 @@ from src.services.payment import create_prodamus_payment_link
 from src.services.llm_report import generate_full_report_llm
 from src.services.pdf_export import generate_pdf_report
 from src.telegram.keyboards import (
-    get_likert_keyboard, get_vfc_keyboard, get_paywall_keyboard, get_consent_keyboard
+    get_likert_keyboard, get_vfc_keyboard, get_paywall_keyboard, get_consent_keyboard,
+    get_main_reply_keyboard, get_restart_confirm_keyboard
 )
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ router = Router()
 
 @router.message(Command("start"))
 async def cmd_start(message: Message):
-    """Handler for /start command."""
+    """Handler for /start command with onboarding explanation and bottom menu."""
     async with AsyncSessionLocal() as db:
         user = await get_or_create_user(
             db,
@@ -45,18 +46,129 @@ async def cmd_start(message: Message):
         if not session:
             session = await start_new_session(db, user.id)
 
-        # Show Onboarding / Consent first
+        reply_kb = get_main_reply_keyboard()
+
         if session.phase == "CONSENT_PENDING":
             welcome_text = (
-                "<b>Приветствуем в системе «Инструкция к себе» V1.3</b>\n\n"
-                "Это двухступенчатая система психологической самодиагностики.\n"
-                "Первый этап (CORE) — короткая бесплатная диагностика из 24 обязательных и нескольких адаптивных вопросов.\n\n"
-                "<i>Нажимая кнопку ниже, вы соглашаетесь на обработку ответов в целях психологической самодиагностики.</i>"
+                "👋 <b>Добро пожаловать в систему «Инструкция к себе» V1.3!</b>\n\n"
+                "Это двухступенчатая система глубокой психологической самодиагностики и построения персональной карты личности.\n\n"
+                "<b>📌 Как устроена диагностика:</b>\n"
+                "• <b>Этап 1 (CORE — Бесплатно):</b> 24 базовых + до 6 адаптивных вопросов. Система выявит ваши ключевые опоры, главные системные конфликты и сформирует первичное резюме.\n"
+                "• <b>Этап 2 (DEEP — Полный отчёт):</b> Диагностика 46 шкал личности, 12 профильных глав и персональный 12-страничный PDF-документ.\n\n"
+                "💡 <i>Отвечайте максимально искренне — здесь нет «хороших» или «плохих» ответов. Каждое решение безопасно и конфиденциально.</i>\n\n"
+                "Нажмите кнопку ниже, чтобы начать базовый этап CORE."
             )
-            await message.answer(welcome_text, parse_mode="HTML", reply_markup=get_consent_keyboard())
+            await message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
+            await message.answer("<b>Согласие на обработку данных:</b>", parse_mode="HTML", reply_markup=get_consent_keyboard())
+            return
+
+        # Resume session
+        await message.answer("🔄 Вы перешли в главное меню системы «Инструкция к себе».", reply_markup=reply_kb)
+        await send_next_question(message, db, session)
+
+
+@router.message(F.text == "▶️ Продолжить диагностику")
+async def btn_continue(message: Message):
+    """Handle 'Continue' button press from bottom reply menu."""
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(db, message.from_user.id, message.chat.id)
+        session = await get_active_session(db, user.id)
+        if not session:
+            session = await start_new_session(db, user.id)
+        
+        if session.phase == "CONSENT_PENDING":
+            await message.answer("Пожалуйста, примите условия перед началом диагностики.", reply_markup=get_consent_keyboard())
             return
 
         await send_next_question(message, db, session)
+
+
+@router.message(F.text == "📊 Мой прогресс")
+async def btn_progress(message: Message):
+    """Show current progress."""
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(db, message.from_user.id, message.chat.id)
+        session = await get_active_session(db, user.id)
+        if not session:
+            await message.answer("У вас нет активной сессии. Нажмите /start для начала.")
+            return
+
+        answers_map = await get_session_answers_map(db, session.id)
+        count = len(answers_map)
+        phase_labels = {
+            "CONSENT_PENDING": "Ожидание согласия",
+            "CORE_IN_PROGRESS": "Этап 1: CORE (Базовая диагностика)",
+            "CORE_READY": "CORE Завершён (Готов бесплатный отчет)",
+            "DEEP_IN_PROGRESS": "Этап 2: DEEP (Глубокая диагностика)",
+            "VFC_IN_PROGRESS": "Этап 2: VFC (Выбор приоритетов)",
+            "FULL_ASSESSMENT_COMPLETED": "Диагностика полностью завершена"
+        }
+        label = phase_labels.get(session.phase, session.phase)
+        text = (
+            f"<b>📊 Ваш текущий прогресс:</b>\n\n"
+            f"• <b>Статус:</b> {label}\n"
+            f"• <b>Отвечено вопросов:</b> {count}\n\n"
+            f"Нажмите «▶️ Продолжить диагностику» для перехода к следующему вопросу."
+        )
+        await message.answer(text, parse_mode="HTML")
+
+
+@router.message(F.text == "❓ О системе")
+async def btn_info(message: Message):
+    """Show information about system architecture."""
+    info_text = (
+        "<b>🧠 О системе «Инструкция к себе» V1.3</b>\n\n"
+        "Система совмещает детерминированный математический скоринг 46 шкал личности и продвинутую модель синтеза LLM.\n\n"
+        "<b>Архитектура включает:</b>\n"
+        "• <b>CORE:</b> 24 ключевых + адаптивные вопросы для экспресс-карты личности.\n"
+        "• <b>46 Primary Scales:</b> Измерение самоценности, регуляции, близости, проявленности и работы с неопределенностью.\n"
+        "• <b>10 Персональных правил:</b> Ваши жизненные опоры и рычаги изменений.\n"
+        "• <b>PDF Export:</b> Формирование персональной инструкции для скачивания."
+    )
+    await message.answer(info_text, parse_mode="HTML")
+
+
+@router.message(F.text == "🔄 Начать заново")
+@router.message(Command("reset"))
+@router.message(Command("restart"))
+async def btn_restart_prompt(message: Message):
+    """Ask confirmation before resetting session."""
+    text = (
+        "⚠️ <b>Вы уверены, что хотите сбросить текущую сессию и начать заново?</b>\n\n"
+        "<i>Все ответы в текущей сессии будут архивированы, и диагностика начнётся с первого вопроса.</i>"
+    )
+    await message.answer(text, parse_mode="HTML", reply_markup=get_restart_confirm_keyboard())
+
+
+@router.callback_query(F.data == "confirm_restart")
+async def cb_confirm_restart(callback: CallbackQuery):
+    """Execute session reset and start fresh."""
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(db, callback.from_user.id, callback.message.chat.id)
+        session = await get_active_session(db, user.id)
+        if session:
+            session.status = "CANCELLED"
+            await db.commit()
+
+        new_session = await start_new_session(db, user.id)
+        await callback.answer("Сессия сброшена!")
+        await callback.message.edit_text("✅ <b>Сессия сброшена.</b> Диагностика начнется заново.", parse_mode="HTML")
+        
+        reply_kb = get_main_reply_keyboard()
+        welcome_text = (
+            "👋 <b>Добро пожаловать в систему «Инструкция к себе» V1.3!</b>\n\n"
+            "Это двухступенчатая система глубокой психологической самодиагностики.\n"
+            "Нажмите кнопку ниже, чтобы начать первый этап CORE (24 вопроса)."
+        )
+        await callback.message.answer(welcome_text, parse_mode="HTML", reply_markup=reply_kb)
+        await callback.message.answer("<b>Согласие на обработку данных:</b>", parse_mode="HTML", reply_markup=get_consent_keyboard())
+
+
+@router.callback_query(F.data == "cancel_restart")
+async def cb_cancel_restart(callback: CallbackQuery):
+    """Cancel restart."""
+    await callback.answer("Сброс отменен")
+    await callback.message.edit_text("❌ Сброс отменен. Вы можете продолжать диагностику.")
 
 
 @router.callback_query(F.data == "accept_consent")

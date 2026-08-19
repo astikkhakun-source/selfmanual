@@ -1,6 +1,8 @@
-import random
 from typing import Dict, Any, Optional
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import (
+    InlineKeyboardMarkup, InlineKeyboardButton,
+    ReplyKeyboardMarkup, KeyboardButton
+)
 
 
 def get_likert_keyboard(q_id: str, client_event_id: str, show_change_last: bool = False) -> InlineKeyboardMarkup:
@@ -63,6 +65,27 @@ def get_paywall_keyboard(payment_url: str) -> InlineKeyboardMarkup:
 def get_consent_keyboard() -> InlineKeyboardMarkup:
     """Consent agreement keyboard."""
     buttons = [
-        [InlineKeyboardButton(text="✅ Принимаю условия и начинаю", callback_data="accept_consent")]
+        [InlineKeyboardButton(text="🚀 Начать диагностику CORE", callback_data="accept_consent")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def get_main_reply_keyboard() -> ReplyKeyboardMarkup:
+    """Persistent bottom ReplyKeyboard for main bot menu."""
+    keyboard = [
+        [KeyboardButton(text="▶️ Продолжить диагностику"), KeyboardButton(text="📊 Мой прогресс")],
+        [KeyboardButton(text="❓ О системе"), KeyboardButton(text="🔄 Начать заново")]
+    ]
+    return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
+
+
+def get_restart_confirm_keyboard() -> InlineKeyboardMarkup:
+    """Inline confirmation for restarting assessment."""
+    buttons = [
+        [
+            InlineKeyboardButton(text="⚠️ Да, сбросить и начать заново", callback_data="confirm_restart"),
+            InlineKeyboardButton(text="❌ Отмена", callback_data="cancel_restart")
+        ]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
