@@ -98,7 +98,12 @@ async def cmd_start(message: Message):
 async def btn_continue(message: Message):
     """Handle 'Continue' button press from bottom reply menu."""
     async with AsyncSessionLocal() as db:
-        user = await get_or_create_user(db, message.from_user.id, message.chat.id)
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=message.from_user.id,
+            chat_id=message.chat.id,
+            username=message.from_user.username
+        )
         session = await get_active_session(db, user.id)
         if not session:
             session = await start_new_session(db, user.id)
@@ -106,6 +111,30 @@ async def btn_continue(message: Message):
         if session.phase == "CONSENT_PENDING":
             await message.answer("Пожалуйста, примите условия перед началом исследования.", reply_markup=get_consent_keyboard())
             return
+
+        if session.phase == "CORE_READY":
+            stmt_ent = select(AccessEntitlement).where(
+                AccessEntitlement.session_id == session.id,
+                AccessEntitlement.status == "ACTIVE"
+            )
+            res_ent = await db.execute(stmt_ent)
+            has_ent = res_ent.scalar_one_or_none() is not None
+
+            if user.is_admin or has_ent:
+                session.phase = "DEEP_IN_PROGRESS"
+                await db.commit()
+                await message.answer("🚀 <b>Переходим к Этапу 2 (DEEP)...</b>", parse_mode="HTML")
+                await send_next_question(message, db, session)
+                return
+            else:
+                payment_url = create_prodamus_payment_link(user_id=session.user_id, session_id=session.id)
+                await message.answer(
+                    "🪞 <b>Ваша карта-отчет CORE уже готова!</b>\n\n"
+                    "Для продолжения исследования и перехода к 175 вопросам <b>Этапа 2 (DEEP)</b> откройте доступ по кнопке ниже:",
+                    parse_mode="HTML",
+                    reply_markup=get_paywall_keyboard(payment_url)
+                )
+                return
 
         await send_next_question(message, db, session)
 
@@ -256,7 +285,7 @@ async def cb_answer_likert(callback: CallbackQuery):
             await callback.message.answer("Сессия не найдена. Нажмите /start.")
             return
 
-        phase = session.phase
+        old_phase = session.phase
         await save_answer(
             db,
             session_id=session.id,
@@ -265,6 +294,10 @@ async def cb_answer_likert(callback: CallbackQuery):
             phase=phase,
             client_event_id=client_event_id
         )
+
+        if old_phase in ("CORE_READY", "FULL_ASSESSMENT_COMPLETED"):
+            await callback.answer("Ответ сохранён!", show_alert=False)
+            return
 
         await send_next_question(callback.message, db, session, edit_existing=True)
 
@@ -293,6 +326,7 @@ async def cb_answer_vfc(callback: CallbackQuery):
             await callback.message.answer("Сессия не найдена.")
             return
 
+        old_phase = session.phase
         await save_answer(
             db,
             session_id=session.id,
@@ -302,6 +336,10 @@ async def cb_answer_vfc(callback: CallbackQuery):
             client_event_id=client_event_id,
             selected_value=selected_val
         )
+
+        if old_phase == "FULL_ASSESSMENT_COMPLETED":
+            await callback.answer("Ответ сохранён!", show_alert=False)
+            return
 
         await send_next_question(callback.message, db, session, edit_existing=True)
 
