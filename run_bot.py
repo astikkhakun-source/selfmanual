@@ -4,6 +4,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 
+from sqlalchemy import text
 from src.core.config import settings
 from src.db.base import engine, Base
 from src.telegram.handlers.assessment import router as assessment_router
@@ -23,9 +24,14 @@ async def main():
         )
         return
 
-    # 1. Initialize DB tables
+    # 1. Initialize DB tables & run column migrations
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        try:
+            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(100);"))
+            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;"))
+        except Exception as mig_err:
+            logger.info(f"Database migration note: {mig_err}")
 
     bot = Bot(
         token=settings.TELEGRAM_BOT_TOKEN,

@@ -7,14 +7,21 @@ class Base(DeclarativeBase):
     pass
 
 
-# Create async engine for Supabase PostgreSQL
+# Create async engine for PostgreSQL or SQLite
+engine_kwargs = {
+    "echo": (settings.ENVIRONMENT == "development"),
+    "future": True,
+}
+if not settings.SUPABASE_DATABASE_URL.startswith("sqlite"):
+    engine_kwargs.update({
+        "pool_pre_ping": True,
+        "pool_size": 10,
+        "max_overflow": 20
+    })
+
 engine = create_async_engine(
     settings.SUPABASE_DATABASE_URL,
-    echo=(settings.ENVIRONMENT == "development"),
-    future=True,
-    pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20
+    **engine_kwargs
 )
 
 # Async session factory

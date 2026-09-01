@@ -29,6 +29,13 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
 
+    # Admin Users
+    ADMIN_USERNAMES: str = "astihakun,astikkhakun,sherlockdxb"
+
+    @property
+    def admin_usernames_list(self) -> list[str]:
+        return [u.strip().lstrip("@").lower() for u in self.ADMIN_USERNAMES.split(",") if u.strip()]
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

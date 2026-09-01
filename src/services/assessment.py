@@ -3,7 +3,8 @@ from typing import Dict, List, Any, Optional
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.db.models import User, AssessmentSession, Answer, CoreAnalysis
+from src.core.config import settings
+from src.db.models import User, AssessmentSession, Answer, CoreAnalysis, AccessEntitlement
 from src.services.config_loader import (
     CORE_BASE_ITEMS, DEEP_TRAIT_ORDER, DEEP_STATE_CONTEXT_ORDER, VFC_ORDER, VFC_PAIRS
 )
@@ -12,21 +13,71 @@ from src.domain.scoring.core_engine import (
 )
 
 
-async def get_or_create_user(db: AsyncSession, telegram_user_id: int, chat_id: int, language: str = "ru") -> User:
+async def get_or_create_user(
+    db: AsyncSession,
+    telegram_user_id: int,
+    chat_id: int,
+    username: Optional[str] = None,
+    language: str = "ru"
+) -> User:
     """Find existing user by Telegram ID or create a new user."""
     stmt = select(User).where(User.telegram_user_id == telegram_user_id)
     res = await db.execute(stmt)
     user = res.scalar_one_or_none()
 
+    clean_username = username.lstrip("@") if username else None
+    is_admin_user = False
+    if clean_username:
+        if clean_username.lower() in settings.admin_usernames_list:
+            is_admin_user = True
+
     if not user:
         user = User(
             telegram_user_id=telegram_user_id,
             chat_id=chat_id,
+            username=clean_username,
+            is_admin=is_admin_user,
             language=language
         )
         db.add(user)
         await db.commit()
         await db.refresh(user)
+    else:
+        updated = False
+        if clean_username and user.username != clean_username:
+            user.username = clean_username
+            updated = True
+        if is_admin_user and not user.is_admin:
+            user.is_admin = True
+            updated = True
+        if updated:
+            await db.commit()
+
+    # Ensure admin gets full active entitlement for active session
+    if user.is_admin:
+        stmt_sess = select(AssessmentSession).where(
+            AssessmentSession.user_id == user.id,
+            AssessmentSession.status == "ACTIVE"
+        ).order_by(AssessmentSession.created_at.desc())
+        res_sess = await db.execute(stmt_sess)
+        active_sess = res_sess.scalar_one_or_none()
+
+        if active_sess:
+            stmt_ent = select(AccessEntitlement).where(
+                AccessEntitlement.session_id == active_sess.id,
+                AccessEntitlement.entitlement_type == "FULL_REPORT"
+            )
+            res_ent = await db.execute(stmt_ent)
+            if not res_ent.scalar_one_or_none():
+                ent = AccessEntitlement(
+                    user_id=user.id,
+                    session_id=active_sess.id,
+                    entitlement_type="FULL_REPORT",
+                    source="admin",
+                    status="ACTIVE"
+                )
+                db.add(ent)
+                await db.commit()
 
     return user
 
@@ -179,7 +230,22 @@ async def get_next_question_for_session(db: AsyncSession, session: AssessmentSes
         session.phase = "CORE_READY"
         session.core_completed_at = datetime.utcnow()
         await db.commit()
-        return None
+
+    if session.phase in ("CORE_READY", "DEEP_UNLOCKED"):
+        stmt_user = select(User).where(User.id == session.user_id)
+        res_user = await db.execute(stmt_user)
+        user = res_user.scalar_one_or_none()
+
+        stmt_ent = select(AccessEntitlement).where(
+            AccessEntitlement.session_id == session.id,
+            AccessEntitlement.status == "ACTIVE"
+        )
+        res_ent = await db.execute(stmt_ent)
+        has_ent = res_ent.scalar_one_or_none() is not None
+
+        if session.phase == "DEEP_UNLOCKED" or has_ent or (user and user.is_admin):
+            session.phase = "DEEP_IN_PROGRESS"
+            await db.commit()
 
     if session.phase == "DEEP_IN_PROGRESS":
         # 1. Master trait questions (excluding already answered in CORE)

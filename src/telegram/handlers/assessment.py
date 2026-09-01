@@ -8,6 +8,7 @@ from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery, FSInputFile
 
 from src.db.base import AsyncSessionLocal
+from src.db.models import User, AccessEntitlement
 from src.services.config_loader import (
     CORE_BASE_ITEMS, VFC_PAIRS, CONFIG_DIR, get_question_info
 )
@@ -15,6 +16,9 @@ from src.services.assessment import (
     get_or_create_user, get_active_session, start_new_session,
     save_answer, get_next_question_for_session, get_session_answers_map,
     clear_session_answers_cache
+)
+from src.services.admin import (
+    get_admin_stats, grant_user_entitlement, get_question_bank_summary, list_questions_by_phase
 )
 from src.domain.scoring.core_engine import calculate_core_signals, evaluate_core_conflicts
 from src.domain.scoring.scales import calculate_primary_scales
@@ -25,7 +29,9 @@ from src.services.llm_report import generate_full_report_llm
 from src.services.pdf_export import generate_pdf_report
 from src.telegram.keyboards import (
     get_likert_keyboard, get_vfc_keyboard, get_paywall_keyboard, get_consent_keyboard,
-    get_main_reply_keyboard, get_restart_confirm_keyboard
+    get_main_reply_keyboard, get_restart_confirm_keyboard,
+    get_admin_paywall_keyboard, get_admin_main_reply_keyboard, get_admin_dashboard_keyboard,
+    get_admin_questions_nav_keyboard
 )
 
 logger = logging.getLogger(__name__)
@@ -44,6 +50,7 @@ async def cmd_start(message: Message):
             db,
             telegram_user_id=message.from_user.id,
             chat_id=message.chat.id,
+            username=message.from_user.username,
             language=message.from_user.language_code or "ru"
         )
         
@@ -51,7 +58,7 @@ async def cmd_start(message: Message):
         if not session:
             session = await start_new_session(db, user.id)
 
-        reply_kb = get_main_reply_keyboard()
+        reply_kb = get_admin_main_reply_keyboard(is_admin=user.is_admin)
         answers_map = await get_session_answers_map(db, session.id)
 
         # Send 16:9 Onboarding Banner image if available
@@ -360,6 +367,19 @@ async def render_free_core_report(message: Message, db, session):
 
     top_cf_text = conflicts.get(top_conflict_id, {}).get("headline", "Ты ищешь собственный баланс.") if top_conflict_id else "Ты ищешь баланс между автономией и предсказуемостью."
 
+    # Check if user is admin or entitled
+    stmt_u = select(User).where(User.id == session.user_id)
+    res_u = await db.execute(stmt_u)
+    user = res_u.scalar_one_or_none()
+
+    stmt_ent = select(AccessEntitlement).where(
+        AccessEntitlement.session_id == session.id,
+        AccessEntitlement.status == "ACTIVE"
+    )
+    res_ent = await db.execute(stmt_ent)
+    has_ent = res_ent.scalar_one_or_none() is not None
+    is_admin = user.is_admin if user else False
+
     report_text = (
         "🪞 <b>БЕСПЛАТНАЯ КАРТА-ОТЧЕТ CORE (Первичная архитектура)</b>\n\n"
         "<b>Ты в двух абзацах:</b>\n"
@@ -372,8 +392,14 @@ async def render_free_core_report(message: Message, db, session):
         "Полная «Инструкция к себе» покажет, как все 46 аспектов вашей личности связаны между собой."
     )
 
+    if is_admin or has_ent:
+        report_text += "\n\n👑 <b>Административный доступ:</b> Вам разблокирован полный доступ к Этапу 2 (DEEP)."
+
     payment_url = create_prodamus_payment_link(user_id=session.user_id, session_id=session.id)
-    markup = get_paywall_keyboard(payment_url)
+    if is_admin or has_ent:
+        markup = get_admin_paywall_keyboard(payment_url)
+    else:
+        markup = get_paywall_keyboard(payment_url)
 
     core_img = os.path.join(ASSETS_IMAGES_DIR, "core_report.png")
     if os.path.exists(core_img):
@@ -422,3 +448,213 @@ async def render_full_report_and_pdf(message: Message, db, session):
         logger.error(f"Ошибка при генерации PDF: {pdf_err}", exc_info=True)
         full_text += "⚠️ <i>Не удалось сформировать PDF-документ, но ваш текстовый отчёт сгенерирован выше.</i>"
         await status_msg.edit_text(full_text, parse_mode="HTML")
+
+
+# --- ADMIN HANDLERS & COMMANDS ---
+
+@router.message(Command("admin"))
+@router.message(F.text == "👑 Админ-панель")
+async def cmd_admin(message: Message):
+    """Admin control panel dashboard."""
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=message.from_user.id,
+            chat_id=message.chat.id,
+            username=message.from_user.username
+        )
+        if not user.is_admin:
+            await message.answer("⛔ <i>У вас нет прав администратора.</i>", parse_mode="HTML")
+            return
+
+        stats = await get_admin_stats(db)
+        q_summary = get_question_bank_summary()
+
+        text = (
+            "👑 <b>ПАНЕЛЬ АДМИНИСТРАТОРА СИСТЕМЫ</b>\n\n"
+            f"<b>Администратор:</b> @{user.username or user.telegram_user_id}\n\n"
+            f"📊 <b>Общая статистика:</b>\n"
+            f"• Пользователей в системе: <b>{stats['total_users']}</b> (Админов: <b>{stats['total_admins']}</b>)\n"
+            f"• Активных сессий: <b>{stats['active_sessions']}</b>\n"
+            f"• Активных доступов (Entitlements): <b>{stats['active_entitlements']}</b>\n"
+            f"• Оплаченных заказов: <b>{stats['successful_payments']}</b>\n"
+            f"• Сформировано PDF-инструкций: <b>{stats['pdf_exports']}</b>\n\n"
+            f"📚 <b>Банк вопросов ({q_summary['total_count']} всего):</b>\n"
+            f"• CORE Базовые: <b>{q_summary['core_base_count']}</b>\n"
+            f"• DEEP Шкалы (Traits): <b>{q_summary['deep_trait_count']}</b>\n"
+            f"• State/Context: <b>{q_summary['deep_state_context_count']}</b>\n"
+            f"• VFC Выбор ценностей: <b>{q_summary['vfc_count']}</b>\n\n"
+            "Выберите нужное действие ниже:"
+        )
+        await message.answer(text, parse_mode="HTML", reply_markup=get_admin_dashboard_keyboard())
+
+
+@router.callback_query(F.data == "admin:menu")
+async def cb_admin_menu(callback: CallbackQuery):
+    """Return to admin main menu inline."""
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=callback.from_user.id,
+            chat_id=callback.message.chat.id,
+            username=callback.from_user.username
+        )
+        if not user.is_admin:
+            await callback.answer("У вас нет прав администратора.")
+            return
+
+        stats = await get_admin_stats(db)
+        text = (
+            "👑 <b>ПАНЕЛЬ АДМИНИСТРАТОРА СИСТЕМЫ</b>\n\n"
+            f"<b>Администратор:</b> @{user.username or user.telegram_user_id}\n\n"
+            f"📊 <b>Общая статистика:</b>\n"
+            f"• Пользователей: <b>{stats['total_users']}</b> (Админов: <b>{stats['total_admins']}</b>)\n"
+            f"• Активных сессий: <b>{stats['active_sessions']}</b>\n"
+            f"• Активных доступов: <b>{stats['active_entitlements']}</b>\n"
+            f"• Оплаченных заказов: <b>{stats['successful_payments']}</b>\n"
+            f"• Сформировано PDF: <b>{stats['pdf_exports']}</b>\n\n"
+            "Выберите нужное действие ниже:"
+        )
+        await callback.message.edit_text(text, parse_mode="HTML", reply_markup=get_admin_dashboard_keyboard())
+
+
+@router.callback_query(F.data == "admin:stats")
+async def cb_admin_stats(callback: CallbackQuery):
+    """Show detailed admin stats callback."""
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=callback.from_user.id,
+            chat_id=callback.message.chat.id,
+            username=callback.from_user.username
+        )
+        if not user.is_admin:
+            await callback.answer("Отказано в доступе.")
+            return
+
+        stats = await get_admin_stats(db)
+        phase_str = "\n".join([f"  • {k}: {v}" for k, v in stats["phase_breakdown"].items()])
+        text = (
+            "📊 <b>ДЕТАЛЬНАЯ СТАТИСТИКА СИСТЕМЫ</b>\n\n"
+            f"• <b>Всего пользователей:</b> {stats['total_users']}\n"
+            f"• <b>Администраторов:</b> {stats['total_admins']}\n"
+            f"• <b>Активных сессий:</b> {stats['active_sessions']}\n"
+            f"• <b>Активных доступов (DEEP):</b> {stats['active_entitlements']}\n"
+            f"• <b>Успешных оплат:</b> {stats['successful_payments']}\n"
+            f"• <b>Сгенерировано PDF:</b> {stats['pdf_exports']}\n\n"
+            f"📌 <b>Распределение по фазам сессий:</b>\n{phase_str if phase_str else '  • Нет данных'}\n"
+        )
+        markup = get_admin_dashboard_keyboard()
+        await callback.message.edit_text(text, parse_mode="HTML", reply_markup=markup)
+
+
+@router.callback_query(F.data.startswith("admin:questions:"))
+async def cb_admin_questions(callback: CallbackQuery):
+    """Question bank paginated viewer."""
+    parts = callback.data.split(":")
+    phase = parts[2] if len(parts) > 2 else "CORE"
+    page = int(parts[3]) if len(parts) > 3 else 1
+
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=callback.from_user.id,
+            chat_id=callback.message.chat.id,
+            username=callback.from_user.username
+        )
+        if not user.is_admin:
+            await callback.answer("Отказано в доступе.")
+            return
+
+        page_size = 5
+        items, total = list_questions_by_phase(phase, page=page, page_size=page_size)
+        total_pages = max(1, (total + page_size - 1) // page_size)
+
+        lines = [f"📚 <b>Банк вопросов [{phase}] (Стр. {page}/{total_pages}, всего {total}):</b>\n"]
+        for idx, item in enumerate(items, start=(page-1)*page_size + 1):
+            qid = item["question_id"]
+            if item["type"] == "VFC":
+                lines.append(f"<b>{idx}. [{qid}] (VFC)</b>\n{item['text_ru']}\n")
+            else:
+                scale = item.get("scale_id", "")
+                direction = item.get("direction", "+")
+                lines.append(f"<b>{idx}. [{qid}]</b> ({scale}, {direction})\n«{item['text_ru']}»\n")
+
+        nav_kb = get_admin_questions_nav_keyboard(phase, page, total_pages)
+        await callback.message.edit_text("\n".join(lines), parse_mode="HTML", reply_markup=nav_kb)
+
+
+@router.callback_query(F.data == "admin:grant_prompt")
+async def cb_admin_grant_prompt(callback: CallbackQuery):
+    """Instruction on how to grant admin access to another user."""
+    text = (
+        "🔓 <b>Выдача прав администратора и доступа:</b>\n\n"
+        "Чтобы выдать пользователю права админа и полный доступ к DEEP, отправьте команду:\n\n"
+        "<code>/grant @username</code> или <code>/grant 123456789</code>\n\n"
+        "<i>Например: /grant @AstiHakun или /grant @sherlockdxb</i>"
+    )
+    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=get_admin_dashboard_keyboard())
+
+
+@router.message(Command("grant"))
+@router.message(Command("admin_grant"))
+async def cmd_grant(message: Message):
+    """Command handler to grant admin access by username or Telegram user ID."""
+    async with AsyncSessionLocal() as db:
+        admin_user = await get_or_create_user(
+            db,
+            telegram_user_id=message.from_user.id,
+            chat_id=message.chat.id,
+            username=message.from_user.username
+        )
+        if not admin_user.is_admin:
+            await message.answer("⛔ <i>У вас нет прав администратора.</i>", parse_mode="HTML")
+            return
+
+        parts = message.text.split(maxsplit=1)
+        if len(parts) < 2:
+            await message.answer("⚠️ Укажите username или Telegram ID. Пример:\n<code>/grant @username</code>")
+            return
+
+        target_id = parts[1].strip()
+        success, res_msg = await grant_user_entitlement(db, target_id)
+        await message.answer(res_msg, parse_mode="HTML")
+
+
+@router.callback_query(F.data == "admin_start_deep")
+async def cb_admin_start_deep(callback: CallbackQuery):
+    """Direct transition to DEEP phase for Admin users."""
+    await callback.answer("Переход к этапу DEEP...")
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=callback.from_user.id,
+            chat_id=callback.message.chat.id,
+            username=callback.from_user.username
+        )
+        session = await get_active_session(db, user.id)
+        if not session:
+            session = await start_new_session(db, user.id)
+
+        # Grant active entitlement if missing
+        stmt_ent = select(AccessEntitlement).where(
+            AccessEntitlement.session_id == session.id,
+            AccessEntitlement.entitlement_type == "FULL_REPORT"
+        )
+        res_ent = await db.execute(stmt_ent)
+        if not res_ent.scalar_one_or_none():
+            ent = AccessEntitlement(
+                user_id=user.id,
+                session_id=session.id,
+                entitlement_type="FULL_REPORT",
+                source="admin",
+                status="ACTIVE"
+            )
+            db.add(ent)
+
+        session.phase = "DEEP_IN_PROGRESS"
+        await db.commit()
+
+        await callback.message.answer("🚀 <b>Этап 2: DEEP (Глубокое исследование) успешно разблокирован!</b>\n\nНачинаем диагностику шкал личности.", parse_mode="HTML")
+        await send_next_question(callback.message, db, session)
+

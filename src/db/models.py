@@ -19,6 +19,8 @@ class User(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=generate_uuid)
     telegram_user_id: Mapped[int] = mapped_column(BigInteger, unique=True, index=True, nullable=False)
     chat_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    username: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, index=True)
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     language: Mapped[str] = mapped_column(String(10), default="ru")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     deleted_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
