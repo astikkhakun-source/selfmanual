@@ -1,242 +1,1303 @@
 [
   {
-    "id": "P01",
-    "code": "P1_APPROVAL_LOOP",
-    "type": "PATTERN",
-    "name": "Петля поиска внешнего одобрения",
-    "description": "Поведение, при котором любые решения проверяются через реакцию окружающих, а собственное мнение подавляется ради сохранения принятия.",
-    "trigger_conditions": [
-      {
-        "dimension": "D01_INTERNAL_SUPPORT",
-        "operator": "<=",
-        "value": 40
-      },
-      {
-        "dimension": "D33_NEED_TO_BELONG",
-        "operator": ">=",
-        "value": 60
-      }
+    "id": "P01_APPROVAL_LOOP",
+    "name_ru": "Петля поиска внешнего одобрения",
+    "name_en": "Approval Loop",
+    "definition": "Поведение, при котором решения проверяются через реакцию окружающих, а собственное мнение подавляется ради сохранения принятия.",
+    "trigger": [
+      "evaluation_risk",
+      "visibility",
+      "interpersonal_conflict"
     ],
-    "interpretation": "Вы склонны ориентироваться на внешние сигналы одобрения как на единственный показатель правильности своих шагов."
+    "internal_response": [
+      "fear_of_rejection",
+      "doubt_in_self"
+    ],
+    "strategy": [
+      "approval_seeking",
+      "chameleon_behavior"
+    ],
+    "short_term_function": "Снижает тревогу отвержения и сохраняет сиюминутный комфорт связи.",
+    "long_term_cost": "Размывает собственную идентичность и создает хроническую зависимость от чужой оценки.",
+    "required_dimensions": [
+      "D01_INTERNAL_SUPPORT",
+      "D33_NEED_TO_BELONG"
+    ],
+    "supporting_dimensions": [
+      "D32_REJECTION_SENSITIVITY"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [
+      "Do not detect when seeking approval is a formal requirement of an organizational hierarchy."
+    ],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C1_AUTHENTICITY_VS_ACCEPTANCE"
+    ],
+    "related_patterns": [
+      "P15_REASSURANCE_SEEKING",
+      "P32_ADAPTIVE_SELF_ERASURE"
+    ]
   },
   {
-    "id": "P02",
-    "code": "P2_CONTROL_ANALYSIS_LOOP",
-    "type": "PATTERN",
-    "name": "Аналитическая петля гиперконтроля",
-    "description": "Попытка справиться с тревогой перед неизвестностью через бесконечный сбыт информации и гиперпланирование.",
-    "trigger_conditions": [
-      {
-        "dimension": "D14_UNCERTAINTY_TOLERANCE",
-        "operator": "<=",
-        "value": 40
-      },
-      {
-        "dimension": "D15_CONTROL_RELIANCE",
-        "operator": ">=",
-        "value": 60
-      }
+    "id": "P02_CONTROL_ANALYSIS_LOOP",
+    "name_ru": "Аналитическая петля гиперконтроля",
+    "name_en": "Control-Analysis Loop",
+    "definition": "Попытка справиться с тревогой перед неизвестностью через бесконечный сбор информации и гиперпланирование.",
+    "trigger": [
+      "uncertainty",
+      "high_stakes",
+      "unpredictable_environment"
     ],
-    "interpretation": "Ваш ум использует анализ как форму защиты: кажется, что если еще немного подумать, гарантированная безопасность будет найдена."
+    "internal_response": [
+      "anxiety_from_unknown",
+      "loss_of_control_fear"
+    ],
+    "strategy": [
+      "overthinking",
+      "micromanagement",
+      "information_hoarding"
+    ],
+    "short_term_function": "Создает иллюзию контроля и временную защищенность от неожиданностей.",
+    "long_term_cost": "Приводит к когнитивному истощению и затягиванию перехода к реальным действиям.",
+    "required_dimensions": [
+      "D14_UNCERTAINTY_TOLERANCE",
+      "D15_CONTROL_RELIANCE"
+    ],
+    "supporting_dimensions": [
+      "D19_COGNITIVE_OVERPROCESSING"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [
+      "Do not detect when thorough analysis is objectively required by scientific or legal standards."
+    ],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C2_FREEDOM_VS_SECURITY",
+      "C5_CONTROL_VS_SPONTANEITY"
+    ],
+    "related_patterns": [
+      "P14_AVOIDANCE_THROUGH_PREPARATION",
+      "P28_IMMEDIATE_CERTAINTY_SEEKING"
+    ]
   },
   {
-    "id": "P03",
-    "code": "P3_CERTAINTY_BEFORE_ACTION",
-    "type": "PATTERN",
-    "name": "Требование 100% гарантий перед стартом",
-    "description": "Запрет на совершение первого шага, пока результат не станет абсолютно предсказуемым и безопасным.",
-    "trigger_conditions": [
-      {
-        "dimension": "D09_DECISIVENESS",
-        "operator": "<=",
-        "value": 40
-      },
-      {
-        "dimension": "D16_PREDICTABILITY_NEED",
-        "operator": ">=",
-        "value": 60
-      }
+    "id": "P03_CERTAINTY_BEFORE_ACTION",
+    "name_ru": "Требование 100% гарантий перед стартом",
+    "name_en": "Certainty Before Action",
+    "definition": "Запрет на совершение первого шага, пока результат не станет абсолютно предсказуемым и безопасным.",
+    "trigger": [
+      "new_project",
+      "career_pivot",
+      "visibility"
     ],
-    "interpretation": "Вы откладываете действия не из-за лени, а потому что психика отказывается двигаться без страховки."
+    "internal_response": [
+      "fear_of_failure",
+      "perfectionism_pressure"
+    ],
+    "strategy": [
+      "action_delay",
+      "waiting_for_guarantees"
+    ],
+    "short_term_function": "Предотвращает столкновение с ошибками на неразведанной территории.",
+    "long_term_cost": "Упускает временные окна возможностей и формирует ощущение увязания на месте.",
+    "required_dimensions": [
+      "D09_DECISIVENESS",
+      "D16_PREDICTABILITY_NEED"
+    ],
+    "supporting_dimensions": [
+      "D10_TOLERANCE_OF_IMPERFECT_ACTION"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [
+      "Do not detect when delay is due to actual lack of essential physical resources."
+    ],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C2_FREEDOM_VS_SECURITY"
+    ],
+    "related_patterns": [
+      "P13_PERFECTIONISTIC_DELAY",
+      "P30_OPTION_PRESERVATION"
+    ]
   },
   {
-    "id": "P04",
-    "code": "P4_SELF_SILENCING",
-    "type": "PATTERN",
-    "name": "Самоподавление (Self-Silencing)",
-    "description": "Систематическое умалчивание своего мнения, несогласия или потребностей ради сохранения безопасных отношений.",
-    "trigger_conditions": [
-      {
-        "dimension": "D34_CONFLICT_TOLERANCE",
-        "operator": "<=",
-        "value": 40
-      },
-      {
-        "dimension": "D31_BOUNDARY_FLEXIBILITY",
-        "operator": "<=",
-        "value": 40
-      }
+    "id": "P04_SELF_SILENCING",
+    "name_ru": "Самоподавление",
+    "name_en": "Self-Silencing",
+    "definition": "Систематическое умалчивание своего мнения, несогласия или потребностей ради сохранения безопасных отношений.",
+    "trigger": [
+      "conflict_potential",
+      "authority_figure",
+      "relationship_tension"
     ],
-    "interpretation": "Вы выбираете безопасность связи ценой отрезания собственной проявляемости."
+    "internal_response": [
+      "fear_of_confrontation",
+      "guilt_on_assertion"
+    ],
+    "strategy": [
+      "swallowing_opinions",
+      "passive_compliance"
+    ],
+    "short_term_function": "Предотвращает вспышки открытого конфликта и сохраняет внешнее спокойствие.",
+    "long_term_cost": "Накапливает скрытую аутоагрессию и обиду, разрушая искреннюю близость.",
+    "required_dimensions": [
+      "D34_CONFLICT_TOLERANCE",
+      "D31_BOUNDARY_FLEXIBILITY"
+    ],
+    "supporting_dimensions": [
+      "D23_EMOTIONAL_EXPRESSION"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [
+      "Do not infer self-silencing from diplomatic tact in formal business negotiations."
+    ],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C1_AUTHENTICITY_VS_ACCEPTANCE"
+    ],
+    "related_patterns": [
+      "P19_CONFLICT_AVOIDANCE",
+      "P33_NEED_SUPPRESSION"
+    ]
   },
   {
-    "id": "P05",
-    "code": "P5_PERFORMANCE_SELF_WORTH",
-    "type": "PATTERN",
-    "name": "Самооценка, привязанная к продуктивности",
-    "description": "Ощущение собственной ценности существует только во время высоких результатов и достижений.",
-    "trigger_conditions": [
-      {
-        "dimension": "D02_SELF_WORTH_STABILITY",
-        "operator": "<=",
-        "value": 40
-      },
-      {
-        "dimension": "D26_ACHIEVEMENT_ORIENTATION",
-        "operator": ">=",
-        "value": 60
-      }
+    "id": "P05_PERFORMANCE_SELF_WORTH",
+    "name_ru": "Самооценка через достижения",
+    "name_en": "Performance-Based Self-Worth",
+    "definition": "Ощущение собственной ценности существует только во время выдающихся результатов и непрерывной продуктивности.",
+    "trigger": [
+      "rest",
+      "failure",
+      "lack_of_external_metrics"
     ],
-    "interpretation": "Каждый ваш день становится экзаменом на право считать себя 'хорошим'."
+    "internal_response": [
+      "worthlessness_feeling",
+      "inner_critic_attack"
+    ],
+    "strategy": [
+      "workaholism",
+      "constant_goal_chasing"
+    ],
+    "short_term_function": "Дает временные дофаминовые всплески и социальное признание.",
+    "long_term_cost": "Приводит к тяжелым циклам выгорания и невозможности расслабиться.",
+    "required_dimensions": [
+      "D02_SELF_WORTH_STABILITY",
+      "D26_ACHIEVEMENT_ORIENTATION"
+    ],
+    "supporting_dimensions": [
+      "D05_SELF_CRITICISM"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [
+      "Do not detect when high effort is a short-term emergency response."
+    ],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C4_ACHIEVEMENT_VS_SELF_PRESERVATION"
+    ],
+    "related_patterns": [
+      "P18_ACHIEVEMENT_COMPENSATION",
+      "P24_GOALPOST_SHIFTING"
+    ]
   },
   {
-    "id": "P06",
-    "code": "P6_EMOTION_INTELLECTUALIZATION",
-    "type": "PATTERN",
-    "name": "Интеллектуализация эмоций",
-    "description": "Замена проживания сложных чувств когнитивным объяснением 'почему я это чувствую'.",
-    "trigger_conditions": [
-      {
-        "dimension": "D20_EMOTIONAL_AWARENESS",
-        "operator": "<=",
-        "value": 40
-      },
-      {
-        "dimension": "D19_COGNITIVE_OVERPROCESSING",
-        "operator": ">=",
-        "value": 60
-      }
+    "id": "P06_EMOTION_INTELLECTUALIZATION",
+    "name_ru": "Интеллектуализация эмоций",
+    "name_en": "Emotion Intellectualization",
+    "definition": "Замена проживания сложных чувств когнитивным объяснением 'почему я это чувствую'.",
+    "trigger": [
+      "emotional_pain",
+      "grief",
+      "vulnerability"
     ],
-    "interpretation": "Вы думаете свои чувства вместо того, чтобы их чувствовать."
+    "internal_response": [
+      "discomfort_with_affect",
+      "loss_of_rational_ground"
+    ],
+    "strategy": [
+      "rationalization",
+      "explaining_feelings"
+    ],
+    "short_term_function": "Защищает психологический контейнер от затопления болью.",
+    "long_term_cost": "Создает соматический дисконнект и делает эмоции 'замороженными' в теле.",
+    "required_dimensions": [
+      "D20_EMOTIONAL_AWARENESS",
+      "D19_COGNITIVE_OVERPROCESSING"
+    ],
+    "supporting_dimensions": [
+      "D24_EXPERIENTIAL_AVOIDANCE"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [
+      "Do not confuse with objective professional analysis of clinical data."
+    ],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [],
+    "related_patterns": [
+      "P35_COGNITIVE_OVERRIDING",
+      "P34_EMOTIONAL_CONTROL_LOOP"
+    ]
   },
   {
-    "id": "C01",
-    "code": "C1_AUTHENTICITY_VS_ACCEPTANCE",
-    "type": "CONFLICT",
-    "name": "Аутентичность vs Принятие",
-    "description": "Внутренний разрыв между стремлением быть собой и страхом потерять расположение группы.",
-    "trigger_conditions": [
-      {
-        "dimension": "D07_INTERNAL_LOCUS_OF_EVALUATION",
-        "operator": ">=",
-        "value": 60
-      },
-      {
-        "dimension": "D33_NEED_TO_BELONG",
-        "operator": ">=",
-        "value": 60
-      }
+    "id": "P13_PERFECTIONISTIC_DELAY",
+    "name_ru": "Перфекционистская отсрочка",
+    "name_en": "Perfectionistic Delay",
+    "definition": "Откладывание действия или публикации результата до достижения субъективно достаточного уровня качества.",
+    "trigger": [
+      "evaluation_risk",
+      "visibility",
+      "high_stakes_output"
     ],
-    "interpretation": "Вы одновременно хотите заявить о своем уникальном видении и панически боитесь остаться в одиночестве."
+    "internal_response": [
+      "quality_doubt",
+      "fear_of_negative_evaluation"
+    ],
+    "strategy": [
+      "additional_revision",
+      "delay",
+      "preparation"
+    ],
+    "short_term_function": "Снижает вероятность столкновения с внешней оценкой несовершенного результата.",
+    "long_term_cost": "Замедляет получение реальной обратной связи и может усиливать сомнения в собственной готовности.",
+    "required_dimensions": [
+      "D10_TOLERANCE_OF_IMPERFECT_ACTION",
+      "D28_PERFECTIONISTIC_SELF_MONITORING"
+    ],
+    "supporting_dimensions": [
+      "D05_SELF_CRITICISM"
+    ],
+    "required_evidence_count": 4,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [
+      "Do not detect when additional revision is objectively required by task standards.",
+      "Do not infer perfectionistic delay from a single delayed project."
+    ],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C3_VISIBILITY_VS_PROTECTION"
+    ],
+    "related_patterns": [
+      "P14_AVOIDANCE_THROUGH_PREPARATION",
+      "P37_SELF_MONITORING_UNDER_EVALUATION"
+    ]
   },
   {
-    "id": "C02",
-    "code": "C2_FREEDOM_VS_SECURITY",
-    "type": "CONFLICT",
-    "name": "Свобода vs Безопасность",
-    "description": "Конфликт между жаждой автономии/масштаба и остроконечной потребностью в предсказуемости.",
-    "trigger_conditions": [
-      {
-        "dimension": "D08_ACTION_AGENCY",
-        "operator": ">=",
-        "value": 60
-      },
-      {
-        "dimension": "D14_UNCERTAINTY_TOLERANCE",
-        "operator": "<=",
-        "value": 40
-      }
+    "id": "P14_AVOIDANCE_THROUGH_PREPARATION",
+    "name_ru": "Избегание через подготовку",
+    "name_en": "Avoidance Through Preparation",
+    "name_definition": "Замещение реального контакта с внешним миром бесконечным улучшением инструментария, учебой или обустройством процесса.",
+    "trigger": [
+      "launch_moment",
+      "public_exposure"
     ],
-    "interpretation": "Вы рветесь вперед к новым горизонтам, но удерживаете себя тормозом из предсказуемости."
+    "internal_response": [
+      "unpreparedness_illusion",
+      "imposter_feeling"
+    ],
+    "strategy": [
+      "taking_another_course",
+      "buying_more_tools",
+      "polishing"
+    ],
+    "short_term_function": "Создает ощущение занятости продуктивным делом без риска быть отвергнутым.",
+    "long_term_cost": "Хронический статус 'вечного студента' или 'подготавливающегося'.",
+    "required_dimensions": [
+      "D08_ACTION_AGENCY",
+      "D24_EXPERIENTIAL_AVOIDANCE"
+    ],
+    "supporting_dimensions": [
+      "D03_SELF_TRUST"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [
+      "Do not detect during initial baseline education in a completely new domain."
+    ],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C3_VISIBILITY_VS_PROTECTION"
+    ],
+    "related_patterns": [
+      "P02_CONTROL_ANALYSIS_LOOP",
+      "P13_PERFECTIONISTIC_DELAY"
+    ]
   },
   {
-    "id": "C03",
-    "code": "C3_VISIBILITY_VS_PROTECTION",
-    "type": "CONFLICT",
-    "name": "Проявляемость vs Защита",
-    "description": "Желание быть признанным при одновременном страхе оказаться уязвимым под чужими взглядами.",
-    "trigger_conditions": [
-      {
-        "dimension": "D35_VISIBILITY_TOLERANCE",
-        "operator": "<=",
-        "value": 40
-      },
-      {
-        "dimension": "D26_ACHIEVEMENT_ORIENTATION",
-        "operator": ">=",
-        "value": 60
-      }
+    "id": "P15_REASSURANCE_SEEKING",
+    "name_ru": "Поиск успокоения и валидации",
+    "name_en": "Reassurance Seeking",
+    "definition": "Потребность перепроверять свои решения у авторитетов или партнеров для сброса эмоционального напряжения.",
+    "trigger": [
+      "decision_making",
+      "interpersonal_uncertainty"
     ],
-    "interpretation": "Вы создаете прекрасные результаты, но сматываете их в черновики, как только дело доходит до показа миру."
+    "internal_response": [
+      "internal_emptiness",
+      "doubt_in_perception"
+    ],
+    "strategy": [
+      "asking_multiple_opinions",
+      "seeking_approval"
+    ],
+    "short_term_function": "Мгновенно снижает внутреннее сомнение и перекладывает часть ответственности.",
+    "long_term_cost": "Разрушает опору на собственное чутье и усиливает зависимость.",
+    "required_dimensions": [
+      "D03_SELF_TRUST",
+      "D01_INTERNAL_SUPPORT"
+    ],
+    "supporting_dimensions": [
+      "D33_NEED_TO_BELONG"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [
+      "Do not detect when consulting a specialized expert (e.g. physician, lawyer) is rational."
+    ],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C1_AUTHENTICITY_VS_ACCEPTANCE"
+    ],
+    "related_patterns": [
+      "P01_APPROVAL_LOOP",
+      "P29_DECISION_REVERSAL_LOOP"
+    ]
   },
   {
-    "id": "C04",
-    "code": "C4_ACHIEVEMENT_VS_SELF_PRESERVATION",
-    "type": "CONFLICT",
-    "name": "Достижения vs Самосохранение",
-    "description": "Гонка за высокими метриками вопреки физическому и эмоциональному истощению.",
-    "trigger_conditions": [
-      {
-        "dimension": "D26_ACHIEVEMENT_ORIENTATION",
-        "operator": ">=",
-        "value": 70
-      },
-      {
-        "dimension": "D39_SOMATIC_DISCONNECT",
-        "operator": ">=",
-        "value": 60
-      }
+    "id": "P16_RELATIONAL_WITHDRAWAL",
+    "name_ru": "Дистанцирование при угрозе близости",
+    "name_en": "Relational Withdrawal",
+    "definition": "Увеличение дистанции, эмоциональный отход или холодность при сближении или возникновении напряжения в отношениях.",
+    "trigger": [
+      "vulnerability",
+      "intimacy_growth",
+      "relational_conflict"
     ],
-    "interpretation": "Ваши амбиции заставляют вас игнорировать стоп-сигналы собственного тела."
+    "internal_response": [
+      "suffocation_feeling",
+      "fear_of_entrapment"
+    ],
+    "strategy": [
+      "going_ghost",
+      "emotional_coldness",
+      "focusing_on_work"
+    ],
+    "short_term_function": "Восстанавливает чувство безопасности и контроля над своими границами.",
+    "long_term_cost": "Препятствует выстраиванию устойчивой, глубокой привязанности.",
+    "required_dimensions": [
+      "D36_HYPER_INDEPENDENCE",
+      "D23_EMOTIONAL_EXPRESSION"
+    ],
+    "supporting_dimensions": [
+      "D31_BOUNDARY_FLEXIBILITY"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [
+      "Do not detect when withdrawal is a protective boundary response against an abusive partner."
+    ],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C6_AUTHENTICITY_VS_PROTECTION"
+    ],
+    "related_patterns": [
+      "P31_AUTONOMY_DEFENSE"
+    ]
   },
   {
-    "id": "C05",
-    "code": "C5_CONTROL_VS_SPONTANEITY",
-    "type": "CONFLICT",
-    "name": "Контроль vs Спонтанность",
-    "description": "Мечта о легкости при неспособности ослабить хватку микроменеджмента.",
-    "trigger_conditions": [
-      {
-        "dimension": "D15_CONTROL_RELIANCE",
-        "operator": ">=",
-        "value": 65
-      },
-      {
-        "dimension": "D16_PREDICTABILITY_NEED",
-        "operator": ">=",
-        "value": 60
-      }
+    "id": "P17_OVERFUNCTIONING",
+    "name_ru": "Чрезмерное функционирование (Гиперответственность)",
+    "name_en": "Overfunctioning",
+    "definition": "Принятие на себя ответственности за состояния, задачи и эмоции других людей ради удержания стабильности в системе.",
+    "trigger": [
+      "chaos_in_environment",
+      "others_helplessness"
     ],
-    "interpretation": "Вы хотите радоваться жизни, но не можете расслабиться без заранее прописанного сценария."
+    "internal_response": [
+      "anxiety_if_others_fail",
+      "need_to_fix"
+    ],
+    "strategy": [
+      "taking_over",
+      "solving_others_problems"
+    ],
+    "short_term_function": "Устраняет беспорядок и дает сильное чувство контролируемой полезности.",
+    "long_term_cost": "Истощает личные ресурсы и инфантилизирует окружение.",
+    "required_dimensions": [
+      "D15_CONTROL_RELIANCE",
+      "D31_BOUNDARY_FLEXIBILITY"
+    ],
+    "supporting_dimensions": [
+      "D08_ACTION_AGENCY"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [
+      "Do not detect in formal parental roles caring for minor children."
+    ],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C4_ACHIEVEMENT_VS_SELF_PRESERVATION"
+    ],
+    "related_patterns": [
+      "P02_CONTROL_ANALYSIS_LOOP"
+    ]
   },
   {
-    "id": "C06",
-    "code": "C6_AUTHENTICITY_VS_PROTECTION",
-    "type": "CONFLICT",
-    "name": "Искренность vs Самозащита",
-    "description": "Потребность в глубокой близости при запрете показывать свою уязвимость.",
-    "trigger_conditions": [
-      {
-        "dimension": "D36_HYPER_INDEPENDENCE",
-        "operator": ">=",
-        "value": 60
-      },
-      {
-        "dimension": "D23_EMOTIONAL_EXPRESSION",
-        "operator": "<=",
-        "value": 40
-      }
+    "id": "P18_ACHIEVEMENT_COMPENSATION",
+    "name_ru": "Компенсация самоотношения через победы",
+    "name_en": "Achievement Compensation",
+    "definition": "Использование внешних успехов как единственного способа 'заткнуть' внутреннее чувство неполноценности или вины.",
+    "trigger": [
+      "inner_emptiness",
+      "criticism"
     ],
-    "interpretation": "Вы ищете настоящих людей, но держите броню, не давая никому подойти близко."
+    "internal_response": [
+      "shame",
+      "worthlessness"
+    ],
+    "strategy": [
+      "pursuing_external_badges",
+      "trophy_hunting"
+    ],
+    "short_term_function": "Маскирует внутреннюю уязвимость внешним лоском и статусом.",
+    "long_term_cost": "Не лечит фундаментальную хрупкость Я, требуя все более крупных доз успеха.",
+    "required_dimensions": [
+      "D01_INTERNAL_SUPPORT",
+      "D26_ACHIEVEMENT_ORIENTATION"
+    ],
+    "supporting_dimensions": [
+      "D07_INTERNAL_LOCUS_OF_EVALUATION"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C4_ACHIEVEMENT_VS_SELF_PRESERVATION"
+    ],
+    "related_patterns": [
+      "P05_PERFORMANCE_SELF_WORTH"
+    ]
+  },
+  {
+    "id": "P19_CONFLICT_AVOIDANCE",
+    "name_ru": "Избегание прямого конфликта",
+    "name_en": "Conflict Avoidance",
+    "definition": "Любые ухищрения (смена темы, отшучивание, соглашательство) ради того, чтобы не входить в прямую конфронтацию.",
+    "trigger": [
+      "rising_anger_in_room",
+      "disagreement"
+    ],
+    "internal_response": [
+      "fear_of_destruction",
+      "threat_to_connection"
+    ],
+    "strategy": [
+      "deflection",
+      "humor",
+      "immediate_concession"
+    ],
+    "short_term_function": "Удерживает бытовой мир и предотвращает выброс агрессии.",
+    "long_term_cost": "Системные проблемы не решаются и превращаются в пассивную агрессию.",
+    "required_dimensions": [
+      "D34_CONFLICT_TOLERANCE"
+    ],
+    "supporting_dimensions": [
+      "D31_BOUNDARY_FLEXIBILITY"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C1_AUTHENTICITY_VS_ACCEPTANCE"
+    ],
+    "related_patterns": [
+      "P04_SELF_SILENCING"
+    ]
+  },
+  {
+    "id": "P20_POST_CONFLICT_RUMINATION",
+    "name_ru": "Мысленное пережевывание конфликта",
+    "name_en": "Post-Conflict Rumination",
+    "definition": "Длительное прокручивание диалогов после ссоры: 'А надо было сказать вот так...'.",
+    "trigger": [
+      "past_confrontation"
+    ],
+    "internal_response": [
+      "humiliation_feeling",
+      "unresolved_anger"
+    ],
+    "strategy": [
+      "internal_re-enactment"
+    ],
+    "short_term_function": "Попытка когнитивно отвоевать суверенитет и загладить чувство уязвимости.",
+    "long_term_cost": "Длительная утечка ментальной энергии в прошлое.",
+    "required_dimensions": [
+      "D19_COGNITIVE_OVERPROCESSING",
+      "D34_CONFLICT_TOLERANCE"
+    ],
+    "supporting_dimensions": [
+      "D44_TEMPORAL_FOCUS"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [],
+    "related_patterns": [
+      "P06_EMOTION_INTELLECTUALIZATION"
+    ]
+  },
+  {
+    "id": "P21_REJECTION_HYPERVIGILANCE",
+    "name_ru": "Гипербдительность к отвержению",
+    "name_en": "Rejection Hypervigilance",
+    "definition": "Постоянный сканирующий мониторинг чужой мимики, интонаций и паузы в текстах на предмет скрытого недовольства.",
+    "trigger": [
+      "social_interaction",
+      "ambiguous_message"
+    ],
+    "internal_response": [
+      "alert_mode",
+      "catastrophizing_distance"
+    ],
+    "strategy": [
+      "hyper_scanning",
+      "over_interpreting"
+    ],
+    "short_term_function": "Дает шанс упреждающе подстроиться до того, как произойдет реальный разрыв.",
+    "long_term_cost": "Формирует иллюзию враждебности среды и хроническую взвинченность.",
+    "required_dimensions": [
+      "D32_REJECTION_SENSITIVITY"
+    ],
+    "supporting_dimensions": [
+      "D37_STRESS_BASELINE"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C1_AUTHENTICITY_VS_ACCEPTANCE"
+    ],
+    "related_patterns": [
+      "P01_APPROVAL_LOOP"
+    ]
+  },
+  {
+    "id": "P22_VISIBILITY_INHIBITION",
+    "name_ru": "Торможение проявленности",
+    "name_en": "Visibility Inhibition",
+    "name_definition": "Паралич действий или острое желание 'сжаться' в момент, когда внимание аудитории сфокусировано на вас.",
+    "trigger": [
+      "public_stage",
+      "publishing_post",
+      "presentation"
+    ],
+    "internal_response": [
+      "shame_threat",
+      "feeling_exposed"
+    ],
+    "strategy": [
+      "hiding",
+      "understating_results"
+    ],
+    "short_term_function": "Защищает от зависти, суждения или атаки извне.",
+    "long_term_cost": "Не дает миру узнать о вашей реальной квалификации.",
+    "required_dimensions": [
+      "D35_VISIBILITY_TOLERANCE"
+    ],
+    "supporting_dimensions": [
+      "D05_SELF_CRITICISM"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C3_VISIBILITY_VS_PROTECTION"
+    ],
+    "related_patterns": [
+      "P13_PERFECTIONISTIC_DELAY"
+    ]
+  },
+  {
+    "id": "P23_PREEMPTIVE_SELF_CRITICISM",
+    "name_ru": "Упреждающая самокритика",
+    "name_en": "Preemptive Self-Criticism",
+    "definition": "Ругание себя первыми до того, как это успеют сделать окружающие.",
+    "trigger": [
+      "showing_work",
+      "making_mistake"
+    ],
+    "internal_response": [
+      "vulnerability_anxiety"
+    ],
+    "strategy": [
+      "self_deprecation",
+      "pointing_out_flaws_first"
+    ],
+    "short_term_function": "Обезвреживает чужого критика: 'я и сам знаю, что это плохо, вы меня не раните'.",
+    "long_term_cost": "Подтверждает внутреннюю неполноценность и сбивает собственную ценность.",
+    "required_dimensions": [
+      "D05_SELF_CRITICISM"
+    ],
+    "supporting_dimensions": [
+      "D01_INTERNAL_SUPPORT"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [],
+    "related_patterns": [
+      "P22_VISIBILITY_INHIBITION"
+    ]
+  },
+  {
+    "id": "P24_GOALPOST_SHIFTING",
+    "name_ru": "Постоянный сдвиг планки",
+    "name_en": "Goalpost Shifting",
+    "definition": "Мгновенный сдвиг критериев успеха вперед, как только текущая цель достигнута, без паузы на присвоение победы.",
+    "trigger": [
+      "goal_attainment"
+    ],
+    "internal_response": [
+      "lack_of_joy",
+      "feeling_it_was_too_easy"
+    ],
+    "strategy": [
+      "setting_bigger_goal_immediately"
+    ],
+    "short_term_function": "Не дает случиться обесцениванию от остановки.",
+    "long_term_cost": "Хроническое чувство, что ты так никуда и не пришел.",
+    "required_dimensions": [
+      "D26_ACHIEVEMENT_ORIENTATION",
+      "D02_SELF_WORTH_STABILITY"
+    ],
+    "supporting_dimensions": [
+      "D28_PERFECTIONISTIC_SELF_MONITORING"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C4_ACHIEVEMENT_VS_SELF_PRESERVATION"
+    ],
+    "related_patterns": [
+      "P05_PERFORMANCE_SELF_WORTH"
+    ]
+  },
+  {
+    "id": "P25_SUCCESS_DISCOUNTING",
+    "name_ru": "Обесценивание успехов",
+    "name_en": "Success Discounting",
+    "definition": "Списывание любых своих побед на удачу, легкие обстоятельства или помощь других ('мне просто повезло').",
+    "trigger": [
+      "receiving_praise",
+      "achieving_result"
+    ],
+    "internal_response": [
+      "imposter_discomfort"
+    ],
+    "strategy": [
+      "attributing_to_luck",
+      "downplaying"
+    ],
+    "short_term_function": "Снимает с человека груз высокого статуса и ожиданий будущих побед.",
+    "long_term_cost": "Блокирует рост здорового чувства компетентности.",
+    "required_dimensions": [
+      "D07_INTERNAL_LOCUS_OF_EVALUATION",
+      "D03_SELF_TRUST"
+    ],
+    "supporting_dimensions": [
+      "D01_INTERNAL_SUPPORT"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [],
+    "related_patterns": [
+      "P23_PREEMPTIVE_SELF_CRITICISM"
+    ]
+  },
+  {
+    "id": "P26_FAILURE_GLOBALIZATION",
+    "name_ru": "Глобализация неудачи",
+    "name_en": "Failure Globalization",
+    "definition": "Раздувание единичной локальной ошибки в тотальный вывод о собственной непригодности.",
+    "trigger": [
+      "single_mistake",
+      "negative_feedback"
+    ],
+    "internal_response": [
+      "total_failure_identity"
+    ],
+    "strategy": [
+      "catastrophizing"
+    ],
+    "short_term_function": "Заставляет мгновенно сжаться и отказаться от рисков.",
+    "long_term_cost": "Уничтожает мотивацию делать новые попытки.",
+    "required_dimensions": [
+      "D27_FAILURE_TOLERANCE",
+      "D17_AMBIGUITY_TOLERANCE"
+    ],
+    "supporting_dimensions": [
+      "D05_SELF_CRITICISM"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [],
+    "related_patterns": [
+      "P05_PERFORMANCE_SELF_WORTH"
+    ]
+  },
+  {
+    "id": "P27_OUTCOME_DEPENDENT_MOTIVATION",
+    "name_ru": "Зависимость мотивации от скорости отклика",
+    "name_en": "Outcome-Dependent Motivation",
+    "definition": "Мгновенное падение интереса к делу, если нет быстрого подкрепления или вау-эффекта.",
+    "trigger": [
+      "routine_phase",
+      "delayed_results"
+    ],
+    "internal_response": [
+      "boredom",
+      "frustration"
+    ],
+    "strategy": [
+      "quitting",
+      "switching_projects"
+    ],
+    "short_term_function": "Экономит энергию, если нет гарантированного дофамина.",
+    "long_term_cost": "Не дает зайти в длинные марафонские проекты.",
+    "required_dimensions": [
+      "D11_PERSISTENCE",
+      "D29_EXTRINSIC_VS_INTRINSIC_DRIVE"
+    ],
+    "supporting_dimensions": [
+      "D30_CHALLENGE_SEEKING"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [],
+    "related_patterns": []
+  },
+  {
+    "id": "P28_IMMEDIATE_CERTAINTY_SEEKING",
+    "name_ru": "Стремление немедленно закрыть неизвестность",
+    "name_en": "Immediate Certainty Seeking",
+    "definition": "Спешное принятие любого (даже невыгодного) решения ради того, чтобы прекратить муку ожидания.",
+    "trigger": [
+      "hanging_status",
+      "waiting_for_reply"
+    ],
+    "internal_response": [
+      "intolerable_suspense"
+    ],
+    "strategy": [
+      "forcing_closure",
+      "premature_decision"
+    ],
+    "short_term_function": "Снимает тягостное эмоциональное напряжение неясности.",
+    "long_term_cost": "Приводит к проигрышным соглашениям на худших условиях.",
+    "required_dimensions": [
+      "D14_UNCERTAINTY_TOLERANCE",
+      "D09_DECISIVENESS"
+    ],
+    "supporting_dimensions": [
+      "D16_PREDICTABILITY_NEED"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C2_FREEDOM_VS_SECURITY"
+    ],
+    "related_patterns": [
+      "P02_CONTROL_ANALYSIS_LOOP"
+    ]
+  },
+  {
+    "id": "P29_DECISION_REVERSAL_LOOP",
+    "name_ru": "Петля пересмотра решений",
+    "name_en": "Decision Reversal Loop",
+    "definition": "Постоянное отматывание назад уже сделанного выбора и сомнения в его правильности.",
+    "trigger": [
+      "post_decision_phase"
+    ],
+    "internal_response": [
+      "buyer_remorse",
+      "fear_of_wrong_choice"
+    ],
+    "strategy": [
+      "re-evaluating_options"
+    ],
+    "short_term_function": "Оставляет за собой ментальную лазейку 'все исправить'.",
+    "long_term_cost": "Убивает фокусировку на реализации сделанного выбора.",
+    "required_dimensions": [
+      "D09_DECISIVENESS",
+      "D19_COGNITIVE_OVERPROCESSING"
+    ],
+    "supporting_dimensions": [
+      "D03_SELF_TRUST"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [],
+    "related_patterns": [
+      "P15_REASSURANCE_SEEKING"
+    ]
+  },
+  {
+    "id": "P30_OPTION_PRESERVATION",
+    "name_ru": "Удержание всех дверей открытыми",
+    "name_en": "Option Preservation",
+    "definition": "Отказ от окончательного выбора в пользу одного направления, чтобы не терять альтернативные ветки.",
+    "trigger": [
+      "fork_in_road"
+    ],
+    "internal_response": [
+      "fear_of_missing_out",
+      "commitment_phobia"
+    ],
+    "strategy": [
+      "multitasking",
+      "half_commitments"
+    ],
+    "short_term_function": "Создает иллюзию богатства возможностей.",
+    "long_term_cost": "Распыление ресурсов и отсутствия результатов ни в одном из направлений.",
+    "required_dimensions": [
+      "D09_DECISIVENESS",
+      "D11_PERSISTENCE"
+    ],
+    "supporting_dimensions": [
+      "D06_IDENTITY_STABILITY"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C2_FREEDOM_VS_SECURITY"
+    ],
+    "related_patterns": [
+      "P03_CERTAINTY_BEFORE_ACTION"
+    ]
+  },
+  {
+    "id": "P31_AUTONOMY_DEFENSE",
+    "name_ru": "Чрезмерная защита автономии",
+    "name_en": "Autonomy Defense",
+    "definition": "Восприятие любой просьбы или партнерского предложения как попытки посягнуть на свободу.",
+    "trigger": [
+      "partnership_offer",
+      "close_commitment"
+    ],
+    "internal_response": [
+      "threat_of_subjugation"
+    ],
+    "strategy": [
+      "rebellion",
+      "pushing_away"
+    ],
+    "short_term_function": "Гарантирует неприкосновенность личных границ.",
+    "long_term_cost": "Сложность формирования крепких союзов в бизнесе и жизни.",
+    "required_dimensions": [
+      "D36_HYPER_INDEPENDENCE",
+      "D07_INTERNAL_LOCUS_OF_EVALUATION"
+    ],
+    "supporting_dimensions": [
+      "D31_BOUNDARY_FLEXIBILITY"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C1_AUTHENTICITY_VS_ACCEPTANCE"
+    ],
+    "related_patterns": [
+      "P16_RELATIONAL_WITHDRAWAL"
+    ]
+  },
+  {
+    "id": "P32_ADAPTIVE_SELF_ERASURE",
+    "name_ru": "Адаптивное стирание себя",
+    "name_en": "Adaptive Self-Erasure",
+    "definition": "Полное подстраивание под характер и ценности партнера до степени утери своего стиля.",
+    "trigger": [
+      "entering_new_relationship",
+      "strong_partner"
+    ],
+    "internal_response": [
+      "fear_of_being_burdensome"
+    ],
+    "strategy": [
+      "mimicry",
+      "agreeing_with_everything"
+    ],
+    "short_term_function": "Гарантирует максимальное слияние и любовь.",
+    "long_term_cost": "Партнер теряет интерес к 'тени', а человек теряет себя.",
+    "required_dimensions": [
+      "D06_IDENTITY_STABILITY",
+      "D33_NEED_TO_BELONG"
+    ],
+    "supporting_dimensions": [
+      "D31_BOUNDARY_FLEXIBILITY"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C1_AUTHENTICITY_VS_ACCEPTANCE"
+    ],
+    "related_patterns": [
+      "P01_APPROVAL_LOOP",
+      "P04_SELF_SILENCING"
+    ]
+  },
+  {
+    "id": "P33_NEED_SUPPRESSION",
+    "name_ru": "Подавление потребностей",
+    "name_en": "Need Suppression",
+    "definition": "Игнорирование своих нужд до тех пор, пока напряжение не выльется в физическую болезнь или аффект.",
+    "trigger": [
+      "high_demands_from_others"
+    ],
+    "internal_response": [
+      "my_needs_dont_matter"
+    ],
+    "strategy": [
+      "enduring",
+      "silent_martyrdom"
+    ],
+    "short_term_function": "Выглядит удобным и бескорыстным в глазах окружающих.",
+    "long_term_cost": "Неизбежный взрыв ярости или соматический срыв.",
+    "required_dimensions": [
+      "D39_SOMATIC_DISCONNECT",
+      "D23_EMOTIONAL_EXPRESSION"
+    ],
+    "supporting_dimensions": [
+      "D31_BOUNDARY_FLEXIBILITY"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C4_ACHIEVEMENT_VS_SELF_PRESERVATION"
+    ],
+    "related_patterns": [
+      "P04_SELF_SILENCING"
+    ]
+  },
+  {
+    "id": "P34_EMOTIONAL_CONTROL_LOOP",
+    "name_ru": "Петля контроля эмоционального состояния",
+    "name_en": "Emotional Control Loop",
+    "definition": "Попытка сначала привести свои чувства в 'идеальный ресурс', и только потом действовать.",
+    "trigger": [
+      "negative_mood",
+      "fatigue"
+    ],
+    "internal_response": [
+      "i_am_not_in_resource"
+    ],
+    "strategy": [
+      "state_fixing_rituals",
+      "waiting_for_mood"
+    ],
+    "short_term_function": "Дает легальный повод не делать задачи в неидеальном состоянии.",
+    "long_term_cost": "Зависимость действий от капризов эмоционального фона.",
+    "required_dimensions": [
+      "D22_EMOTIONAL_TOLERANCE",
+      "D42_PSYCHOLOGICAL_FLEXIBILITY"
+    ],
+    "supporting_dimensions": [
+      "D24_EXPERIENTIAL_AVOIDANCE"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [],
+    "related_patterns": [
+      "P06_EMOTION_INTELLECTUALIZATION"
+    ]
+  },
+  {
+    "id": "P35_COGNITIVE_OVERRIDING",
+    "name_ru": "Когнитивное переламывание интуиции",
+    "name_en": "Cognitive Overriding",
+    "definition": "Систематический отмах от внутреннего 'что-то тут не так' в пользу логически красивых аргументов.",
+    "trigger": [
+      "intuitive_warning"
+    ],
+    "internal_response": [
+      "gut_feeling_distrust"
+    ],
+    "strategy": [
+      "over-reasoning",
+      "ignoring_gut_feel"
+    ],
+    "short_term_function": "Позволяет принять 'рациональное' решение без оглядки на тревогу.",
+    "long_term_cost": "Попадание в ситуации, о которых внутренний компас предупреждал с самого начала.",
+    "required_dimensions": [
+      "D03_SELF_TRUST",
+      "D20_EMOTIONAL_AWARENESS"
+    ],
+    "supporting_dimensions": [
+      "D19_COGNITIVE_OVERPROCESSING"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [],
+    "related_patterns": [
+      "P06_EMOTION_INTELLECTUALIZATION"
+    ]
+  },
+  {
+    "id": "P36_SUNK_COST_PERSISTENCE",
+    "name_ru": "Застревание в неработающем проекте",
+    "name_en": "Sunk Cost Persistence",
+    "definition": "Упрямое продолжение инвестиций в мертвую стратегию только потому, что туда уже вложено много сил.",
+    "trigger": [
+      "failing_strategy",
+      "negative_roi"
+    ],
+    "internal_response": [
+      "refusal_to_admit_loss"
+    ],
+    "strategy": [
+      "doubling_down"
+    ],
+    "short_term_function": "Защищает от признания ошибки и боли потери инвестиций.",
+    "long_term_cost": "Многократное увеличение масштаба итогового провала.",
+    "required_dimensions": [
+      "D11_PERSISTENCE",
+      "D12_BEHAVIORAL_FLEXIBILITY"
+    ],
+    "supporting_dimensions": [
+      "D27_FAILURE_TOLERANCE"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [],
+    "related_patterns": []
+  },
+  {
+    "id": "P37_SELF_MONITORING_UNDER_EVALUATION",
+    "name_ru": "Самоконтроль в присутствии оценки",
+    "name_en": "Self-Monitoring Under Evaluation",
+    "definition": "Резкое сковывание естественности действий при появлении внешнего эксперта или контролера.",
+    "trigger": [
+      "observed_performance",
+      "audit"
+    ],
+    "internal_response": [
+      "stage_fright",
+      "stiffness"
+    ],
+    "strategy": [
+      "watching_ones_every_move"
+    ],
+    "short_term_function": "Попытка минимизировать мелкие огрехи.",
+    "long_term_cost": "Резкое падение качества работы из-за блокировки автоматических навыков.",
+    "required_dimensions": [
+      "D28_PERFECTIONISTIC_SELF_MONITORING",
+      "D35_VISIBILITY_TOLERANCE"
+    ],
+    "supporting_dimensions": [
+      "D05_SELF_CRITICISM"
+    ],
+    "required_evidence_count": 3,
+    "required_question_count": 3,
+    "cross_context_bonus": true,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    },
+    "related_conflicts": [
+      "C3_VISIBILITY_VS_PROTECTION"
+    ],
+    "related_patterns": [
+      "P13_PERFECTIONISTIC_DELAY",
+      "P22_VISIBILITY_INHIBITION"
+    ]
   }
 ]

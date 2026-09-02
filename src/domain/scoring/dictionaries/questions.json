@@ -6,7 +6,9 @@
     "legacy_scale_id": "cognitive_openness",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_COGNITIVE_OPENNESS_01"
   },
   {
     "question_id": "Q002",
@@ -15,7 +17,9 @@
     "legacy_scale_id": "cognitive_openness",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_COGNITIVE_OPENNESS_01"
   },
   {
     "question_id": "Q003",
@@ -24,7 +28,9 @@
     "legacy_scale_id": "cognitive_openness",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_COGNITIVE_OPENNESS_01"
   },
   {
     "question_id": "Q004",
@@ -33,7 +39,17 @@
     "legacy_scale_id": "conscientiousness",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D11_PERSISTENCE",
+        "weight": 0.4,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_CONSCIENTIOUSNESS_01"
   },
   {
     "question_id": "Q005",
@@ -42,7 +58,9 @@
     "legacy_scale_id": "conscientiousness",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_CONSCIENTIOUSNESS_01"
   },
   {
     "question_id": "Q006",
@@ -51,7 +69,17 @@
     "legacy_scale_id": "conscientiousness",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D11_PERSISTENCE",
+        "weight": 0.4,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_CONSCIENTIOUSNESS_01"
   },
   {
     "question_id": "Q007",
@@ -60,7 +88,9 @@
     "legacy_scale_id": "extraversion",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EXTRAVERSION_01"
   },
   {
     "question_id": "Q008",
@@ -69,7 +99,9 @@
     "legacy_scale_id": "extraversion",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EXTRAVERSION_01"
   },
   {
     "question_id": "Q009",
@@ -78,7 +110,9 @@
     "legacy_scale_id": "extraversion",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EXTRAVERSION_01"
   },
   {
     "question_id": "Q010",
@@ -87,7 +121,9 @@
     "legacy_scale_id": "interpersonal_accommodation",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_INTERPERSONAL_ACCOMMODATION_01"
   },
   {
     "question_id": "Q011",
@@ -96,7 +132,17 @@
     "legacy_scale_id": "interpersonal_accommodation",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D12_BEHAVIORAL_FLEXIBILITY",
+        "weight": 0.25,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_INTERPERSONAL_ACCOMMODATION_01"
   },
   {
     "question_id": "Q012",
@@ -105,7 +151,9 @@
     "legacy_scale_id": "interpersonal_accommodation",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_INTERPERSONAL_ACCOMMODATION_01"
   },
   {
     "question_id": "Q013",
@@ -114,7 +162,9 @@
     "legacy_scale_id": "negative_emotionality",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_NEGATIVE_EMOTIONALITY_01"
   },
   {
     "question_id": "Q014",
@@ -123,7 +173,9 @@
     "legacy_scale_id": "negative_emotionality",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_NEGATIVE_EMOTIONALITY_01"
   },
   {
     "question_id": "Q015",
@@ -132,7 +184,9 @@
     "legacy_scale_id": "negative_emotionality",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_NEGATIVE_EMOTIONALITY_01"
   },
   {
     "question_id": "Q016",
@@ -141,7 +195,17 @@
     "legacy_scale_id": "negative_emotionality",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "uncertainty_tolerance",
+        "weight": 0.4,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_NEGATIVE_EMOTIONALITY_01"
   },
   {
     "question_id": "Q017",
@@ -150,7 +214,17 @@
     "legacy_scale_id": "recognition_based_self_regulation",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D01_INTERNAL_SUPPORT",
+        "weight": 0.5,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_RECOGNITION_BASED_SELF_REGULATION_01"
   },
   {
     "question_id": "Q018",
@@ -159,7 +233,17 @@
     "legacy_scale_id": "recognition_based_self_regulation",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D01_INTERNAL_SUPPORT",
+        "weight": 0.5,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_RECOGNITION_BASED_SELF_REGULATION_01"
   },
   {
     "question_id": "Q019",
@@ -168,7 +252,17 @@
     "legacy_scale_id": "recognition_based_self_regulation",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D07_INTERNAL_LOCUS_OF_EVALUATION",
+        "weight": 0.5,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_RECOGNITION_BASED_SELF_REGULATION_01"
   },
   {
     "question_id": "Q020",
@@ -177,7 +271,9 @@
     "legacy_scale_id": "recognition_based_self_regulation",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_RECOGNITION_BASED_SELF_REGULATION_01"
   },
   {
     "question_id": "Q021",
@@ -186,7 +282,17 @@
     "legacy_scale_id": "detachment_tendency",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "attachment_avoidance",
+        "weight": 0.4,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "RELATIONSHIPS"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_DETACHMENT_TENDENCY_01"
   },
   {
     "question_id": "Q022",
@@ -195,7 +301,17 @@
     "legacy_scale_id": "detachment_tendency",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "attachment_avoidance",
+        "weight": 0.25,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "RELATIONSHIPS"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_DETACHMENT_TENDENCY_01"
   },
   {
     "question_id": "Q023",
@@ -204,7 +320,17 @@
     "legacy_scale_id": "detachment_tendency",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "attachment_avoidance",
+        "weight": 0.4,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "RELATIONSHIPS"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_DETACHMENT_TENDENCY_01"
   },
   {
     "question_id": "Q024",
@@ -213,7 +339,17 @@
     "legacy_scale_id": "rigid_control_tendency",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "control_need",
+        "weight": 0.4,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "WORK"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_RIGID_CONTROL_TENDENCY_01"
   },
   {
     "question_id": "Q025",
@@ -222,7 +358,17 @@
     "legacy_scale_id": "rigid_control_tendency",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D12_BEHAVIORAL_FLEXIBILITY",
+        "weight": 0.4,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_RIGID_CONTROL_TENDENCY_01"
   },
   {
     "question_id": "Q026",
@@ -231,7 +377,17 @@
     "legacy_scale_id": "rigid_control_tendency",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D12_BEHAVIORAL_FLEXIBILITY",
+        "weight": 0.4,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_RIGID_CONTROL_TENDENCY_01"
   },
   {
     "question_id": "Q027",
@@ -240,7 +396,9 @@
     "legacy_scale_id": "experiential_avoidance",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EXPERIENTIAL_AVOIDANCE_01"
   },
   {
     "question_id": "Q028",
@@ -249,7 +407,17 @@
     "legacy_scale_id": "experiential_avoidance",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D08_ACTION_AGENCY",
+        "weight": 0.4,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_EXPERIENTIAL_AVOIDANCE_01"
   },
   {
     "question_id": "Q029",
@@ -258,7 +426,17 @@
     "legacy_scale_id": "experiential_avoidance",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D11_PERSISTENCE",
+        "weight": 0.25,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_EXPERIENTIAL_AVOIDANCE_01"
   },
   {
     "question_id": "Q030",
@@ -267,7 +445,9 @@
     "legacy_scale_id": "experiential_avoidance",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EXPERIENTIAL_AVOIDANCE_01"
   },
   {
     "question_id": "Q031",
@@ -276,7 +456,9 @@
     "legacy_scale_id": "intellectualization",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_INTELLECTUALIZATION_01"
   },
   {
     "question_id": "Q032",
@@ -285,7 +467,9 @@
     "legacy_scale_id": "intellectualization",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_INTELLECTUALIZATION_01"
   },
   {
     "question_id": "Q033",
@@ -294,7 +478,9 @@
     "legacy_scale_id": "intellectualization",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_INTELLECTUALIZATION_01"
   },
   {
     "question_id": "Q034",
@@ -303,7 +489,9 @@
     "legacy_scale_id": "emotional_suppression",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EMOTIONAL_SUPPRESSION_01"
   },
   {
     "question_id": "Q035",
@@ -312,7 +500,9 @@
     "legacy_scale_id": "emotional_suppression",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EMOTIONAL_SUPPRESSION_01"
   },
   {
     "question_id": "Q036",
@@ -321,7 +511,9 @@
     "legacy_scale_id": "emotional_suppression",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EMOTIONAL_SUPPRESSION_01"
   },
   {
     "question_id": "Q037",
@@ -330,7 +522,9 @@
     "legacy_scale_id": "polarized_evaluation",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_POLARIZED_EVALUATION_01"
   },
   {
     "question_id": "Q038",
@@ -339,7 +533,17 @@
     "legacy_scale_id": "polarized_evaluation",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D10_TOLERANCE_OF_IMPERFECT_ACTION",
+        "weight": 0.25,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_POLARIZED_EVALUATION_01"
   },
   {
     "question_id": "Q039",
@@ -348,7 +552,9 @@
     "legacy_scale_id": "polarized_evaluation",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_POLARIZED_EVALUATION_01"
   },
   {
     "question_id": "Q040",
@@ -357,7 +563,9 @@
     "legacy_scale_id": "emotional_awareness",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EMOTIONAL_AWARENESS_01"
   },
   {
     "question_id": "Q041",
@@ -366,7 +574,9 @@
     "legacy_scale_id": "emotional_awareness",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EMOTIONAL_AWARENESS_01"
   },
   {
     "question_id": "Q042",
@@ -375,7 +585,9 @@
     "legacy_scale_id": "emotional_awareness",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EMOTIONAL_AWARENESS_01"
   },
   {
     "question_id": "Q043",
@@ -384,7 +596,9 @@
     "legacy_scale_id": "attachment_anxiety",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ATTACHMENT_ANXIETY_01"
   },
   {
     "question_id": "Q044",
@@ -393,7 +607,9 @@
     "legacy_scale_id": "attachment_anxiety",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ATTACHMENT_ANXIETY_01"
   },
   {
     "question_id": "Q045",
@@ -402,7 +618,9 @@
     "legacy_scale_id": "attachment_anxiety",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ATTACHMENT_ANXIETY_01"
   },
   {
     "question_id": "Q046",
@@ -411,7 +629,17 @@
     "legacy_scale_id": "attachment_anxiety",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "uncertainty_tolerance",
+        "weight": 0.3,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "RELATIONSHIPS"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_ATTACHMENT_ANXIETY_01"
   },
   {
     "question_id": "Q047",
@@ -420,7 +648,9 @@
     "legacy_scale_id": "attachment_avoidance",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ATTACHMENT_AVOIDANCE_01"
   },
   {
     "question_id": "Q048",
@@ -429,7 +659,9 @@
     "legacy_scale_id": "attachment_avoidance",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ATTACHMENT_AVOIDANCE_01"
   },
   {
     "question_id": "Q049",
@@ -438,7 +670,9 @@
     "legacy_scale_id": "attachment_avoidance",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ATTACHMENT_AVOIDANCE_01"
   },
   {
     "question_id": "Q050",
@@ -447,7 +681,9 @@
     "legacy_scale_id": "attachment_avoidance",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ATTACHMENT_AVOIDANCE_01"
   },
   {
     "question_id": "Q051",
@@ -456,7 +692,9 @@
     "legacy_scale_id": "interpersonal_trust",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_INTERPERSONAL_TRUST_01"
   },
   {
     "question_id": "Q052",
@@ -465,7 +703,9 @@
     "legacy_scale_id": "interpersonal_trust",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_INTERPERSONAL_TRUST_01"
   },
   {
     "question_id": "Q053",
@@ -474,7 +714,9 @@
     "legacy_scale_id": "interpersonal_trust",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_INTERPERSONAL_TRUST_01"
   },
   {
     "question_id": "Q054",
@@ -483,7 +725,17 @@
     "legacy_scale_id": "boundary_assertiveness",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D01_INTERNAL_SUPPORT",
+        "weight": 0.2,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_BOUNDARY_ASSERTIVENESS_01"
   },
   {
     "question_id": "Q055",
@@ -492,7 +744,17 @@
     "legacy_scale_id": "boundary_assertiveness",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D01_INTERNAL_SUPPORT",
+        "weight": 0.35,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_BOUNDARY_ASSERTIVENESS_01"
   },
   {
     "question_id": "Q056",
@@ -501,7 +763,9 @@
     "legacy_scale_id": "boundary_assertiveness",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_BOUNDARY_ASSERTIVENESS_01"
   },
   {
     "question_id": "Q057",
@@ -510,7 +774,9 @@
     "legacy_scale_id": "autonomy_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_AUTONOMY_VALUE_01"
   },
   {
     "question_id": "Q058",
@@ -519,7 +785,9 @@
     "legacy_scale_id": "autonomy_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_AUTONOMY_VALUE_01"
   },
   {
     "question_id": "Q059",
@@ -528,7 +796,9 @@
     "legacy_scale_id": "autonomy_value",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_AUTONOMY_VALUE_01"
   },
   {
     "question_id": "Q060",
@@ -537,7 +807,9 @@
     "legacy_scale_id": "security_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_SECURITY_VALUE_01"
   },
   {
     "question_id": "Q061",
@@ -546,7 +818,9 @@
     "legacy_scale_id": "security_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_SECURITY_VALUE_01"
   },
   {
     "question_id": "Q062",
@@ -555,7 +829,9 @@
     "legacy_scale_id": "security_value",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_SECURITY_VALUE_01"
   },
   {
     "question_id": "Q063",
@@ -564,7 +840,9 @@
     "legacy_scale_id": "achievement_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ACHIEVEMENT_VALUE_01"
   },
   {
     "question_id": "Q064",
@@ -573,7 +851,9 @@
     "legacy_scale_id": "achievement_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ACHIEVEMENT_VALUE_01"
   },
   {
     "question_id": "Q065",
@@ -582,7 +862,9 @@
     "legacy_scale_id": "achievement_value",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ACHIEVEMENT_VALUE_01"
   },
   {
     "question_id": "Q066",
@@ -591,7 +873,9 @@
     "legacy_scale_id": "belonging_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_BELONGING_VALUE_01"
   },
   {
     "question_id": "Q067",
@@ -600,7 +884,9 @@
     "legacy_scale_id": "belonging_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_BELONGING_VALUE_01"
   },
   {
     "question_id": "Q068",
@@ -609,7 +895,9 @@
     "legacy_scale_id": "belonging_value",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_BELONGING_VALUE_01"
   },
   {
     "question_id": "Q069",
@@ -618,7 +906,9 @@
     "legacy_scale_id": "meaning_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_MEANING_VALUE_01"
   },
   {
     "question_id": "Q070",
@@ -627,7 +917,9 @@
     "legacy_scale_id": "meaning_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_MEANING_VALUE_01"
   },
   {
     "question_id": "Q071",
@@ -636,7 +928,9 @@
     "legacy_scale_id": "meaning_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_MEANING_VALUE_01"
   },
   {
     "question_id": "Q072",
@@ -645,7 +939,9 @@
     "legacy_scale_id": "growth_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_GROWTH_VALUE_01"
   },
   {
     "question_id": "Q073",
@@ -654,7 +950,9 @@
     "legacy_scale_id": "growth_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_GROWTH_VALUE_01"
   },
   {
     "question_id": "Q074",
@@ -663,7 +961,9 @@
     "legacy_scale_id": "growth_value",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_GROWTH_VALUE_01"
   },
   {
     "question_id": "Q075",
@@ -672,7 +972,17 @@
     "legacy_scale_id": "agency",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D08_ACTION_AGENCY",
+        "weight": 0.3,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_AGENCY_01"
   },
   {
     "question_id": "Q076",
@@ -681,7 +991,17 @@
     "legacy_scale_id": "agency",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D08_ACTION_AGENCY",
+        "weight": 0.3,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_AGENCY_01"
   },
   {
     "question_id": "Q077",
@@ -690,7 +1010,17 @@
     "legacy_scale_id": "agency",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D08_ACTION_AGENCY",
+        "weight": 0.4,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_AGENCY_01"
   },
   {
     "question_id": "Q078",
@@ -699,7 +1029,9 @@
     "legacy_scale_id": "agency",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_AGENCY_01"
   },
   {
     "question_id": "Q079",
@@ -708,7 +1040,9 @@
     "legacy_scale_id": "self_efficacy",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_SELF_EFFICACY_01"
   },
   {
     "question_id": "Q080",
@@ -717,7 +1051,17 @@
     "legacy_scale_id": "self_efficacy",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D03_SELF_TRUST",
+        "weight": 0.4,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_SELF_EFFICACY_01"
   },
   {
     "question_id": "Q081",
@@ -726,7 +1070,17 @@
     "legacy_scale_id": "self_efficacy",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D03_SELF_TRUST",
+        "weight": 0.4,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_SELF_EFFICACY_01"
   },
   {
     "question_id": "Q082",
@@ -735,7 +1089,9 @@
     "legacy_scale_id": "external_outcome_attribution",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EXTERNAL_OUTCOME_ATTRIBUTION_01"
   },
   {
     "question_id": "Q083",
@@ -744,7 +1100,9 @@
     "legacy_scale_id": "external_outcome_attribution",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EXTERNAL_OUTCOME_ATTRIBUTION_01"
   },
   {
     "question_id": "Q084",
@@ -753,7 +1111,9 @@
     "legacy_scale_id": "external_outcome_attribution",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EXTERNAL_OUTCOME_ATTRIBUTION_01"
   },
   {
     "question_id": "Q085",
@@ -762,7 +1122,9 @@
     "legacy_scale_id": "uncertainty_tolerance",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_UNCERTAINTY_TOLERANCE_01"
   },
   {
     "question_id": "Q086",
@@ -771,7 +1133,9 @@
     "legacy_scale_id": "uncertainty_tolerance",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_UNCERTAINTY_TOLERANCE_01"
   },
   {
     "question_id": "Q087",
@@ -780,7 +1144,17 @@
     "legacy_scale_id": "uncertainty_tolerance",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D09_DECISIVENESS",
+        "weight": 0.25,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "UNCERTAINTY"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_UNCERTAINTY_TOLERANCE_01"
   },
   {
     "question_id": "Q088",
@@ -789,7 +1163,9 @@
     "legacy_scale_id": "uncertainty_tolerance",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_UNCERTAINTY_TOLERANCE_01"
   },
   {
     "question_id": "Q089",
@@ -798,7 +1174,9 @@
     "legacy_scale_id": "control_need",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_CONTROL_NEED_01"
   },
   {
     "question_id": "Q090",
@@ -807,7 +1185,9 @@
     "legacy_scale_id": "control_need",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_CONTROL_NEED_01"
   },
   {
     "question_id": "Q091",
@@ -816,7 +1196,9 @@
     "legacy_scale_id": "control_need",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_CONTROL_NEED_01"
   },
   {
     "question_id": "Q092",
@@ -825,7 +1207,9 @@
     "legacy_scale_id": "decisiveness",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_DECISIVENESS_01"
   },
   {
     "question_id": "Q093",
@@ -834,7 +1218,9 @@
     "legacy_scale_id": "decisiveness",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_DECISIVENESS_01"
   },
   {
     "question_id": "Q094",
@@ -843,7 +1229,9 @@
     "legacy_scale_id": "decisiveness",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_DECISIVENESS_01"
   },
   {
     "question_id": "Q095",
@@ -852,7 +1240,17 @@
     "legacy_scale_id": "decision_rumination",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D03_SELF_TRUST",
+        "weight": 0.4,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_DECISION_RUMINATION_01"
   },
   {
     "question_id": "Q096",
@@ -861,7 +1259,17 @@
     "legacy_scale_id": "decision_rumination",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D03_SELF_TRUST",
+        "weight": 0.4,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_DECISION_RUMINATION_01"
   },
   {
     "question_id": "Q097",
@@ -870,7 +1278,17 @@
     "legacy_scale_id": "decision_rumination",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D03_SELF_TRUST",
+        "weight": 0.4,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_DECISION_RUMINATION_01"
   },
   {
     "question_id": "Q098",
@@ -879,7 +1297,24 @@
     "legacy_scale_id": "reassurance_seeking",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D01_INTERNAL_SUPPORT",
+        "weight": 0.25,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      },
+      {
+        "dimension": "D03_SELF_TRUST",
+        "weight": 0.35,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_REASSURANCE_SEEKING_01"
   },
   {
     "question_id": "Q099",
@@ -888,7 +1323,17 @@
     "legacy_scale_id": "reassurance_seeking",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "attachment_anxiety",
+        "weight": 0.4,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "RELATIONSHIPS"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_REASSURANCE_SEEKING_01"
   },
   {
     "question_id": "Q100",
@@ -897,7 +1342,17 @@
     "legacy_scale_id": "reassurance_seeking",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D01_INTERNAL_SUPPORT",
+        "weight": 0.4,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_REASSURANCE_SEEKING_01"
   },
   {
     "question_id": "Q101",
@@ -906,7 +1361,17 @@
     "legacy_scale_id": "error_intolerance",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D09_DECISIVENESS",
+        "weight": 0.35,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_ERROR_INTOLERANCE_01"
   },
   {
     "question_id": "Q102",
@@ -915,7 +1380,9 @@
     "legacy_scale_id": "error_intolerance",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ERROR_INTOLERANCE_01"
   },
   {
     "question_id": "Q103",
@@ -924,7 +1391,17 @@
     "legacy_scale_id": "error_intolerance",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D10_TOLERANCE_OF_IMPERFECT_ACTION",
+        "weight": 0.4,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_ERROR_INTOLERANCE_01"
   },
   {
     "question_id": "Q104",
@@ -933,7 +1410,17 @@
     "legacy_scale_id": "action_initiation",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D08_ACTION_AGENCY",
+        "weight": 0.3,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_ACTION_INITIATION_01"
   },
   {
     "question_id": "Q105",
@@ -942,7 +1429,17 @@
     "legacy_scale_id": "action_initiation",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D08_ACTION_AGENCY",
+        "weight": 0.3,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_ACTION_INITIATION_01"
   },
   {
     "question_id": "Q106",
@@ -951,7 +1448,17 @@
     "legacy_scale_id": "action_initiation",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D08_ACTION_AGENCY",
+        "weight": 0.3,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_ACTION_INITIATION_01"
   },
   {
     "question_id": "Q107",
@@ -960,7 +1467,9 @@
     "legacy_scale_id": "adaptive_flexibility",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ADAPTIVE_FLEXIBILITY_01"
   },
   {
     "question_id": "Q108",
@@ -969,7 +1478,9 @@
     "legacy_scale_id": "adaptive_flexibility",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ADAPTIVE_FLEXIBILITY_01"
   },
   {
     "question_id": "Q109",
@@ -978,7 +1489,9 @@
     "legacy_scale_id": "adaptive_flexibility",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ADAPTIVE_FLEXIBILITY_01"
   },
   {
     "question_id": "Q110",
@@ -987,7 +1500,17 @@
     "legacy_scale_id": "fear_of_evaluation",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D01_INTERNAL_SUPPORT",
+        "weight": 0.2,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_FEAR_OF_EVALUATION_01"
   },
   {
     "question_id": "Q111",
@@ -996,7 +1519,9 @@
     "legacy_scale_id": "fear_of_evaluation",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_FEAR_OF_EVALUATION_01"
   },
   {
     "question_id": "Q112",
@@ -1005,7 +1530,9 @@
     "legacy_scale_id": "fear_of_evaluation",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_FEAR_OF_EVALUATION_01"
   },
   {
     "question_id": "Q113",
@@ -1014,7 +1541,17 @@
     "legacy_scale_id": "fear_of_evaluation",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D01_INTERNAL_SUPPORT",
+        "weight": 0.25,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_FEAR_OF_EVALUATION_01"
   },
   {
     "question_id": "Q114",
@@ -1023,7 +1560,9 @@
     "legacy_scale_id": "authentic_expression",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_AUTHENTIC_EXPRESSION_01"
   },
   {
     "question_id": "Q115",
@@ -1032,7 +1571,17 @@
     "legacy_scale_id": "authentic_expression",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D06_IDENTITY_STABILITY",
+        "weight": 0.2,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_AUTHENTIC_EXPRESSION_01"
   },
   {
     "question_id": "Q116",
@@ -1041,7 +1590,9 @@
     "legacy_scale_id": "authentic_expression",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_AUTHENTIC_EXPRESSION_01"
   },
   {
     "question_id": "Q117",
@@ -1050,7 +1601,9 @@
     "legacy_scale_id": "authentic_expression",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_AUTHENTIC_EXPRESSION_01"
   },
   {
     "question_id": "Q118",
@@ -1059,7 +1612,9 @@
     "legacy_scale_id": "visibility_desire",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_VISIBILITY_DESIRE_01"
   },
   {
     "question_id": "Q119",
@@ -1068,7 +1623,9 @@
     "legacy_scale_id": "visibility_desire",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_VISIBILITY_DESIRE_01"
   },
   {
     "question_id": "Q120",
@@ -1077,7 +1634,9 @@
     "legacy_scale_id": "visibility_desire",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_VISIBILITY_DESIRE_01"
   },
   {
     "question_id": "Q121",
@@ -1086,7 +1645,17 @@
     "legacy_scale_id": "inner_critic",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D05_SELF_CRITICISM",
+        "weight": 0.5,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_INNER_CRITIC_01"
   },
   {
     "question_id": "Q122",
@@ -1095,7 +1664,17 @@
     "legacy_scale_id": "inner_critic",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D05_SELF_CRITICISM",
+        "weight": 0.5,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_INNER_CRITIC_01"
   },
   {
     "question_id": "Q123",
@@ -1104,7 +1683,17 @@
     "legacy_scale_id": "inner_critic",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D04_SELF_COMPASSION",
+        "weight": 0.4,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_INNER_CRITIC_01"
   },
   {
     "question_id": "Q124",
@@ -1113,7 +1702,17 @@
     "legacy_scale_id": "vulnerability_avoidance",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "attachment_avoidance",
+        "weight": 0.35,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_VULNERABILITY_AVOIDANCE_01"
   },
   {
     "question_id": "Q125",
@@ -1122,7 +1721,9 @@
     "legacy_scale_id": "vulnerability_avoidance",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_VULNERABILITY_AVOIDANCE_01"
   },
   {
     "question_id": "Q126",
@@ -1131,7 +1732,17 @@
     "legacy_scale_id": "vulnerability_avoidance",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "attachment_avoidance",
+        "weight": 0.35,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_VULNERABILITY_AVOIDANCE_01"
   },
   {
     "question_id": "Q127",
@@ -1140,7 +1751,17 @@
     "legacy_scale_id": "performance_based_self_worth",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D02_SELF_WORTH_STABILITY",
+        "weight": 0.4,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_PERFORMANCE_BASED_SELF_WORTH_01"
   },
   {
     "question_id": "Q128",
@@ -1149,7 +1770,17 @@
     "legacy_scale_id": "performance_based_self_worth",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D02_SELF_WORTH_STABILITY",
+        "weight": 0.5,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_PERFORMANCE_BASED_SELF_WORTH_01"
   },
   {
     "question_id": "Q129",
@@ -1158,7 +1789,17 @@
     "legacy_scale_id": "performance_based_self_worth",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D02_SELF_WORTH_STABILITY",
+        "weight": 0.5,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_PERFORMANCE_BASED_SELF_WORTH_01"
   },
   {
     "question_id": "Q130",
@@ -1167,7 +1808,17 @@
     "legacy_scale_id": "performance_based_self_worth",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D02_SELF_WORTH_STABILITY",
+        "weight": 0.3,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_PERFORMANCE_BASED_SELF_WORTH_01"
   },
   {
     "question_id": "Q131",
@@ -1176,7 +1827,17 @@
     "legacy_scale_id": "stable_self_worth",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D02_SELF_WORTH_STABILITY",
+        "weight": 0.5,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_STABLE_SELF_WORTH_01"
   },
   {
     "question_id": "Q132",
@@ -1185,7 +1846,17 @@
     "legacy_scale_id": "stable_self_worth",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D04_SELF_COMPASSION",
+        "weight": 0.3,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_STABLE_SELF_WORTH_01"
   },
   {
     "question_id": "Q133",
@@ -1194,7 +1865,17 @@
     "legacy_scale_id": "stable_self_worth",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D02_SELF_WORTH_STABILITY",
+        "weight": 0.5,
+        "direction": -1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_STABLE_SELF_WORTH_01"
   },
   {
     "question_id": "Q134",
@@ -1203,7 +1884,9 @@
     "legacy_scale_id": "achievement_drive",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ACHIEVEMENT_DRIVE_01"
   },
   {
     "question_id": "Q135",
@@ -1212,7 +1895,9 @@
     "legacy_scale_id": "achievement_drive",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ACHIEVEMENT_DRIVE_01"
   },
   {
     "question_id": "Q136",
@@ -1221,7 +1906,9 @@
     "legacy_scale_id": "achievement_drive",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ACHIEVEMENT_DRIVE_01"
   },
   {
     "question_id": "Q137",
@@ -1230,7 +1917,9 @@
     "legacy_scale_id": "need_awareness",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_NEED_AWARENESS_01"
   },
   {
     "question_id": "Q138",
@@ -1239,7 +1928,17 @@
     "legacy_scale_id": "need_awareness",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [
+      {
+        "dimension": "D06_IDENTITY_STABILITY",
+        "weight": 0.3,
+        "direction": 1,
+        "evidence_type": "SECONDARY",
+        "context": "GENERAL"
+      }
+    ],
+    "auto_evidence_cluster_id": "AUTO_NEED_AWARENESS_01"
   },
   {
     "question_id": "Q139",
@@ -1248,7 +1947,9 @@
     "legacy_scale_id": "need_awareness",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_NEED_AWARENESS_01"
   },
   {
     "question_id": "Q140",
@@ -1257,7 +1958,9 @@
     "legacy_scale_id": "money_security",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_MONEY_SECURITY_01"
   },
   {
     "question_id": "Q141",
@@ -1266,7 +1969,9 @@
     "legacy_scale_id": "money_security",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_MONEY_SECURITY_01"
   },
   {
     "question_id": "Q142",
@@ -1275,7 +1980,9 @@
     "legacy_scale_id": "money_security",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_MONEY_SECURITY_01"
   },
   {
     "question_id": "Q143",
@@ -1284,7 +1991,9 @@
     "legacy_scale_id": "money_autonomy",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_MONEY_AUTONOMY_01"
   },
   {
     "question_id": "Q144",
@@ -1293,7 +2002,9 @@
     "legacy_scale_id": "money_autonomy",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_MONEY_AUTONOMY_01"
   },
   {
     "question_id": "Q145",
@@ -1302,7 +2013,9 @@
     "legacy_scale_id": "money_autonomy",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_MONEY_AUTONOMY_01"
   },
   {
     "question_id": "Q146",
@@ -1311,7 +2024,9 @@
     "legacy_scale_id": "money_status_achievement",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_MONEY_STATUS_ACHIEVEMENT_01"
   },
   {
     "question_id": "Q147",
@@ -1320,7 +2035,9 @@
     "legacy_scale_id": "money_status_achievement",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_MONEY_STATUS_ACHIEVEMENT_01"
   },
   {
     "question_id": "Q148",
@@ -1329,7 +2046,9 @@
     "legacy_scale_id": "money_status_achievement",
     "evidence_type": "DIRECT_NEGATIVE",
     "direction": "R",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_MONEY_STATUS_ACHIEVEMENT_01"
   },
   {
     "question_id": "Q149",
@@ -1338,7 +2057,9 @@
     "legacy_scale_id": "anxiety_state",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ANXIETY_STATE_01"
   },
   {
     "question_id": "Q150",
@@ -1347,7 +2068,9 @@
     "legacy_scale_id": "anxiety_state",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ANXIETY_STATE_01"
   },
   {
     "question_id": "Q151",
@@ -1356,7 +2079,9 @@
     "legacy_scale_id": "anxiety_state",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_ANXIETY_STATE_01"
   },
   {
     "question_id": "Q152",
@@ -1365,7 +2090,9 @@
     "legacy_scale_id": "low_mood_state",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_LOW_MOOD_STATE_01"
   },
   {
     "question_id": "Q153",
@@ -1374,7 +2101,9 @@
     "legacy_scale_id": "low_mood_state",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_LOW_MOOD_STATE_01"
   },
   {
     "question_id": "Q154",
@@ -1383,7 +2112,9 @@
     "legacy_scale_id": "low_mood_state",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_LOW_MOOD_STATE_01"
   },
   {
     "question_id": "Q155",
@@ -1392,7 +2123,9 @@
     "legacy_scale_id": "relational_uncertainty",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_RELATIONAL_UNCERTAINTY_01"
   },
   {
     "question_id": "Q156",
@@ -1401,7 +2134,9 @@
     "legacy_scale_id": "support_type",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_SUPPORT_TYPE_01"
   },
   {
     "question_id": "Q157",
@@ -1410,7 +2145,9 @@
     "legacy_scale_id": "evaluation_source",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_EVALUATION_SOURCE_01"
   },
   {
     "question_id": "Q158",
@@ -1419,7 +2156,9 @@
     "legacy_scale_id": "stakes_sensitive_control",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_STAKES_SENSITIVE_CONTROL_01"
   },
   {
     "question_id": "Q159",
@@ -1428,7 +2167,9 @@
     "legacy_scale_id": "financial_baseline_security",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_FINANCIAL_BASELINE_SECURITY_01"
   },
   {
     "question_id": "Q160",
@@ -1437,6 +2178,8 @@
     "legacy_scale_id": "current_meaning",
     "evidence_type": "DIRECT_POSITIVE",
     "direction": "D",
-    "weight": 1.0
+    "weight": 1.0,
+    "secondary_mappings": [],
+    "auto_evidence_cluster_id": "AUTO_CURRENT_MEANING_01"
   }
 ]

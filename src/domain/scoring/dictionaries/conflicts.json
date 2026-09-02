@@ -1,0 +1,406 @@
+[
+  {
+    "id": "C01_AUTHENTICITY_VS_ACCEPTANCE",
+    "code": "C1_AUTHENTICITY_VS_ACCEPTANCE",
+    "name_ru": "Аутентичность vs Принятие",
+    "name_en": "Authenticity vs Acceptance",
+    "definition": "Внутренний разрыв между стремлением быть собой и страхом потерять расположение группы.",
+    "trigger": [
+      "group_pressure",
+      "expressing_unpopular_opinion",
+      "value_clash"
+    ],
+    "internal_response": [
+      "tension_between_truth_and_harmony"
+    ],
+    "strategy": [
+      "hesitation_before_speaking",
+      "partial_self_censorship"
+    ],
+    "short_term_function": "Удерживает принадлежность к группе при сохранении части внутреннего отклика.",
+    "long_term_cost": "Хроническое невидимое напряжение и отчуждение от окружения.",
+    "required_dimensions": [
+      "D07_INTERNAL_LOCUS_OF_EVALUATION",
+      "D33_NEED_TO_BELONG"
+    ],
+    "supporting_dimensions": [
+      "D32_REJECTION_SENSITIVITY"
+    ],
+    "required_evidence_count": 3,
+    "exclusion_rules": [
+      "Do not detect if user explicitly prioritizes one pole completely without tension."
+    ],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    }
+  },
+  {
+    "id": "C02_FREEDOM_VS_SECURITY",
+    "code": "C2_FREEDOM_VS_SECURITY",
+    "name_ru": "Свобода vs Безопасность",
+    "name_en": "Freedom vs Security",
+    "definition": "Конфликт между жаждой автономии/масштаба и остроконечной потребностью в предсказуемости.",
+    "trigger": [
+      "career_pivot",
+      "entrepreneurship",
+      "major_life_step"
+    ],
+    "internal_response": [
+      "excitement_mixed_with_terror"
+    ],
+    "strategy": [
+      "taking_one_step_forward_two_steps_back"
+    ],
+    "short_term_function": "Предотвращает слишком радикальные необдуманные риски.",
+    "long_term_cost": "Застревание в золотой клетке предсказуемой комфортности.",
+    "required_dimensions": [
+      "D08_ACTION_AGENCY",
+      "D14_UNCERTAINTY_TOLERANCE"
+    ],
+    "supporting_dimensions": [
+      "D18_RISK_TOLERANCE"
+    ],
+    "required_evidence_count": 3,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    }
+  },
+  {
+    "id": "C03_VISIBILITY_VS_PROTECTION",
+    "code": "C3_VISIBILITY_VS_PROTECTION",
+    "name_ru": "Проявляемость vs Защита",
+    "name_en": "Visibility vs Self-Protection",
+    "definition": "Желание быть признанным при одновременном страхе оказаться уязвимым под чужими взглядами.",
+    "trigger": [
+      "public_launch",
+      "social_media_posting",
+      "presenting_work"
+    ],
+    "internal_response": [
+      "ambivalence_toward_fame"
+    ],
+    "strategy": [
+      "creating_work_but_delaying_publication"
+    ],
+    "short_term_function": "Сохраняет достоинство продукта в тайне от чужой критики.",
+    "long_term_cost": "Работа 'в стол' и нереализованный потенциал.",
+    "required_dimensions": [
+      "D35_VISIBILITY_TOLERANCE",
+      "D26_ACHIEVEMENT_ORIENTATION"
+    ],
+    "supporting_dimensions": [
+      "D05_SELF_CRITICISM"
+    ],
+    "required_evidence_count": 3,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    }
+  },
+  {
+    "id": "C04_ACHIEVEMENT_VS_SELF_PRESERVATION",
+    "code": "C4_ACHIEVEMENT_VS_SELF_PRESERVATION",
+    "name_ru": "Достижения vs Самосохранение",
+    "name_en": "Achievement vs Self-Preservation",
+    "definition": "Гонка за высокими метриками вопреки физическому и эмоциональному истощению.",
+    "trigger": [
+      "deadline_crunch",
+      "ambitious_targets"
+    ],
+    "internal_response": [
+      "ignoring_somatic_fatigue"
+    ],
+    "strategy": [
+      "pushing_through_sickness",
+      "caffeine_burnout_cycle"
+    ],
+    "short_term_function": "Обеспечивает рекордные показатели в моменте.",
+    "long_term_cost": "Острый телесный срыв или госпитализация.",
+    "required_dimensions": [
+      "D26_ACHIEVEMENT_ORIENTATION",
+      "D39_SOMATIC_DISCONNECT"
+    ],
+    "supporting_dimensions": [
+      "D37_STRESS_BASELINE"
+    ],
+    "required_evidence_count": 3,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    }
+  },
+  {
+    "id": "C05_CONTROL_VS_SPONTANEITY",
+    "code": "C5_CONTROL_VS_SPONTANEITY",
+    "name_ru": "Контроль vs Спонтанность",
+    "name_en": "Control vs Spontaneity",
+    "definition": "Мечта о легкости при неспособности ослабить хватку микроменеджмента.",
+    "trigger": [
+      "vacation",
+      "unstructured_time",
+      "creative_brainstorm"
+    ],
+    "internal_response": [
+      "inability_to_relax_without_schedule"
+    ],
+    "strategy": [
+      "over-scheduling_leisure"
+    ],
+    "short_term_function": "Защищает отдых от непредвиденных накладок.",
+    "long_term_cost": "Потеря радости живого потока и спонтанных открытий.",
+    "required_dimensions": [
+      "D15_CONTROL_RELIANCE",
+      "D16_PREDICTABILITY_NEED"
+    ],
+    "supporting_dimensions": [
+      "D12_BEHAVIORAL_FLEXIBILITY"
+    ],
+    "required_evidence_count": 3,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    }
+  },
+  {
+    "id": "C06_AUTHENTICITY_VS_PROTECTION",
+    "code": "C6_AUTHENTICITY_VS_PROTECTION",
+    "name_ru": "Искренность vs Самозащита",
+    "name_en": "Authenticity vs Self-Protection",
+    "definition": "Потребность в глубокой близости при запрете показывать свою уязвимость.",
+    "trigger": [
+      "deep_relationship_talk",
+      "vulnerability_moment"
+    ],
+    "internal_response": [
+      "desire_for_closeness_clashing_with_armor"
+    ],
+    "strategy": [
+      "irony",
+      "emotional_armoring"
+    ],
+    "short_term_function": "Предотвращает глубокую рану в случае отвержения.",
+    "long_term_cost": "Отношения остаются на поверхностном уровне.",
+    "required_dimensions": [
+      "D36_HYPER_INDEPENDENCE",
+      "D23_EMOTIONAL_EXPRESSION"
+    ],
+    "supporting_dimensions": [
+      "D20_EMOTIONAL_AWARENESS"
+    ],
+    "required_evidence_count": 3,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    }
+  },
+  {
+    "id": "C07_EXPRESSION_VS_DIPLOMACY",
+    "code": "C7_EXPRESSION_VS_DIPLOMACY",
+    "name_ru": "Прямота vs Дипломатия",
+    "name_en": "Expression vs Diplomacy",
+    "definition": "Разрыв между открытым выговариванием правды и желанием быть политически корректным.",
+    "trigger": [
+      "seeing_injustice",
+      "feedback_session"
+    ],
+    "internal_response": [
+      "swallowing_blunt_truth"
+    ],
+    "strategy": [
+      "softening_message_until_blurred"
+    ],
+    "short_term_function": "Сохраняет вежливые рабочие отношения.",
+    "long_term_cost": "Суть претензии так и не доносится до адресата.",
+    "required_dimensions": [
+      "D23_EMOTIONAL_EXPRESSION",
+      "D34_CONFLICT_TOLERANCE"
+    ],
+    "supporting_dimensions": [
+      "D31_BOUNDARY_FLEXIBILITY"
+    ],
+    "required_evidence_count": 3,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    }
+  },
+  {
+    "id": "C08_IDEALISM_VS_PRAGMATISM",
+    "code": "C8_IDEALISM_VS_PRAGMATISM",
+    "name_ru": "Идеализм vs Прагматизм",
+    "name_en": "Idealism vs Pragmatism",
+    "definition": "Конфликт между высокими эстетическими/этическими идеалами и необходимостью идти на компромисс с рынком.",
+    "trigger": [
+      "commercialization_of_idea",
+      "budget_cuts"
+    ],
+    "internal_response": [
+      "feeling_like_selling_out"
+    ],
+    "strategy": [
+      "rejecting_commercial_deals"
+    ],
+    "short_term_function": "Сохраняет чистую совесть и идеальный образ.",
+    "long_term_cost": "Хроническая нехватка ресурсов на развитие.",
+    "required_dimensions": [
+      "D07_INTERNAL_LOCUS_OF_EVALUATION",
+      "D18_RISK_TOLERANCE"
+    ],
+    "supporting_dimensions": [
+      "D45_DOGMA_ATTACHMENT"
+    ],
+    "required_evidence_count": 3,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    }
+  },
+  {
+    "id": "C09_SELF_RELIANCE_VS_DELEGATION",
+    "code": "C9_SELF_RELIANCE_VS_DELEGATION",
+    "name_ru": "Самостоятельность vs Делегирование",
+    "name_en": "Self-Reliance vs Delegation",
+    "definition": "Желание масштабировать процессы при неспособности доверить стандарт качества команде.",
+    "trigger": [
+      "scaling_business",
+      "team_expansion"
+    ],
+    "internal_response": [
+      "they_will_ruin_my_standard"
+    ],
+    "strategy": [
+      "taking_back_delegated_tasks"
+    ],
+    "short_term_function": "Гарантирует 100% соотвествие личному стандарту.",
+    "long_term_cost": "Создание узкого горлышка из самого себя.",
+    "required_dimensions": [
+      "D15_CONTROL_RELIANCE",
+      "D36_HYPER_INDEPENDENCE"
+    ],
+    "supporting_dimensions": [
+      "D28_PERFECTIONISTIC_SELF_MONITORING"
+    ],
+    "required_evidence_count": 3,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    }
+  },
+  {
+    "id": "C10_STABILITY_VS_GROWTH",
+    "code": "C10_STABILITY_VS_GROWTH",
+    "name_ru": "Стабильность vs Рост",
+    "name_en": "Stability vs Growth",
+    "definition": "Конфликт между удержанием достигнутого плато и выходом в следующую неизведанную зону трансформирующего роста.",
+    "trigger": [
+      "plateau_phase",
+      "boredom_in_success"
+    ],
+    "internal_response": [
+      "fear_of_destroying_what_works"
+    ],
+    "strategy": [
+      "prolonging_plateau"
+    ],
+    "short_term_function": "Защищает текущие активы и покой.",
+    "long_term_cost": "Постепенное увядание актуальности.",
+    "required_dimensions": [
+      "D11_PERSISTENCE",
+      "D30_CHALLENGE_SEEKING"
+    ],
+    "supporting_dimensions": [
+      "D14_UNCERTAINTY_TOLERANCE"
+    ],
+    "required_evidence_count": 3,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    }
+  },
+  {
+    "id": "C11_INTIMACY_VS_AUTONOMY",
+    "code": "C11_INTIMACY_VS_AUTONOMY",
+    "name_ru": "Близость vs Автономия",
+    "name_en": "Intimacy vs Autonomy",
+    "definition": "Желание слиться с партнером при паническом страхе быть поглощенным чужой личностью.",
+    "trigger": [
+      "marriage_talk",
+      "moving_in_together"
+    ],
+    "internal_response": [
+      "claustrophobia_in_love"
+    ],
+    "strategy": [
+      "push_pull_dynamics"
+    ],
+    "short_term_function": "Удерживает безопасный баланс дистанции.",
+    "long_term_cost": "Изматывающие эмоциональные качели в парах.",
+    "required_dimensions": [
+      "D06_IDENTITY_STABILITY",
+      "D36_HYPER_INDEPENDENCE"
+    ],
+    "supporting_dimensions": [
+      "D33_NEED_TO_BELONG"
+    ],
+    "required_evidence_count": 3,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    }
+  },
+  {
+    "id": "C12_COMPASSION_VS_ACCOUNTABILITY",
+    "code": "C12_COMPASSION_VS_ACCOUNTABILITY",
+    "name_ru": "Сострадание vs Требовательность",
+    "name_en": "Compassion vs Accountability",
+    "definition": "Конфликт между поддержкой себя при ошибке и необходимостью жесткого спрашивания за результат.",
+    "trigger": [
+      "post_error_review"
+    ],
+    "internal_response": [
+      "hesitation_between_forgiving_and_punishing"
+    ],
+    "strategy": [
+      "fluctuating_between_pity_and_self_flagellation"
+    ],
+    "short_term_function": "Смягчает удары судьбы.",
+    "long_term_cost": "Отсутствие твердой дисциплины при самоанализе.",
+    "required_dimensions": [
+      "D04_SELF_COMPASSION",
+      "D05_SELF_CRITICISM"
+    ],
+    "supporting_dimensions": [
+      "D45_DOGMA_ATTACHMENT"
+    ],
+    "required_evidence_count": 3,
+    "exclusion_rules": [],
+    "confidence_thresholds": {
+      "hypothesis": 60,
+      "reportable": 70,
+      "strong": 85
+    }
+  }
+]

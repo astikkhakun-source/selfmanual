@@ -33,7 +33,7 @@ from src.services.pdf_export import generate_pdf_report, generate_core_pdf_repor
 from src.telegram.keyboards import (
     get_likert_keyboard, get_vfc_keyboard, get_paywall_keyboard, get_consent_keyboard,
     get_restart_confirm_keyboard, get_admin_paywall_keyboard, 
-    get_admin_main_reply_keyboard, get_admin_dashboard_keyboard,
+    get_main_reply_keyboard, get_admin_dashboard_keyboard,
     get_admin_questions_nav_keyboard
 )
 
@@ -61,7 +61,7 @@ async def cmd_start(message: Message):
         if not session:
             session = await start_new_session(db, user.id)
 
-        reply_kb = get_admin_main_reply_keyboard(is_admin=user.is_admin)
+        reply_kb = get_main_reply_keyboard(is_admin=user.is_admin, show_pay_button=(session and session.phase == 'CORE_READY'))
         answers_map = await get_session_answers_map(db, session.id)
 
         # Send 16:9 Onboarding Banner image if available
@@ -142,6 +142,29 @@ async def btn_continue(message: Message):
         await send_next_question(message, db, session)
 
 
+
+@router.message(F.text == "💳 Оплатить полный доступ (DEEP)")
+async def btn_pay_full_access(message: Message):
+    """Show paywall when user clicks the payment button in the main menu."""
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=message.from_user.id,
+            chat_id=message.chat.id
+        )
+        session = await get_active_session(db, user.id)
+        if not session or session.phase != "CORE_READY":
+            await message.answer("Оплата полного отчета сейчас недоступна. Пожалуйста, завершите первый этап тестирования.")
+            return
+
+        payment_url = create_prodamus_payment_link(user_id=session.user_id, session_id=session.id)
+        await message.answer(
+            "🪞 <b>Доступ к Этапу 2 (DEEP)</b>\n\n"
+            "Оплатите доступ по ссылке ниже, чтобы разблокировать оставшиеся 145 вопросов и получить полную PDF-инструкцию.",
+            parse_mode="HTML",
+            reply_markup=get_paywall_keyboard(payment_url)
+        )
+
 @router.message(F.text == "📊 Мой прогресс")
 async def btn_progress(message: Message):
     """Show current progress."""
@@ -214,7 +237,7 @@ async def cb_confirm_restart(callback: CallbackQuery):
         await callback.answer("Сессия сброшена!")
         await callback.message.edit_text("✅ <b>Сессия сброшена.</b> Диагностика начнется заново.", parse_mode="HTML")
         
-        reply_kb = get_admin_main_reply_keyboard(is_admin=user.is_admin)
+        reply_kb = get_main_reply_keyboard(is_admin=user.is_admin, show_pay_button=(session and session.phase == 'CORE_READY'))
         welcome_text = (
             "👁️ <b>Добро пожаловать в систему «Инструкция к себе» V1.3!</b>\n\n"
             "Ваша личность — это не застывший набор мыслей, а сложная операционная система восприятия, постоянно редактирующая свой собственный код перед тем, как его заметит окружающая реальность.\n\n"
@@ -498,6 +521,63 @@ async def render_full_report_and_pdf(message: Message, db, session):
 
 
 # --- ADMIN HANDLERS & COMMANDS ---
+
+
+@router.message(Command("promo"))
+async def cmd_promo(message: Message):
+    """Activate promo code for free access."""
+    parts = message.text.split(maxsplit=1)
+    if len(parts) < 2:
+        await message.answer("⚠️ Пожалуйста, укажите промокод. Пример:\n<code>/promo TESTGROUP2026</code>", parse_mode="HTML")
+        return
+
+    code = parts[1].strip()
+    
+    if code.upper() != settings.TEST_GROUP_PROMO.upper():
+        await message.answer("❌ Неверный промокод.")
+        return
+
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=message.from_user.id,
+            chat_id=message.chat.id,
+            username=message.from_user.username
+        )
+        session = await get_active_session(db, user.id)
+        if not session:
+            session = await start_new_session(db, user.id)
+
+        # Grant access entitlement
+        stmt_ent = select(AccessEntitlement).where(
+            AccessEntitlement.session_id == session.id,
+            AccessEntitlement.entitlement_type == "FULL_REPORT"
+        )
+        res_ent = await db.execute(stmt_ent)
+        existing_ent = res_ent.scalars().first()
+
+        if not existing_ent:
+            ent = AccessEntitlement(
+                user_id=user.id,
+                session_id=session.id,
+                entitlement_type="FULL_REPORT",
+                source="promo",
+                status="ACTIVE"
+            )
+            db.add(ent)
+            
+        if session.phase == "CORE_READY":
+            session.phase = "DEEP_IN_PROGRESS"
+            
+        await db.commit()
+
+        await message.answer(
+            "🎉 <b>Промокод успешно активирован!</b>\n\n"
+            "Вам предоставлен полный доступ к Этапу 2 (DEEP) и формированию PDF-инструкции.\n\n"
+            "Нажмите «▶️ Продолжить диагностику», чтобы перейти к следующим вопросам.",
+            parse_mode="HTML"
+        )
+
 
 @router.message(Command("admin"))
 @router.message(F.text == "👑 Админ-панель")

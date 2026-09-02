@@ -24,6 +24,66 @@ CHAPTER_TITLES = {
 }
 
 
+
+# Asti Dark Style definitions
+BG_COLOR = '#0F0F11'
+TEXT_COLOR = '#EAEAEA'
+ACCENT_COLOR = '#C8B592'
+MUTED_TEXT = '#6B6B73'
+
+def draw_background(canvas, doc):
+    canvas.saveState()
+    w, h = 595.27, 841.89
+    bg_img = "c:/Sher_AI_Studio/projects/selfmanual/assets/images/onboarding.png"
+    import os
+    if os.path.exists(bg_img):
+        from reportlab.lib.utils import ImageReader
+        try:
+            img = ImageReader(bg_img)
+            img_w, img_h = img.getSize()
+            img_aspect = img_w / float(img_h)
+            target_aspect = w / float(h)
+            if img_aspect > target_aspect:
+                draw_h = h
+                draw_w = draw_h * img_aspect
+                x_offset = (w - draw_w) / 2
+                y_offset = 0
+            else:
+                draw_w = w
+                draw_h = draw_w / img_aspect
+                x_offset = 0
+                y_offset = (h - draw_h) / 2
+            canvas.drawImage(bg_img, x_offset, y_offset, width=draw_w, height=draw_h, preserveAspectRatio=True)
+        except Exception:
+            pass
+            
+    from reportlab.lib import colors
+    canvas.setFillColor(colors.HexColor(BG_COLOR))
+    try:
+        canvas.setFillAlpha(0.90)
+    except AttributeError:
+        pass
+    canvas.rect(0, 0, w, h, fill=1, stroke=0)
+    try:
+        canvas.setFillAlpha(1.0)
+    except AttributeError:
+        pass
+    
+    canvas.setStrokeColor(colors.HexColor(ACCENT_COLOR))
+    canvas.setLineWidth(0.3)
+    margin = 40
+    canvas.line(margin, h - margin, w - margin, h - margin)
+    
+    canvas.setFont("Helvetica", 7)
+    canvas.setFillColor(colors.HexColor(MUTED_TEXT))
+    canvas.drawString(margin, h - margin + 8, "PRIVATE PSYCHOLOGICAL INTELLIGENCE REPORT")
+    canvas.drawRightString(w - margin, h - margin + 8, "ID: SC-99482A")
+    canvas.drawString(margin, margin - 15, f"PAGE {str(doc.page).zfill(2)}")
+    canvas.drawRightString(w - margin, margin - 15, "SELFCODE SYSTEM V1.3")
+    
+    canvas.restoreState()
+
+
 def _get_reportlab():
     """Lazy import of ReportLab to prevent module load crashes when reportlab is not installed."""
     try:
@@ -119,27 +179,27 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
     title_style = ParagraphStyle(
         'CoverTitle', parent=styles['Normal'],
         fontName=font_bold, fontSize=24, leading=28,
-        textColor=colors.HexColor('#2b6cb0'), alignment=1, spaceAfter=15
+        textColor=colors.HexColor(ACCENT_COLOR), alignment=1, spaceAfter=15
     )
     subtitle_style = ParagraphStyle(
         'CoverSubTitle', parent=styles['Normal'],
         fontName=font_reg, fontSize=14, leading=18,
-        textColor=colors.HexColor('#4a5568'), alignment=1, spaceAfter=30
+        textColor=colors.HexColor(MUTED_TEXT), alignment=1, spaceAfter=30
     )
     section_style = ParagraphStyle(
         'SectionHeader', parent=styles['Normal'],
         fontName=font_bold, fontSize=14, leading=18,
-        textColor=colors.HexColor('#2b6cb0'), spaceBefore=20, spaceAfter=10
+        textColor=colors.HexColor(ACCENT_COLOR), spaceBefore=20, spaceAfter=10
     )
     heading_style = ParagraphStyle(
         'ChapterHeader', parent=styles['Normal'],
         fontName=font_bold, fontSize=11, leading=14,
-        textColor=colors.HexColor('#2d3748'), spaceBefore=10, spaceAfter=4
+        textColor=colors.HexColor(TEXT_COLOR), spaceBefore=10, spaceAfter=4
     )
     body_style = ParagraphStyle(
         'ChapterBody', parent=styles['Normal'],
         fontName=font_reg, fontSize=9.5, leading=13,
-        textColor=colors.HexColor('#1a202c'), spaceAfter=8
+        textColor=colors.HexColor(TEXT_COLOR), spaceAfter=8
     )
     meta_style = ParagraphStyle(
         'MetaBox', parent=styles['Normal'],
@@ -158,7 +218,7 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
     story.append(Spacer(1, 40))
     story.append(Paragraph("ИНСТРУКЦИЯ К СЕБЕ", title_style))
     story.append(Paragraph("Персональная карта психологической архитектуры", subtitle_style))
-    story.append(HRFlowable(width="80%", thickness=1, color=colors.HexColor('#e2e8f0'), spaceAfter=30))
+    story.append(HRFlowable(width="80%", thickness=1, color=colors.HexColor(ACCENT_COLOR), spaceAfter=30))
     
     date_str = datetime.now(timezone.utc).strftime("%d.%m.%Y")
     story.append(Paragraph(f"<b>Дата отчета:</b> {date_str} | <b>Версия:</b> Architecture V1.3", meta_style))
@@ -200,7 +260,7 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
     story.append(Spacer(1, 20))
     story.append(Paragraph("<font size=7 color='#a0aec0'>Документ сформирован системой «Инструкция к себе» V1.3. Не является медицинским диагнозом.</font>", meta_style))
 
-    doc.build(story)
+    doc.build(story, onFirstPage=draw_background, onLaterPages=draw_background)
     return output_path
 
 
@@ -235,49 +295,49 @@ def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> st
     
     title_style = ParagraphStyle(
         'CoverTitle', parent=styles['Normal'], fontName=font_bold, fontSize=22, leading=26,
-        textColor=colors.HexColor('#1a202c'), alignment=1, spaceAfter=20
+        textColor=colors.HexColor(TEXT_COLOR), alignment=1, spaceAfter=20
     )
     core_phrase_style = ParagraphStyle(
         'CorePhrase', parent=styles['Normal'], fontName=font_bold, fontSize=16, leading=22,
-        textColor=colors.HexColor('#2b6cb0'), alignment=1, spaceAfter=25
+        textColor=colors.HexColor(ACCENT_COLOR), alignment=1, spaceAfter=25
     )
     section_title = ParagraphStyle(
         'SectionTitle', parent=styles['Normal'], fontName=font_bold, fontSize=16, leading=20,
-        textColor=colors.HexColor('#2d3748'), spaceAfter=15, spaceBefore=20
+        textColor=colors.HexColor(TEXT_COLOR), spaceAfter=15, spaceBefore=20
     )
     body_style = ParagraphStyle(
         'Body', parent=styles['Normal'], fontName=font_reg, fontSize=11, leading=16,
-        textColor=colors.HexColor('#2d3748'), spaceAfter=12
+        textColor=colors.HexColor(TEXT_COLOR), spaceAfter=12
     )
     metric_title_style = ParagraphStyle(
         'MetricTitle', parent=styles['Normal'], fontName=font_bold, fontSize=12, leading=16,
-        textColor=colors.HexColor('#2b6cb0'), spaceAfter=4, spaceBefore=10
+        textColor=colors.HexColor(ACCENT_COLOR), spaceAfter=4, spaceBefore=10
     )
     metric_desc_style = ParagraphStyle(
         'MetricDesc', parent=styles['Normal'], fontName=font_reg, fontSize=10, leading=14,
-        textColor=colors.HexColor('#4a5568'), spaceAfter=10
+        textColor=colors.HexColor(MUTED_TEXT), spaceAfter=10
     )
     cycle_flow_style = ParagraphStyle(
         'CycleFlow', parent=styles['Normal'], fontName=font_bold, fontSize=11, leading=18,
-        textColor=colors.HexColor('#e53e3e'), alignment=1, spaceAfter=15, spaceBefore=10
+        textColor=colors.HexColor(ACCENT_COLOR), alignment=1, spaceAfter=15, spaceBefore=10
     )
     list_style = ParagraphStyle(
         'ListStyle', parent=styles['Normal'], fontName=font_reg, fontSize=11, leading=16,
-        textColor=colors.HexColor('#2d3748'), spaceAfter=8, leftIndent=15
+        textColor=colors.HexColor(TEXT_COLOR), spaceAfter=8, leftIndent=15
     )
     marketing_style = ParagraphStyle(
         'Marketing', parent=styles['Normal'], fontName=font_bold, fontSize=11, leading=16,
-        textColor=colors.HexColor('#c53030'), spaceAfter=10, spaceBefore=20
+        textColor=colors.HexColor(ACCENT_COLOR), spaceAfter=10, spaceBefore=20
     )
 
     story = []
     report = report_data.get("report", {})
 
     # PAGE 1: ВАШ SELFCORE
-    story.append(Paragraph("ИНСТРУКЦИЯ К СЕБЕ", ParagraphStyle('Top', fontName=font_bold, fontSize=10, textColor=colors.gray, alignment=1)))
+    story.append(Paragraph("ИНСТРУКЦИЯ К СЕБЕ", ParagraphStyle('Top', fontName=font_bold, fontSize=10, textColor=colors.HexColor(MUTED_TEXT), alignment=1)))
     story.append(Spacer(1, 15))
     story.append(Paragraph("ВАШ SELFCORE", title_style))
-    story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#e2e8f0'), spaceAfter=25))
+    story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor(ACCENT_COLOR), spaceAfter=25))
     
     if report.get("core_phrase"):
         story.append(Paragraph(report["core_phrase"], core_phrase_style))
@@ -333,14 +393,14 @@ def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> st
     border = report.get("border_of_knowledge", {})
     story.append(Paragraph("Первые 30 вопросов позволяют увидеть базовую архитектуру вашей внутренней системы. Но они ещё не показывают, почему она сформировалась именно такой и как её элементы взаимодействуют между собой.", body_style))
     story.append(Spacer(1, 10))
-    story.append(Paragraph("В полном SelfCore исследуются:", ParagraphStyle('B', fontName=font_bold, fontSize=11, textColor=colors.HexColor('#2d3748'), spaceAfter=5)))
+    story.append(Paragraph("В полном SelfCore исследуются:", ParagraphStyle('B', fontName=font_bold, fontSize=11, textColor=colors.HexColor(TEXT_COLOR), spaceAfter=5)))
     for unk in border.get("unknowns", []):
         story.append(Paragraph(f"• {unk}", list_style))
     
     story.append(Spacer(1, 10))
     story.append(Paragraph("Мы уже видим несколько противоречий в ваших ответах. Но данных CORE недостаточно, чтобы определить, являются ли они случайными или образуют устойчивый внутренний конфликт.", body_style))
-    story.append(Paragraph("Для этого нужен следующий уровень диагностики.", ParagraphStyle('B2', fontName=font_bold, fontSize=11, textColor=colors.HexColor('#2b6cb0'))))
+    story.append(Paragraph("Для этого нужен следующий уровень диагностики.", ParagraphStyle('B2', fontName=font_bold, fontSize=11, textColor=colors.HexColor(ACCENT_COLOR))))
 
-    doc.build(story)
+    doc.build(story, onFirstPage=draw_background, onLaterPages=draw_background)
     return output_path
 

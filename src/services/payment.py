@@ -21,6 +21,9 @@ def create_prodamus_payment_link(user_id: str, session_id: str, amount: float = 
         "sum": f"{amount:.2f}",
         "currency": "RUB",
         "customer_extra": session_id,
+        "products[0][name]": "SelfCode полная диагностика",
+        "products[0][price]": f"{amount:.2f}",
+        "products[0][quantity]": "1",
         "sys": "selfmanual_telegram_v1_3"
     }
 

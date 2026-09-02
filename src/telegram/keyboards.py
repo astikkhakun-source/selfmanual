@@ -79,12 +79,14 @@ def get_admin_paywall_keyboard(payment_url: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
-def get_admin_main_reply_keyboard(is_admin: bool = False) -> ReplyKeyboardMarkup:
-    """Persistent bottom ReplyKeyboard with Admin button for admins."""
+def get_main_reply_keyboard(is_admin: bool = False, show_pay_button: bool = False) -> ReplyKeyboardMarkup:
+    """Persistent bottom ReplyKeyboard with optional Pay button and Admin button."""
     keyboard = [
         [KeyboardButton(text="▶️ Продолжить диагностику"), KeyboardButton(text="📊 Мой прогресс")],
         [KeyboardButton(text="❓ О системе"), KeyboardButton(text="🔄 Начать заново")]
     ]
+    if show_pay_button:
+        keyboard.insert(0, [KeyboardButton(text="💳 Оплатить полный доступ (DEEP)")])
     if is_admin:
         keyboard.append([KeyboardButton(text="👑 Админ-панель")])
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
