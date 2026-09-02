@@ -58,11 +58,11 @@ async def grant_user_entitlement(db: AsyncSession, identifier: str) -> Tuple[boo
         tg_id = int(clean_id)
         stmt = select(User).where(User.telegram_user_id == tg_id)
         res = await db.execute(stmt)
-        user = res.scalar_one_or_none()
+        user = res.scalars().first()
     else:
         stmt = select(User).where(func.lower(User.username) == clean_id.lower())
         res = await db.execute(stmt)
-        user = res.scalar_one_or_none()
+        user = res.scalars().first()
 
     if not user:
         return False, f"Пользователь «{identifier}» не найден в базе данных."
@@ -75,7 +75,7 @@ async def grant_user_entitlement(db: AsyncSession, identifier: str) -> Tuple[boo
         AssessmentSession.status == "ACTIVE"
     ).order_by(AssessmentSession.created_at.desc())
     res_sess = await db.execute(stmt_sess)
-    session = res_sess.scalar_one_or_none()
+    session = res_sess.scalars().first()
 
     if session:
         stmt_ent = select(AccessEntitlement).where(
@@ -83,7 +83,7 @@ async def grant_user_entitlement(db: AsyncSession, identifier: str) -> Tuple[boo
             AccessEntitlement.entitlement_type == "FULL_REPORT"
         )
         res_ent = await db.execute(stmt_ent)
-        existing_ent = res_ent.scalar_one_or_none()
+        existing_ent = res_ent.scalars().first()
 
         if not existing_ent:
             ent = AccessEntitlement(

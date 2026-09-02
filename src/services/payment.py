@@ -51,7 +51,7 @@ async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) ->
     # Find assessment session
     stmt = select(AssessmentSession).where(AssessmentSession.id == session_id)
     res = await db.execute(stmt)
-    session = res.scalar_one_or_none()
+    session = res.scalars().first()
 
     if not session:
         return False, f"Session {session_id} not found"
@@ -62,7 +62,7 @@ async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) ->
         AccessEntitlement.entitlement_type == "FULL_REPORT"
     )
     res_ent = await db.execute(stmt_ent)
-    existing_ent = res_ent.scalar_one_or_none()
+    existing_ent = res_ent.scalars().first()
 
     if existing_ent:
         # Entitlement already active, return idempotent success
@@ -71,7 +71,7 @@ async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) ->
     # 3. Create or update payment record
     stmt_pay = select(Payment).where(Payment.prodamus_order_id == order_id)
     res_pay = await db.execute(stmt_pay)
-    payment = res_pay.scalar_one_or_none()
+    payment = res_pay.scalars().first()
 
     if not payment:
         payment = Payment(

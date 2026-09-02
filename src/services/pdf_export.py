@@ -202,3 +202,145 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
 
     doc.build(story)
     return output_path
+
+
+def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
+    """
+    Generate 3-page CORE PDF report (SelfCore) using ReportLab.
+    """
+    rl = _get_reportlab()
+    A4 = rl["A4"]
+    colors = rl["colors"]
+    getSampleStyleSheet = rl["getSampleStyleSheet"]
+    ParagraphStyle = rl["ParagraphStyle"]
+    SimpleDocTemplate = rl["SimpleDocTemplate"]
+    Paragraph = rl["Paragraph"]
+    Spacer = rl["Spacer"]
+    HRFlowable = rl["HRFlowable"]
+    PageBreak = rl["PageBreak"]
+
+    font_reg, font_bold = _get_cyrillic_font(rl["pdfmetrics"], rl["TTFont"])
+
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    pdf_filename = f"SelfCore_Report_{session_id[:8]}_{int(datetime.now(timezone.utc).timestamp())}.pdf"
+    output_path = os.path.join(OUTPUT_DIR, pdf_filename)
+
+    doc = SimpleDocTemplate(
+        output_path,
+        pagesize=A4,
+        rightMargin=40, leftMargin=40, topMargin=40, bottomMargin=40
+    )
+
+    styles = getSampleStyleSheet()
+    
+    title_style = ParagraphStyle(
+        'CoverTitle', parent=styles['Normal'], fontName=font_bold, fontSize=22, leading=26,
+        textColor=colors.HexColor('#1a202c'), alignment=1, spaceAfter=20
+    )
+    core_phrase_style = ParagraphStyle(
+        'CorePhrase', parent=styles['Normal'], fontName=font_bold, fontSize=16, leading=22,
+        textColor=colors.HexColor('#2b6cb0'), alignment=1, spaceAfter=25
+    )
+    section_title = ParagraphStyle(
+        'SectionTitle', parent=styles['Normal'], fontName=font_bold, fontSize=16, leading=20,
+        textColor=colors.HexColor('#2d3748'), spaceAfter=15, spaceBefore=20
+    )
+    body_style = ParagraphStyle(
+        'Body', parent=styles['Normal'], fontName=font_reg, fontSize=11, leading=16,
+        textColor=colors.HexColor('#2d3748'), spaceAfter=12
+    )
+    metric_title_style = ParagraphStyle(
+        'MetricTitle', parent=styles['Normal'], fontName=font_bold, fontSize=12, leading=16,
+        textColor=colors.HexColor('#2b6cb0'), spaceAfter=4, spaceBefore=10
+    )
+    metric_desc_style = ParagraphStyle(
+        'MetricDesc', parent=styles['Normal'], fontName=font_reg, fontSize=10, leading=14,
+        textColor=colors.HexColor('#4a5568'), spaceAfter=10
+    )
+    cycle_flow_style = ParagraphStyle(
+        'CycleFlow', parent=styles['Normal'], fontName=font_bold, fontSize=11, leading=18,
+        textColor=colors.HexColor('#e53e3e'), alignment=1, spaceAfter=15, spaceBefore=10
+    )
+    list_style = ParagraphStyle(
+        'ListStyle', parent=styles['Normal'], fontName=font_reg, fontSize=11, leading=16,
+        textColor=colors.HexColor('#2d3748'), spaceAfter=8, leftIndent=15
+    )
+    marketing_style = ParagraphStyle(
+        'Marketing', parent=styles['Normal'], fontName=font_bold, fontSize=11, leading=16,
+        textColor=colors.HexColor('#c53030'), spaceAfter=10, spaceBefore=20
+    )
+
+    story = []
+    report = report_data.get("report", {})
+
+    # PAGE 1: ВАШ SELFCORE
+    story.append(Paragraph("ИНСТРУКЦИЯ К СЕБЕ", ParagraphStyle('Top', fontName=font_bold, fontSize=10, textColor=colors.gray, alignment=1)))
+    story.append(Spacer(1, 15))
+    story.append(Paragraph("ВАШ SELFCORE", title_style))
+    story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#e2e8f0'), spaceAfter=25))
+    
+    if report.get("core_phrase"):
+        story.append(Paragraph(report["core_phrase"], core_phrase_style))
+
+    if report.get("portrait"):
+        story.append(Paragraph(report["portrait"], body_style))
+        story.append(Spacer(1, 20))
+
+    story.append(Paragraph("ЧЕТЫРЕ КЛЮЧЕВЫХ ПОКАЗАТЕЛЯ", section_title))
+    metrics = report.get("metrics", [])
+    for m in metrics:
+        story.append(Paragraph(f"{m.get('name')} — {m.get('score')}/100", metric_title_style))
+        story.append(Paragraph(m.get("description", ""), metric_desc_style))
+
+    story.append(PageBreak())
+
+    # PAGE 2: ЦИКЛ, РЕСУРСЫ, ОГРАНИЧЕНИЯ
+    story.append(Paragraph("ВАШ ГЛАВНЫЙ ВНУТРЕННИЙ ЦИКЛ", section_title))
+    loop = report.get("main_loop", {})
+    if loop.get("flow"):
+        story.append(Paragraph(loop["flow"], cycle_flow_style))
+    if loop.get("description"):
+        story.append(Paragraph(loop["description"], body_style))
+    
+    story.append(Spacer(1, 20))
+    
+    story.append(Paragraph("ЧТО ВАС УСИЛИВАЕТ", section_title))
+    for res in report.get("resources", []):
+        story.append(Paragraph(f"• {res}", list_style))
+
+    story.append(Spacer(1, 20))
+
+    story.append(Paragraph("ГДЕ ВАШ РЕСУРС МОЖЕТ СТАНОВИТЬСЯ ЛОВУШКОЙ", section_title))
+    for lim in report.get("limitations", []):
+        story.append(Paragraph(f"• {lim}", list_style))
+
+    story.append(PageBreak())
+
+    # PAGE 3: ПРАВИЛА, ПРОТИВОРЕЧИЯ, МАРКЕТИНГ
+    story.append(Paragraph("ПЯТЬ ПРАВИЛ ВЗАИМОДЕЙСТВИЯ С СОБОЙ", section_title))
+    for idx, rule in enumerate(report.get("rules", []), 1):
+        story.append(Paragraph(f"<b>0{idx}.</b> {rule}", list_style))
+        
+    story.append(Spacer(1, 20))
+
+    conflict = report.get("conflict")
+    if conflict:
+        story.append(Paragraph("ПРОТИВОРЕЧИЕ, КОТОРОЕ СТОИТ ЗАМЕТИТЬ", section_title))
+        story.append(Paragraph(conflict, body_style))
+        story.append(Spacer(1, 20))
+
+    story.append(Paragraph("ЭТО ТОЛЬКО ВЕРХНИЙ СЛОЙ", marketing_style))
+    border = report.get("border_of_knowledge", {})
+    story.append(Paragraph("Первые 30 вопросов позволяют увидеть базовую архитектуру вашей внутренней системы. Но они ещё не показывают, почему она сформировалась именно такой и как её элементы взаимодействуют между собой.", body_style))
+    story.append(Spacer(1, 10))
+    story.append(Paragraph("В полном SelfCore исследуются:", ParagraphStyle('B', fontName=font_bold, fontSize=11, textColor=colors.HexColor('#2d3748'), spaceAfter=5)))
+    for unk in border.get("unknowns", []):
+        story.append(Paragraph(f"• {unk}", list_style))
+    
+    story.append(Spacer(1, 10))
+    story.append(Paragraph("Мы уже видим несколько противоречий в ваших ответах. Но данных CORE недостаточно, чтобы определить, являются ли они случайными или образуют устойчивый внутренний конфликт.", body_style))
+    story.append(Paragraph("Для этого нужен следующий уровень диагностики.", ParagraphStyle('B2', fontName=font_bold, fontSize=11, textColor=colors.HexColor('#2b6cb0'))))
+
+    doc.build(story)
+    return output_path
+

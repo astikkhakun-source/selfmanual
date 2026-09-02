@@ -7,6 +7,8 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery, FSInputFile
 
+from sqlalchemy import select
+
 from src.db.base import AsyncSessionLocal
 from src.db.models import User, AccessEntitlement
 from src.services.config_loader import (
@@ -25,12 +27,12 @@ from src.domain.scoring.scales import calculate_primary_scales
 from src.domain.scoring.patterns import evaluate_full_patterns
 from src.domain.scoring.conflicts import evaluate_full_conflicts
 from src.services.payment import create_prodamus_payment_link
-from src.services.llm_report import generate_full_report_llm
-from src.services.pdf_export import generate_pdf_report
+from src.services.llm_report import generate_full_report_llm, generate_core_report_llm
+from src.services.pdf_export import generate_pdf_report, generate_core_pdf_report
 from src.telegram.keyboards import (
     get_likert_keyboard, get_vfc_keyboard, get_paywall_keyboard, get_consent_keyboard,
-    get_main_reply_keyboard, get_restart_confirm_keyboard,
-    get_admin_paywall_keyboard, get_admin_main_reply_keyboard, get_admin_dashboard_keyboard,
+    get_restart_confirm_keyboard, get_admin_paywall_keyboard, 
+    get_admin_main_reply_keyboard, get_admin_dashboard_keyboard,
     get_admin_questions_nav_keyboard
 )
 
@@ -118,7 +120,7 @@ async def btn_continue(message: Message):
                 AccessEntitlement.status == "ACTIVE"
             )
             res_ent = await db.execute(stmt_ent)
-            has_ent = res_ent.scalar_one_or_none() is not None
+            has_ent = res_ent.scalars().first() is not None
 
             if user.is_admin or has_ent:
                 session.phase = "DEEP_IN_PROGRESS"
@@ -211,7 +213,7 @@ async def cb_confirm_restart(callback: CallbackQuery):
         await callback.answer("Сессия сброшена!")
         await callback.message.edit_text("✅ <b>Сессия сброшена.</b> Диагностика начнется заново.", parse_mode="HTML")
         
-        reply_kb = get_main_reply_keyboard()
+        reply_kb = get_admin_main_reply_keyboard(is_admin=user.is_admin)
         welcome_text = (
             "👁️ <b>Добро пожаловать в систему «Инструкция к себе» V1.3!</b>\n\n"
             "Ваша личность — это не застывший набор мыслей, а сложная операционная система восприятия, постоянно редактирующая свой собственный код перед тем, как его заметит окружающая реальность.\n\n"
@@ -291,7 +293,7 @@ async def cb_answer_likert(callback: CallbackQuery):
             session_id=session.id,
             question_id=q_id,
             raw_answer=raw_answer,
-            phase=phase,
+            phase=old_phase,
             client_event_id=client_event_id
         )
 
@@ -398,40 +400,41 @@ async def send_next_question(message: Message, db, session, edit_existing: bool 
 
 
 async def render_free_core_report(message: Message, db, session):
-    """Render 6-screen FREE report and personalized Paywall."""
+    """Render the new 3-page PDF FREE report (SelfCore) and personalized Paywall."""
     answers_map = await get_session_answers_map(db, session.id)
-    signals = calculate_core_signals(answers_map)
-    conflicts, top_conflict_id, report_mode = evaluate_core_conflicts(signals)
+    
+    # Format answers for the scoring engine
+    answers_text = ""
+    for q_id, ans in answers_map.items():
+        q_info = get_question_info(q_id)
+        q_text = q_info.get("text_ru", f"Вопрос {q_id}")
+        answers_text += f"{q_id}:\nQuestion: {q_text}\nAnswer: {ans}\n\n"
 
-    top_cf_text = conflicts.get(top_conflict_id, {}).get("headline", "Ты ищешь собственный баланс.") if top_conflict_id else "Ты ищешь баланс между автономией и предсказуемостью."
+    status_msg = await message.answer("🔄 <i>Формируем вашу персональную архитектуру SelfCore...</i>", parse_mode="HTML")
+
+    # Call LLM logic
+    report_data = await generate_core_report_llm(answers_text)
+    
+    try:
+        # Generate PDF
+        pdf_path = generate_core_pdf_report(session.id, report_data)
+    except Exception as e:
+        logger.error(f"Failed to generate CORE pdf: {e}", exc_info=True)
+        await status_msg.edit_text("⚠️ Ошибка при формировании PDF. Попробуйте еще раз.")
+        return
 
     # Check if user is admin or entitled
     stmt_u = select(User).where(User.id == session.user_id)
     res_u = await db.execute(stmt_u)
-    user = res_u.scalar_one_or_none()
+    user = res_u.scalars().first()
 
     stmt_ent = select(AccessEntitlement).where(
         AccessEntitlement.session_id == session.id,
         AccessEntitlement.status == "ACTIVE"
     )
     res_ent = await db.execute(stmt_ent)
-    has_ent = res_ent.scalar_one_or_none() is not None
+    has_ent = res_ent.scalars().first() is not None
     is_admin = user.is_admin if user else False
-
-    report_text = (
-        "🪞 <b>БЕСПЛАТНАЯ КАРТА-ОТЧЕТ CORE (Первичная архитектура)</b>\n\n"
-        "<b>Ты в двух абзацах:</b>\n"
-        "Ваша первичная конфигурация показывает сочетание высокого стремления к независимости и тонкой чувствительности к внешнему признанию.\n\n"
-        f"<b>Главный инсайт вашей системы:</b>\n<i>«{top_cf_text}»</i>\n\n"
-        "<b>Граница знания:</b>\n"
-        "Короткая диагностика показала наиболее заметную конфигурацию. Но мы видим <b>ЧТО</b> происходит в вашей операционной системе, но пока не знаем <b>ПОЧЕМУ</b>.\n\n"
-        "───────────────\n"
-        "<b>ЭТО БЫЛА НЕ ИНСТРУКЦИЯ. ЭТО БЫЛА ПЕРВАЯ СТРАНИЦА.</b>\n"
-        "Полная «Инструкция к себе» покажет, как все 46 аспектов вашей личности связаны между собой."
-    )
-
-    if is_admin or has_ent:
-        report_text += "\n\n👑 <b>Административный доступ:</b> Вам разблокирован полный доступ к Этапу 2 (DEEP)."
 
     payment_url = create_prodamus_payment_link(user_id=session.user_id, session_id=session.id)
     if is_admin or has_ent:
@@ -439,14 +442,28 @@ async def render_free_core_report(message: Message, db, session):
     else:
         markup = get_paywall_keyboard(payment_url)
 
-    core_img = os.path.join(ASSETS_IMAGES_DIR, "core_report.png")
-    if os.path.exists(core_img):
-        try:
-            await message.answer_photo(FSInputFile(core_img))
-        except Exception as img_err:
-            logger.error(f"Failed to send CORE report photo: {img_err}")
+    report_text = (
+        "🪞 <b>ВАШ БЕСПЛАТНЫЙ ОТЧЕТ SELFCORE ГОТОВ</b>\n\n"
+        "PDF-документ сформирован и прикреплен ниже. В нем вы найдете свою первичную архитектуру, "
+        "ключевые показатели, внутренний цикл и правила обращения с собой.\n\n"
+        "<i>Мы уже видим несколько противоречий в ваших ответах. Но данных CORE недостаточно, чтобы определить, "
+        "являются ли они случайными или образуют устойчивый внутренний конфликт. Для этого нужен следующий уровень диагностики (DEEP).</i>"
+    )
 
-    await message.answer(report_text, parse_mode="HTML", reply_markup=markup)
+    if is_admin or has_ent:
+        report_text += "\n\n👑 <b>Административный доступ:</b> Вам разблокирован полный доступ к Этапу 2 (DEEP)."
+
+    try:
+        await status_msg.delete()
+    except Exception:
+        pass
+
+    pdf_file = FSInputFile(pdf_path, filename=f"SelfCore_{session.id[:8]}.pdf")
+    try:
+        await message.answer_document(pdf_file, caption=report_text, parse_mode="HTML", reply_markup=markup)
+    except Exception as doc_err:
+        logger.error(f"Failed to send CORE PDF document: {doc_err}")
+        await message.answer(report_text, parse_mode="HTML", reply_markup=markup)
 
 
 async def render_full_report_and_pdf(message: Message, db, session):
@@ -680,7 +697,7 @@ async def cb_admin_start_deep(callback: CallbackQuery):
             AccessEntitlement.entitlement_type == "FULL_REPORT"
         )
         res_ent = await db.execute(stmt_ent)
-        if not res_ent.scalar_one_or_none():
+        if not res_ent.scalars().first():
             ent = AccessEntitlement(
                 user_id=user.id,
                 session_id=session.id,

@@ -40,7 +40,7 @@ async def test_admin_auto_grant_and_entitlement():
 
         stmt_ent = select(AccessEntitlement).where(AccessEntitlement.session_id == sess.id)
         res_ent = await session.execute(stmt_ent)
-        ent = res_ent.scalar_one_or_none()
+        ent = res_ent.scalars().first()
         assert ent is not None
         assert ent.source == "admin"
 

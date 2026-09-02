@@ -31,7 +31,7 @@ async def main():
             clean_handle = handle.lstrip("@").lower()
             stmt = select(User).where(User.username.ilike(clean_handle))
             res = await db.execute(stmt)
-            user = res.scalar_one_or_none()
+            user = res.scalars().first()
 
             if not user:
                 print(f"[INFO] User @{clean_handle} not yet registered in DB (will auto-grant admin upon first /start).")
@@ -46,7 +46,7 @@ async def main():
                 AssessmentSession.status == "ACTIVE"
             ).order_by(AssessmentSession.created_at.desc())
             res_sess = await db.execute(stmt_sess)
-            session = res_sess.scalar_one_or_none()
+            session = res_sess.scalars().first()
 
             if session:
                 stmt_ent = select(AccessEntitlement).where(
@@ -54,7 +54,7 @@ async def main():
                     AccessEntitlement.entitlement_type == "FULL_REPORT"
                 )
                 res_ent = await db.execute(stmt_ent)
-                if not res_ent.scalar_one_or_none():
+                if not res_ent.scalars().first():
                     ent = AccessEntitlement(
                         user_id=user.id,
                         session_id=session.id,

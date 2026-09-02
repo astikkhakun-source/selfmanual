@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.config import settings
 from src.db.models import User, AssessmentSession, Answer, CoreAnalysis, AccessEntitlement
 from src.services.config_loader import (
-    CORE_BASE_ITEMS, DEEP_TRAIT_ORDER, DEEP_STATE_CONTEXT_ORDER, VFC_ORDER, VFC_PAIRS
+    CORE_BASE_ITEMS, DEEP_TRAIT_ORDER, DEEP_STATE_CONTEXT_ORDER, VFC_ORDER, VFC_PAIRS, CORE_ADAPTIVE_POOL
 )
 from src.domain.scoring.core_engine import (
     calculate_core_signals, select_next_adaptive_question, evaluate_core_conflicts
@@ -23,7 +23,7 @@ async def get_or_create_user(
     """Find existing user by Telegram ID or create a new user."""
     stmt = select(User).where(User.telegram_user_id == telegram_user_id)
     res = await db.execute(stmt)
-    user = res.scalar_one_or_none()
+    user = res.scalars().first()
 
     clean_username = username.lstrip("@") if username else None
     is_admin_user = False
@@ -60,7 +60,7 @@ async def get_or_create_user(
             AssessmentSession.status == "ACTIVE"
         ).order_by(AssessmentSession.created_at.desc())
         res_sess = await db.execute(stmt_sess)
-        active_sess = res_sess.scalar_one_or_none()
+        active_sess = res_sess.scalars().first()
 
         if active_sess:
             stmt_ent = select(AccessEntitlement).where(
@@ -68,7 +68,7 @@ async def get_or_create_user(
                 AccessEntitlement.entitlement_type == "FULL_REPORT"
             )
             res_ent = await db.execute(stmt_ent)
-            if not res_ent.scalar_one_or_none():
+            if not res_ent.scalars().first():
                 ent = AccessEntitlement(
                     user_id=user.id,
                     session_id=active_sess.id,
@@ -89,7 +89,7 @@ async def get_active_session(db: AsyncSession, user_id: str) -> Optional[Assessm
         AssessmentSession.status == "ACTIVE"
     ).order_by(AssessmentSession.created_at.desc())
     res = await db.execute(stmt)
-    return res.scalar_one_or_none()
+    return res.scalars().first()
 
 
 async def start_new_session(db: AsyncSession, user_id: str) -> AssessmentSession:
@@ -150,7 +150,7 @@ async def save_answer(
         Answer.question_id == question_id
     )
     res = await db.execute(stmt)
-    existing = res.scalar_one_or_none()
+    existing = res.scalars().first()
 
     if existing:
         existing.raw_answer = raw_answer
@@ -208,13 +208,12 @@ async def get_next_question_for_session(db: AsyncSession, session: AssessmentSes
                 }
 
         # 2. Adaptive pool check (0..6)
-        stmt = select(Answer).where(
-            Answer.session_id == session.id,
-            Answer.phase_answered == "CORE_ADAPTIVE"
-        )
-        res = await db.execute(stmt)
-        adaptive_answers = res.scalars().all()
-        adaptive_history = [ans.question_id for ans in adaptive_answers]
+        core_base_qids = {item["question_id"] for item in CORE_BASE_ITEMS}
+        adaptive_history = [
+            q_id for q_id in answers_map.keys()
+            if q_id not in core_base_qids
+            and any(q_id in pool for pool in CORE_ADAPTIVE_POOL.values())
+        ]
 
         next_adaptive = select_next_adaptive_question(answers_map, adaptive_history)
         if next_adaptive:
@@ -234,16 +233,16 @@ async def get_next_question_for_session(db: AsyncSession, session: AssessmentSes
     if session.phase in ("CORE_READY", "DEEP_UNLOCKED"):
         stmt_user = select(User).where(User.id == session.user_id)
         res_user = await db.execute(stmt_user)
-        user = res_user.scalar_one_or_none()
+        user = res_user.scalars().first()
 
         stmt_ent = select(AccessEntitlement).where(
             AccessEntitlement.session_id == session.id,
             AccessEntitlement.status == "ACTIVE"
         )
         res_ent = await db.execute(stmt_ent)
-        has_ent = res_ent.scalar_one_or_none() is not None
+        has_ent = res_ent.scalars().first() is not None
 
-        if session.phase == "DEEP_UNLOCKED" or has_ent or (user and user.is_admin):
+        if session.phase == "DEEP_UNLOCKED":
             session.phase = "DEEP_IN_PROGRESS"
             await db.commit()
 
