@@ -1,0 +1,1442 @@
+[
+  {
+    "question_id": "Q001",
+    "text_ru": "Мне интересно разбираться в идеях, которые заставляют по-новому смотреть на привычные вещи.",
+    "type": "TRAIT",
+    "legacy_scale_id": "cognitive_openness",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q002",
+    "text_ru": "Мне интересно рассматривать одну и ту же тему с разных, иногда противоречащих друг другу сторон.",
+    "type": "TRAIT",
+    "legacy_scale_id": "cognitive_openness",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q003",
+    "text_ru": "Мне нравится находить неожиданные связи между разными идеями.",
+    "type": "TRAIT",
+    "legacy_scale_id": "cognitive_openness",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q004",
+    "text_ru": "Если я беру на себя задачу, я стараюсь довести её до конца.",
+    "type": "TRAIT",
+    "legacy_scale_id": "conscientiousness",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q005",
+    "text_ru": "Я умею выстраивать порядок действий, когда цель требует длительной работы.",
+    "type": "TRAIT",
+    "legacy_scale_id": "conscientiousness",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q006",
+    "text_ru": "Мне трудно придерживаться плана, даже если он для меня важен.",
+    "type": "TRAIT",
+    "legacy_scale_id": "conscientiousness",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q007",
+    "text_ru": "Общение с людьми часто даёт мне дополнительную энергию.",
+    "type": "TRAIT",
+    "legacy_scale_id": "extraversion",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q008",
+    "text_ru": "Мне легко первым вступить в разговор или познакомиться.",
+    "type": "TRAIT",
+    "legacy_scale_id": "extraversion",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q009",
+    "text_ru": "В группе мне естественно занимать активную позицию.",
+    "type": "TRAIT",
+    "legacy_scale_id": "extraversion",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q010",
+    "text_ru": "Даже в конфликте я стараюсь понять, что происходит с другим человеком.",
+    "type": "TRAIT",
+    "legacy_scale_id": "interpersonal_accommodation",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q011",
+    "text_ru": "При разногласиях я обычно ищу вариант, в котором учтены интересы обеих сторон.",
+    "type": "TRAIT",
+    "legacy_scale_id": "interpersonal_accommodation",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q012",
+    "text_ru": "Если я считаю свою позицию правильной, я могу продолжать настаивать на ней, даже когда это усиливает конфликт.",
+    "type": "TRAIT",
+    "legacy_scale_id": "interpersonal_accommodation",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q013",
+    "text_ru": "Неприятные события могут надолго выбивать меня из внутреннего равновесия.",
+    "type": "TRAIT",
+    "legacy_scale_id": "negative_emotionality",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q014",
+    "text_ru": "Я довольно быстро начинаю тревожиться, когда ситуация становится напряжённой.",
+    "type": "TRAIT",
+    "legacy_scale_id": "negative_emotionality",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q015",
+    "text_ru": "Даже при серьёзных проблемах мне обычно легко сохранять эмоциональное спокойствие.",
+    "type": "TRAIT",
+    "legacy_scale_id": "negative_emotionality",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q016",
+    "text_ru": "Я часто заранее прокручиваю, что может пойти не так.",
+    "type": "TRAIT",
+    "legacy_scale_id": "negative_emotionality",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q017",
+    "text_ru": "Когда мои усилия остаются незамеченными, мне бывает труднее чувствовать удовлетворение от результата.",
+    "type": "TRAIT",
+    "legacy_scale_id": "recognition_based_self_regulation",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q018",
+    "text_ru": "Отсутствие отклика на то, что для меня важно, может заставить меня сомневаться в себе.",
+    "type": "TRAIT",
+    "legacy_scale_id": "recognition_based_self_regulation",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q019",
+    "text_ru": "Если важный для меня результат не получает одобрения окружающих, я всё равно обычно способен считать его ценным.",
+    "type": "TRAIT",
+    "legacy_scale_id": "recognition_based_self_regulation",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q020",
+    "text_ru": "Если другой человек получает больше признания за сопоставимый результат, это может заметно задевать меня.",
+    "type": "TRAIT",
+    "legacy_scale_id": "recognition_based_self_regulation",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q021",
+    "text_ru": "Когда от меня ждут очень большой эмоциональной вовлечённости, мне иногда хочется увеличить дистанцию.",
+    "type": "TRAIT",
+    "legacy_scale_id": "detachment_tendency",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q022",
+    "text_ru": "Мне комфортнее самостоятельно перерабатывать значительную часть переживаний, чем делиться ими даже с близкими.",
+    "type": "TRAIT",
+    "legacy_scale_id": "detachment_tendency",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q023",
+    "text_ru": "Даже при очень тесной близости мне обычно комфортно оставаться эмоционально включённым в отношения.",
+    "type": "TRAIT",
+    "legacy_scale_id": "detachment_tendency",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q024",
+    "text_ru": "Мне трудно работать спокойно, если важный процесс организован хаотично или непоследовательно.",
+    "type": "TRAIT",
+    "legacy_scale_id": "rigid_control_tendency",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q025",
+    "text_ru": "Мне бывает трудно принять способ выполнения задачи, который отличается от моего, даже если результат получается приемлемым.",
+    "type": "TRAIT",
+    "legacy_scale_id": "rigid_control_tendency",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q026",
+    "text_ru": "Если привычный порядок нарушается, я обычно довольно быстро нахожу другой удобный способ действовать.",
+    "type": "TRAIT",
+    "legacy_scale_id": "rigid_control_tendency",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q027",
+    "text_ru": "Сильный внутренний дискомфорт часто заставляет меня быстро менять ситуацию, даже если объективно можно было бы ничего не делать.",
+    "type": "TRAIT",
+    "legacy_scale_id": "experiential_avoidance",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q028",
+    "text_ru": "Я могу откладывать важные действия, если они вызывают слишком много неприятных переживаний.",
+    "type": "TRAIT",
+    "legacy_scale_id": "experiential_avoidance",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q029",
+    "text_ru": "Неприятное состояние не обязательно заставляет меня сразу менять свои действия.",
+    "type": "TRAIT",
+    "legacy_scale_id": "experiential_avoidance",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q030",
+    "text_ru": "Иногда я меняю свои планы прежде всего ради того, чтобы не сталкиваться с внутренним дискомфортом.",
+    "type": "TRAIT",
+    "legacy_scale_id": "experiential_avoidance",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q031",
+    "text_ru": "Когда меня что-то сильно задевает, я довольно быстро начинаю разбираться, почему это произошло и что это значит.",
+    "type": "TRAIT",
+    "legacy_scale_id": "intellectualization",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q032",
+    "text_ru": "В сложных переживаниях мне проще рассуждать о происходящем, чем говорить о том, что я непосредственно чувствую.",
+    "type": "TRAIT",
+    "legacy_scale_id": "intellectualization",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q033",
+    "text_ru": "Когда меня что-то эмоционально задевает, анализ обычно начинается не сразу — сначала я просто замечаю свою реакцию.",
+    "type": "TRAIT",
+    "legacy_scale_id": "intellectualization",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q034",
+    "text_ru": "Я часто сдерживаю эмоции, чтобы они не были заметны другим.",
+    "type": "TRAIT",
+    "legacy_scale_id": "emotional_suppression",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q035",
+    "text_ru": "Даже когда эмоция сильная, я обычно стараюсь не показывать её внешне.",
+    "type": "TRAIT",
+    "legacy_scale_id": "emotional_suppression",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q036",
+    "text_ru": "Если меня что-то сильно задело, окружающие обычно могут заметить это по моей реакции.",
+    "type": "TRAIT",
+    "legacy_scale_id": "emotional_suppression",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q037",
+    "text_ru": "Если результат заметно хуже ожидаемого, мне легко воспринимать его как провал.",
+    "type": "TRAIT",
+    "legacy_scale_id": "polarized_evaluation",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q038",
+    "text_ru": "Я обычно могу считать результат частично успешным, даже если он оказался далёк от идеального.",
+    "type": "TRAIT",
+    "legacy_scale_id": "polarized_evaluation",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q039",
+    "text_ru": "Иногда один серьёзный недостаток заставляет меня обесценить всё остальное.",
+    "type": "TRAIT",
+    "legacy_scale_id": "polarized_evaluation",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q040",
+    "text_ru": "Мне обычно удаётся довольно точно понять, какую эмоцию я испытываю.",
+    "type": "TRAIT",
+    "legacy_scale_id": "emotional_awareness",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q041",
+    "text_ru": "Даже при сильном переживании я обычно могу различить само чувство и желание немедленно что-то сделать под его влиянием.",
+    "type": "TRAIT",
+    "legacy_scale_id": "emotional_awareness",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q042",
+    "text_ru": "Иногда моё состояние заметно меняется, но мне трудно понять, что именно меня так задело.",
+    "type": "TRAIT",
+    "legacy_scale_id": "emotional_awareness",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q043",
+    "text_ru": "Когда значимый человек отдаляется, я быстро начинаю беспокоиться о наших отношениях.",
+    "type": "TRAIT",
+    "legacy_scale_id": "attachment_anxiety",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q044",
+    "text_ru": "Даже небольшое изменение в теплоте или доступности близкого человека может быстро привлечь моё внимание.",
+    "type": "TRAIT",
+    "legacy_scale_id": "attachment_anxiety",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q045",
+    "text_ru": "Даже если близкий человек становится менее доступным, я обычно не сомневаюсь в устойчивости связи.",
+    "type": "TRAIT",
+    "legacy_scale_id": "attachment_anxiety",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q046",
+    "text_ru": "Неясность в отношениях может занимать мои мысли сильнее, чем мне хотелось бы.",
+    "type": "TRAIT",
+    "legacy_scale_id": "attachment_anxiety",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q047",
+    "text_ru": "Мне некомфортно чувствовать, что я слишком сильно нуждаюсь в другом человеке.",
+    "type": "TRAIT",
+    "legacy_scale_id": "attachment_avoidance",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q048",
+    "text_ru": "Возможность сильно зависеть от близкого человека вызывает у меня внутреннее сопротивление.",
+    "type": "TRAIT",
+    "legacy_scale_id": "attachment_avoidance",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q049",
+    "text_ru": "Мне легко опираться на близкого человека, когда я действительно в нём нуждаюсь.",
+    "type": "TRAIT",
+    "legacy_scale_id": "attachment_avoidance",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q050",
+    "text_ru": "Даже в близких отношениях мне важно сохранять ощущение, что я способен обойтись без помощи другого человека.",
+    "type": "TRAIT",
+    "legacy_scale_id": "attachment_avoidance",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q051",
+    "text_ru": "Пока человек не показал обратного, я обычно предполагаю, что в отношениях со мной у него нет скрытых недоброжелательных намерений.",
+    "type": "TRAIT",
+    "legacy_scale_id": "interpersonal_trust",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q052",
+    "text_ru": "Если человек последовательно выполняет договорённости, моё доверие к нему обычно заметно растёт.",
+    "type": "TRAIT",
+    "legacy_scale_id": "interpersonal_trust",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q053",
+    "text_ru": "Даже в достаточно близких отношениях мне бывает трудно полностью перестать искать признаки возможного подвоха.",
+    "type": "TRAIT",
+    "legacy_scale_id": "interpersonal_trust",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q054",
+    "text_ru": "Мне обычно удаётся отказаться от просьбы, если её выполнение существенно идёт против моих интересов.",
+    "type": "TRAIT",
+    "legacy_scale_id": "boundary_assertiveness",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q055",
+    "text_ru": "Если значимый человек сильно недоволен моим решением, мне бывает трудно не изменить его только ради восстановления отношений.",
+    "type": "TRAIT",
+    "legacy_scale_id": "boundary_assertiveness",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q056",
+    "text_ru": "Когда мои потребности сталкиваются с потребностями другого человека, я способен прямо обозначить свои.",
+    "type": "TRAIT",
+    "legacy_scale_id": "boundary_assertiveness",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q057",
+    "text_ru": "Если более выгодный вариант заметно ограничивает мою свободу выбора, это серьёзный аргумент против него.",
+    "type": "TRAIT",
+    "legacy_scale_id": "autonomy_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q058",
+    "text_ru": "Я готов мириться с меньшим удобством, если взамен получаю больше возможности самостоятельно распоряжаться своей жизнью.",
+    "type": "TRAIT",
+    "legacy_scale_id": "autonomy_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q059",
+    "text_ru": "Если условия жизни меня в целом устраивают, мне не особенно важно, насколько самостоятельно я могу определять их.",
+    "type": "TRAIT",
+    "legacy_scale_id": "autonomy_value",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q060",
+    "text_ru": "Между более предсказуемым вариантом и более перспективным, но рискованным, я нередко склоняюсь к первому.",
+    "type": "TRAIT",
+    "legacy_scale_id": "security_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q061",
+    "text_ru": "Ради большей устойчивости я готов отказаться от части потенциальных возможностей.",
+    "type": "TRAIT",
+    "legacy_scale_id": "security_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q062",
+    "text_ru": "Даже длительный период непредсказуемости сам по себе не делает вариант менее привлекательным для меня.",
+    "type": "TRAIT",
+    "legacy_scale_id": "security_value",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q063",
+    "text_ru": "Я скорее выберу путь с возможностью серьёзного результата, чем более лёгкий путь без заметного роста.",
+    "type": "TRAIT",
+    "legacy_scale_id": "achievement_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q064",
+    "text_ru": "Ощущение, что я становлюсь всё более компетентным в важном для меня деле, существенно влияет на удовлетворённость моей жизнью.",
+    "type": "TRAIT",
+    "legacy_scale_id": "achievement_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q065",
+    "text_ru": "Если моя жизнь в целом приятна и наполнена, отсутствие заметных достижений меня не особенно беспокоит.",
+    "type": "TRAIT",
+    "legacy_scale_id": "achievement_value",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q066",
+    "text_ru": "Даже очень успешная жизнь ощущалась бы для меня неполной без нескольких действительно близких отношений.",
+    "type": "TRAIT",
+    "legacy_scale_id": "belonging_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q067",
+    "text_ru": "Мне важно чувствовать, что я принадлежу к кругу людей, где меня знают и принимают.",
+    "type": "TRAIT",
+    "legacy_scale_id": "belonging_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q068",
+    "text_ru": "Для ощущения полноценной жизни мне не обязательно чувствовать себя частью близкого круга людей.",
+    "type": "TRAIT",
+    "legacy_scale_id": "belonging_value",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q069",
+    "text_ru": "Мне важно чувствовать, что моя жизнь имеет смысл, а не просто состоит из задач.",
+    "type": "TRAIT",
+    "legacy_scale_id": "meaning_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q070",
+    "text_ru": "Даже при внешне успешной жизни мне было бы трудно быть удовлетворённым, если бы я не видел в ней лично значимого направления.",
+    "type": "TRAIT",
+    "legacy_scale_id": "meaning_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q071",
+    "text_ru": "Даже привлекательное занятие со временем теряет для меня ценность, если я перестаю понимать, зачем лично мне его продолжать.",
+    "type": "TRAIT",
+    "legacy_scale_id": "meaning_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q072",
+    "text_ru": "Личностное развитие для меня само по себе представляет ценность.",
+    "type": "TRAIT",
+    "legacy_scale_id": "growth_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q073",
+    "text_ru": "Если выбранный путь долго не даёт мне ощущения внутреннего развития, это само по себе становится причиной задуматься о переменах.",
+    "type": "TRAIT",
+    "legacy_scale_id": "growth_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q074",
+    "text_ru": "Возможность заметно расширить свои способности или понимание может быть для меня достаточной причиной выбрать более сложный путь.",
+    "type": "TRAIT",
+    "legacy_scale_id": "growth_value",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q075",
+    "text_ru": "Даже в сложной ситуации я ищу, на что именно могу повлиять.",
+    "type": "TRAIT",
+    "legacy_scale_id": "agency",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q076",
+    "text_ru": "Когда важная ситуация меня не устраивает, я иногда продолжаю ждать внешних изменений, хотя понимаю, что мог бы предпринять что-то сам.",
+    "type": "TRAIT",
+    "legacy_scale_id": "agency",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q077",
+    "text_ru": "Если я понимаю, что важная часть моей жизни меня больше не устраивает, я способен сам начать её менять, не дожидаясь внешнего толчка.",
+    "type": "TRAIT",
+    "legacy_scale_id": "agency",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q078",
+    "text_ru": "Даже когда я не могу изменить саму ситуацию, я обычно ищу, каким образом могу повлиять на собственный следующий шаг.",
+    "type": "TRAIT",
+    "legacy_scale_id": "agency",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q079",
+    "text_ru": "Если задача для меня действительно важна, я обычно верю, что смогу найти способ с ней справиться.",
+    "type": "TRAIT",
+    "legacy_scale_id": "self_efficacy",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q080",
+    "text_ru": "Столкнувшись с новой сложной задачей, я быстро начинаю сомневаться, что у меня получится.",
+    "type": "TRAIT",
+    "legacy_scale_id": "self_efficacy",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q081",
+    "text_ru": "Даже без готового решения я обычно верю в свою способность разобраться по ходу дела.",
+    "type": "TRAIT",
+    "legacy_scale_id": "self_efficacy",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q082",
+    "text_ru": "Когда важный результат не получается, я часто вижу основную причину в обстоятельствах, которые от меня не зависели.",
+    "type": "TRAIT",
+    "legacy_scale_id": "external_outcome_attribution",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q083",
+    "text_ru": "В важных результатах моей жизни удача и внешние обстоятельства, как мне кажется, играют очень большую роль.",
+    "type": "TRAIT",
+    "legacy_scale_id": "external_outcome_attribution",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q084",
+    "text_ru": "Когда что-то складывается хорошо, я обычно могу увидеть конкретные собственные решения, которые помогли этому произойти.",
+    "type": "TRAIT",
+    "legacy_scale_id": "external_outcome_attribution",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q085",
+    "text_ru": "Я способен действовать, даже когда не знаю наверняка, чем всё закончится.",
+    "type": "TRAIT",
+    "legacy_scale_id": "uncertainty_tolerance",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q086",
+    "text_ru": "Отсутствие ясного ответа на важный вопрос может некоторое время оставаться нерешённым, не занимая всё моё внимание.",
+    "type": "TRAIT",
+    "legacy_scale_id": "uncertainty_tolerance",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q087",
+    "text_ru": "Мне трудно начинать что-то важное, пока у меня нет достаточно ясного представления о возможном исходе.",
+    "type": "TRAIT",
+    "legacy_scale_id": "uncertainty_tolerance",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q088",
+    "text_ru": "Если ситуация допускает несколько возможных объяснений, мне не обязательно сразу выбирать одно из них, чтобы чувствовать себя спокойно.",
+    "type": "TRAIT",
+    "legacy_scale_id": "uncertainty_tolerance",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q089",
+    "text_ru": "В важных ситуациях мне спокойнее, если ключевые решения и ход событий в значительной степени зависят от меня.",
+    "type": "TRAIT",
+    "legacy_scale_id": "control_need",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q090",
+    "text_ru": "Если исход сильно зависит от других людей или случайности, мне становится заметно некомфортно.",
+    "type": "TRAIT",
+    "legacy_scale_id": "control_need",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q091",
+    "text_ru": "Я спокойно отношусь к тому, что часть важных вещей невозможно контролировать.",
+    "type": "TRAIT",
+    "legacy_scale_id": "control_need",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q092",
+    "text_ru": "Получив достаточно информации, я обычно способен принять решение и двигаться дальше.",
+    "type": "TRAIT",
+    "legacy_scale_id": "decisiveness",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q093",
+    "text_ru": "Мне легко застрять между вариантами даже тогда, когда различия между ними уже понятны.",
+    "type": "TRAIT",
+    "legacy_scale_id": "decisiveness",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q094",
+    "text_ru": "Выбрав один из нескольких приемлемых вариантов, я обычно способен отказаться от попытки сохранить остальные возможности открытыми.",
+    "type": "TRAIT",
+    "legacy_scale_id": "decisiveness",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q095",
+    "text_ru": "После решения я могу снова и снова прокручивать, не стоило ли выбрать иначе.",
+    "type": "TRAIT",
+    "legacy_scale_id": "decision_rumination",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q096",
+    "text_ru": "После важного выбора мне бывает трудно перестать искать признаки того, что решение могло быть ошибочным.",
+    "type": "TRAIT",
+    "legacy_scale_id": "decision_rumination",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q097",
+    "text_ru": "Приняв решение, я обычно перестаю мысленно пересматривать его без новых оснований.",
+    "type": "TRAIT",
+    "legacy_scale_id": "decision_rumination",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q098",
+    "text_ru": "Перед важным решением мне часто нужно услышать от другого человека, что я поступаю правильно.",
+    "type": "TRAIT",
+    "legacy_scale_id": "reassurance_seeking",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q099",
+    "text_ru": "Если я тревожусь об отношениях, мне важно получить подтверждение, что всё в порядке.",
+    "type": "TRAIT",
+    "legacy_scale_id": "reassurance_seeking",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q100",
+    "text_ru": "Даже когда я сомневаюсь, мне обычно не нужно чужое подтверждение, чтобы продолжить действовать согласно своему решению.",
+    "type": "TRAIT",
+    "legacy_scale_id": "reassurance_seeking",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q101",
+    "text_ru": "Возможность ошибиться может заставить меня откладывать решение даже тогда, когда дальнейшее ожидание вряд ли даст новую информацию.",
+    "type": "TRAIT",
+    "legacy_scale_id": "error_intolerance",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q102",
+    "text_ru": "После существенной ошибки мне бывает трудно просто скорректировать действия и двигаться дальше.",
+    "type": "TRAIT",
+    "legacy_scale_id": "error_intolerance",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q103",
+    "text_ru": "Если решение необходимо принять, я способен выбрать вариант, даже понимая, что позже он может оказаться неправильным.",
+    "type": "TRAIT",
+    "legacy_scale_id": "error_intolerance",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q104",
+    "text_ru": "Когда решение уже принято, я обычно довольно быстро перехожу к первому конкретному действию.",
+    "type": "TRAIT",
+    "legacy_scale_id": "action_initiation",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q105",
+    "text_ru": "Даже понимая, что именно нужно сделать, я могу долго откладывать первый шаг.",
+    "type": "TRAIT",
+    "legacy_scale_id": "action_initiation",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q106",
+    "text_ru": "Если для начала действия мне не требуется дополнительная информация, мне обычно несложно просто начать.",
+    "type": "TRAIT",
+    "legacy_scale_id": "action_initiation",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q107",
+    "text_ru": "Если выбранный способ долго не даёт результата, я способен отказаться от него и попробовать принципиально другой.",
+    "type": "TRAIT",
+    "legacy_scale_id": "adaptive_flexibility",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q108",
+    "text_ru": "Даже когда выбранная стратегия явно работает плохо, мне бывает трудно перестать вкладываться именно в неё.",
+    "type": "TRAIT",
+    "legacy_scale_id": "adaptive_flexibility",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q109",
+    "text_ru": "Новая информация может заметно изменить мой план, даже если я уже много вложил в первоначальный вариант.",
+    "type": "TRAIT",
+    "legacy_scale_id": "adaptive_flexibility",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q110",
+    "text_ru": "Возможность негативной оценки может заставить меня выражать себя осторожнее, чем мне хотелось бы.",
+    "type": "TRAIT",
+    "legacy_scale_id": "fear_of_evaluation",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q111",
+    "text_ru": "Перед публичным проявлением я часто думаю о том, как меня оценят.",
+    "type": "TRAIT",
+    "legacy_scale_id": "fear_of_evaluation",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q112",
+    "text_ru": "Я способен показать результат своей работы или высказать позицию ещё до того, как уверен, что окружающие отреагируют положительно.",
+    "type": "TRAIT",
+    "legacy_scale_id": "fear_of_evaluation",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q113",
+    "text_ru": "Иногда я отказываюсь от заметного действия не потому, что сам считаю его неправильным, а потому, что представляю возможную реакцию окружающих.",
+    "type": "TRAIT",
+    "legacy_scale_id": "fear_of_evaluation",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q114",
+    "text_ru": "То, как я выражаю свои взгляды другим людям, обычно довольно точно соответствует тому, что я действительно думаю.",
+    "type": "TRAIT",
+    "legacy_scale_id": "authentic_expression",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q115",
+    "text_ru": "В общении мне обычно не приходится заметно менять свои предпочтения или манеру самовыражения, чтобы соответствовать окружению.",
+    "type": "TRAIT",
+    "legacy_scale_id": "authentic_expression",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q116",
+    "text_ru": "Если моё настоящее мнение отличается от мнения окружающих, я иногда выражаю более удобную для ситуации версию своей позиции.",
+    "type": "TRAIT",
+    "legacy_scale_id": "authentic_expression",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q117",
+    "text_ru": "Мне обычно несложно открыто признавать собственные предпочтения, даже если они отличаются от привычных для моего окружения.",
+    "type": "TRAIT",
+    "legacy_scale_id": "authentic_expression",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q118",
+    "text_ru": "Мне хочется, чтобы мои идеи, работа или личность были заметны большему количеству людей.",
+    "type": "TRAIT",
+    "legacy_scale_id": "visibility_desire",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q119",
+    "text_ru": "Возможность доносить свои идеи или результаты до большой аудитории кажется мне привлекательной.",
+    "type": "TRAIT",
+    "legacy_scale_id": "visibility_desire",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q120",
+    "text_ru": "Даже если мне есть что показать или сказать, расширение собственной публичной заметности само по себе меня мало привлекает.",
+    "type": "TRAIT",
+    "legacy_scale_id": "visibility_desire",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q121",
+    "text_ru": "Когда я ошибаюсь, мой внутренний разговор с собой часто становится жёстким.",
+    "type": "TRAIT",
+    "legacy_scale_id": "inner_critic",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q122",
+    "text_ru": "Если мой результат заметно хуже ожидаемого, я склонен критиковать себя сильнее, чем просто анализировать ошибку.",
+    "type": "TRAIT",
+    "legacy_scale_id": "inner_critic",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q123",
+    "text_ru": "После неудачи мне обычно удаётся разговаривать с собой скорее конструктивно, чем обвиняюще.",
+    "type": "TRAIT",
+    "legacy_scale_id": "inner_critic",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q124",
+    "text_ru": "Мне трудно показывать значимым людям, что я действительно нуждаюсь в их поддержке.",
+    "type": "TRAIT",
+    "legacy_scale_id": "vulnerability_avoidance",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q125",
+    "text_ru": "Даже когда мне тяжело, мне часто проще выглядеть справляющимся, чем показать свою растерянность или слабость.",
+    "type": "TRAIT",
+    "legacy_scale_id": "vulnerability_avoidance",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q126",
+    "text_ru": "Я способен сказать близкому человеку, что мне страшно, больно или трудно, не пытаясь сразу выглядеть сильнее, чем чувствую себя на самом деле.",
+    "type": "TRAIT",
+    "legacy_scale_id": "vulnerability_avoidance",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q127",
+    "text_ru": "Когда у меня долго нет значимых результатов, моё отношение к себе становится хуже.",
+    "type": "TRAIT",
+    "legacy_scale_id": "performance_based_self_worth",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q128",
+    "text_ru": "Серьёзная неудача может заставить меня сомневаться не только в своих действиях, но и в собственной ценности.",
+    "type": "TRAIT",
+    "legacy_scale_id": "performance_based_self_worth",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q129",
+    "text_ru": "Неудачный результат обычно не заставляет меня чувствовать себя менее ценным человеком.",
+    "type": "TRAIT",
+    "legacy_scale_id": "performance_based_self_worth",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q130",
+    "text_ru": "Ощущение собственной ценности у меня заметно связано с тем, насколько компетентным и успешным я себя чувствую.",
+    "type": "TRAIT",
+    "legacy_scale_id": "performance_based_self_worth",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q131",
+    "text_ru": "Даже в периоды, когда у меня мало поводов собой гордиться, базовое уважение к себе обычно сохраняется.",
+    "type": "TRAIT",
+    "legacy_scale_id": "stable_self_worth",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q132",
+    "text_ru": "Я могу видеть в себе серьёзные недостатки и при этом не воспринимать себя целиком как «плохого» или менее достойного человека.",
+    "type": "TRAIT",
+    "legacy_scale_id": "stable_self_worth",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q133",
+    "text_ru": "Моё общее отношение к себе может заметно меняться вслед за периодами успехов и неудач.",
+    "type": "TRAIT",
+    "legacy_scale_id": "stable_self_worth",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q134",
+    "text_ru": "Достигнув важной цели, я довольно быстро начинаю думать о следующем уровне.",
+    "type": "TRAIT",
+    "legacy_scale_id": "achievement_drive",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q135",
+    "text_ru": "Возможность превзойти свой прежний результат сама по себе способна сильно меня мотивировать.",
+    "type": "TRAIT",
+    "legacy_scale_id": "achievement_drive",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q136",
+    "text_ru": "Если текущий уровень жизни меня устраивает, у меня обычно нет сильной потребности постоянно повышать планку.",
+    "type": "TRAIT",
+    "legacy_scale_id": "achievement_drive",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q137",
+    "text_ru": "Когда моё состояние ухудшается, мне обычно удаётся понять, чего именно мне сейчас не хватает.",
+    "type": "TRAIT",
+    "legacy_scale_id": "need_awareness",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q138",
+    "text_ru": "Я обычно могу отличить собственное желание от того, чего от меня ожидают окружающие.",
+    "type": "TRAIT",
+    "legacy_scale_id": "need_awareness",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q139",
+    "text_ru": "Я могу долго чувствовать, что меня что-то не устраивает, не понимая, чего именно мне хотелось бы вместо этого.",
+    "type": "TRAIT",
+    "legacy_scale_id": "need_awareness",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q140",
+    "text_ru": "Наличие финансового запаса заметно влияет на моё ощущение безопасности.",
+    "type": "TRAIT",
+    "legacy_scale_id": "money_security",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q141",
+    "text_ru": "Финансовая неопределённость способна сильно снижать моё чувство внутренней устойчивости.",
+    "type": "TRAIT",
+    "legacy_scale_id": "money_security",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q142",
+    "text_ru": "Даже при нестабильном доходе мне обычно удаётся сохранять ощущение базовой безопасности.",
+    "type": "TRAIT",
+    "legacy_scale_id": "money_security",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q143",
+    "text_ru": "Деньги важны для меня прежде всего потому, что расширяют свободу выбора.",
+    "type": "TRAIT",
+    "legacy_scale_id": "money_autonomy",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q144",
+    "text_ru": "Возможность финансово не зависеть от решений других людей для меня особенно важна.",
+    "type": "TRAIT",
+    "legacy_scale_id": "money_autonomy",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q145",
+    "text_ru": "Моё ощущение свободы относительно мало зависит от того, сколько финансовых ресурсов у меня есть.",
+    "type": "TRAIT",
+    "legacy_scale_id": "money_autonomy",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q146",
+    "text_ru": "Уровень моего дохода в некоторой степени служит для меня показателем того, насколько успешно я реализуюсь.",
+    "type": "TRAIT",
+    "legacy_scale_id": "money_status_achievement",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q147",
+    "text_ru": "Финансовый результат делает для меня профессиональные или личные достижения более ощутимыми.",
+    "type": "TRAIT",
+    "legacy_scale_id": "money_status_achievement",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q148",
+    "text_ru": "Я легко могу считать себя очень успешным человеком, даже если это почти никак не отражается на моём финансовом положении.",
+    "type": "TRAIT",
+    "legacy_scale_id": "money_status_achievement",
+    "evidence_type": "DIRECT_NEGATIVE",
+    "direction": "R",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q149",
+    "text_ru": "За последние 14 дней я часто чувствовал внутреннее напряжение или тревогу.",
+    "type": "STATE",
+    "legacy_scale_id": "anxiety_state",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q150",
+    "text_ru": "За последние 14 дней мне бывало трудно остановить или контролировать беспокойство.",
+    "type": "STATE",
+    "legacy_scale_id": "anxiety_state",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q151",
+    "text_ru": "За последние 14 дней я часто ожидал, что может произойти что-то неприятное.",
+    "type": "STATE",
+    "legacy_scale_id": "anxiety_state",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q152",
+    "text_ru": "За последние 14 дней я часто чувствовал подавленность или эмоциональный спад.",
+    "type": "STATE",
+    "legacy_scale_id": "low_mood_state",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q153",
+    "text_ru": "За последние 14 дней мне было заметно сложнее испытывать интерес или удовольствие от вещей, которые обычно меня вовлекают.",
+    "type": "STATE",
+    "legacy_scale_id": "low_mood_state",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q154",
+    "text_ru": "За последние 14 дней мне часто не хватало энергии даже для обычных дел.",
+    "type": "STATE",
+    "legacy_scale_id": "low_mood_state",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q155",
+    "text_ru": "Неопределённость в близких отношениях переносится мной тяжелее, чем неопределённость в большинстве других областей жизни.",
+    "type": "CONTEXT",
+    "legacy_scale_id": "relational_uncertainty",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q156",
+    "text_ru": "Мне легче попросить помощи в практическом вопросе, чем признаться другому человеку, что эмоционально мне тяжело.",
+    "type": "CONTEXT",
+    "legacy_scale_id": "support_type",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q157",
+    "text_ru": "Негативная оценка значимого для меня человека обычно задевает меня сильнее, чем мнение незнакомой аудитории.",
+    "type": "CONTEXT",
+    "legacy_scale_id": "evaluation_source",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q158",
+    "text_ru": "Чем значимее для меня возможные последствия решения, тем сильнее мне хочется контролировать происходящее.",
+    "type": "CONTEXT",
+    "legacy_scale_id": "stakes_sensitive_control",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q159",
+    "text_ru": "Насколько сейчас ваши основные финансовые потребности закрыты?",
+    "type": "MODERATOR",
+    "legacy_scale_id": "financial_baseline_security",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  },
+  {
+    "question_id": "Q160",
+    "text_ru": "Насколько сейчас вы ощущаете, что ваша жизнь имеет понятное вам направление и смысл?",
+    "type": "MODERATOR",
+    "legacy_scale_id": "current_meaning",
+    "evidence_type": "DIRECT_POSITIVE",
+    "direction": "D",
+    "weight": 1.0
+  }
+]

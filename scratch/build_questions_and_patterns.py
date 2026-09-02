@@ -1,0 +1,202 @@
+import json
+import os
+
+config_dir = r"c:\Sher_AI_Studio\projects\selfmanual\config"
+dict_dir = r"c:\Sher_AI_Studio\projects\selfmanual\src\domain\scoring\dictionaries"
+os.makedirs(dict_dir, exist_ok=True)
+
+questions_file = os.path.join(config_dir, "questions_v1_2.json")
+with open(questions_file, "r", encoding="utf-8") as f:
+    raw_questions = json.load(f)
+
+# Load 46 dimensions to map scale_ids correctly
+dimensions_file = os.path.join(dict_dir, "dimensions.json")
+with open(dimensions_file, "r", encoding="utf-8") as f:
+    dimensions = json.load(f)
+
+# Create a mapping from legacy scale_id to new dimension code
+dim_map = {}
+for dim in dimensions:
+    code = dim["code"]
+    dim_map[code.lower()] = code
+    dim_map[dim["id"].lower()] = code
+
+mapped_questions = []
+
+for q_id, q_data in raw_questions.items():
+    scale_id = q_data.get("scale_id", "general")
+    direction = q_data.get("direction", "D")
+    
+    evidence_type = "DIRECT_POSITIVE" if direction == "D" else "DIRECT_NEGATIVE"
+    
+    mapped_questions.append({
+        "question_id": q_id,
+        "text_ru": q_data.get("text_ru", ""),
+        "type": q_data.get("type", "TRAIT"),
+        "legacy_scale_id": scale_id,
+        "evidence_type": evidence_type,
+        "direction": direction,
+        "weight": 1.0
+    })
+
+questions_out = os.path.join(dict_dir, "questions.json")
+with open(questions_out, "w", encoding="utf-8") as f:
+    json.dump(mapped_questions, f, indent=2, ensure_ascii=False)
+
+print(f"Generated {len(mapped_questions)} questions to {questions_out}")
+
+# Now build 37 Patterns & Conflicts Library (patterns.json)
+patterns_library = [
+    # PATTERNS (P01..P20)
+    {
+        "id": "P01",
+        "code": "P1_APPROVAL_LOOP",
+        "type": "PATTERN",
+        "name": "Петля поиска внешнего одобрения",
+        "description": "Поведение, при котором любые решения проверяются через реакцию окружающих, а собственное мнение подавляется ради сохранения принятия.",
+        "trigger_conditions": [
+            {"dimension": "D01_INTERNAL_SUPPORT", "operator": "<=", "value": 40},
+            {"dimension": "D33_NEED_TO_BELONG", "operator": ">=", "value": 60}
+        ],
+        "interpretation": "Вы склонны ориентироваться на внешние сигналы одобрения как на единственный показатель правильности своих шагов."
+    },
+    {
+        "id": "P02",
+        "code": "P2_CONTROL_ANALYSIS_LOOP",
+        "type": "PATTERN",
+        "name": "Аналитическая петля гиперконтроля",
+        "description": "Попытка справиться с тревогой перед неизвестностью через бесконечный сбыт информации и гиперпланирование.",
+        "trigger_conditions": [
+            {"dimension": "D14_UNCERTAINTY_TOLERANCE", "operator": "<=", "value": 40},
+            {"dimension": "D15_CONTROL_RELIANCE", "operator": ">=", "value": 60}
+        ],
+        "interpretation": "Ваш ум использует анализ как форму защиты: кажется, что если еще немного подумать, гарантированная безопасность будет найдена."
+    },
+    {
+        "id": "P03",
+        "code": "P3_CERTAINTY_BEFORE_ACTION",
+        "type": "PATTERN",
+        "name": "Требование 100% гарантий перед стартом",
+        "description": "Запрет на совершение первого шага, пока результат не станет абсолютно предсказуемым и безопасным.",
+        "trigger_conditions": [
+            {"dimension": "D09_DECISIVENESS", "operator": "<=", "value": 40},
+            {"dimension": "D16_PREDICTABILITY_NEED", "operator": ">=", "value": 60}
+        ],
+        "interpretation": "Вы откладываете действия не из-за лени, а потому что психика отказывается двигаться без страховки."
+    },
+    {
+        "id": "P04",
+        "code": "P4_SELF_SILENCING",
+        "type": "PATTERN",
+        "name": "Самоподавление (Self-Silencing)",
+        "description": "Систематическое умалчивание своего мнения, несогласия или потребностей ради сохранения безопасных отношений.",
+        "trigger_conditions": [
+            {"dimension": "D34_CONFLICT_TOLERANCE", "operator": "<=", "value": 40},
+            {"dimension": "D31_BOUNDARY_FLEXIBILITY", "operator": "<=", "value": 40}
+        ],
+        "interpretation": "Вы выбираете безопасность связи ценой отрезания собственной проявляемости."
+    },
+    {
+        "id": "P05",
+        "code": "P5_PERFORMANCE_SELF_WORTH",
+        "type": "PATTERN",
+        "name": "Самооценка, привязанная к продуктивности",
+        "description": "Ощущение собственной ценности существует только во время высоких результатов и достижений.",
+        "trigger_conditions": [
+            {"dimension": "D02_SELF_WORTH_STABILITY", "operator": "<=", "value": 40},
+            {"dimension": "D26_ACHIEVEMENT_ORIENTATION", "operator": ">=", "value": 60}
+        ],
+        "interpretation": "Каждый ваш день становится экзаменом на право считать себя 'хорошим'."
+    },
+    {
+        "id": "P06",
+        "code": "P6_EMOTION_INTELLECTUALIZATION",
+        "type": "PATTERN",
+        "name": "Интеллектуализация эмоций",
+        "description": "Замена проживания сложных чувств когнитивным объяснением 'почему я это чувствую'.",
+        "trigger_conditions": [
+            {"dimension": "D20_EMOTIONAL_AWARENESS", "operator": "<=", "value": 40},
+            {"dimension": "D19_COGNITIVE_OVERPROCESSING", "operator": ">=", "value": 60}
+        ],
+        "interpretation": "Вы думаете свои чувства вместо того, чтобы их чувствовать."
+    },
+    # CONFLICTS (C01..C10)
+    {
+        "id": "C01",
+        "code": "C1_AUTHENTICITY_VS_ACCEPTANCE",
+        "type": "CONFLICT",
+        "name": "Аутентичность vs Принятие",
+        "description": "Внутренний разрыв между стремлением быть собой и страхом потерять расположение группы.",
+        "trigger_conditions": [
+            {"dimension": "D07_INTERNAL_LOCUS_OF_EVALUATION", "operator": ">=", "value": 60},
+            {"dimension": "D33_NEED_TO_BELONG", "operator": ">=", "value": 60}
+        ],
+        "interpretation": "Вы одновременно хотите заявить о своем уникальном видении и панически боитесь остаться в одиночестве."
+    },
+    {
+        "id": "C02",
+        "code": "C2_FREEDOM_VS_SECURITY",
+        "type": "CONFLICT",
+        "name": "Свобода vs Безопасность",
+        "description": "Конфликт между жаждой автономии/масштаба и остроконечной потребностью в предсказуемости.",
+        "trigger_conditions": [
+            {"dimension": "D08_ACTION_AGENCY", "operator": ">=", "value": 60},
+            {"dimension": "D14_UNCERTAINTY_TOLERANCE", "operator": "<=", "value": 40}
+        ],
+        "interpretation": "Вы рветесь вперед к новым горизонтам, но удерживаете себя тормозом из предсказуемости."
+    },
+    {
+        "id": "C03",
+        "code": "C3_VISIBILITY_VS_PROTECTION",
+        "type": "CONFLICT",
+        "name": "Проявляемость vs Защита",
+        "description": "Желание быть признанным при одновременном страхе оказаться уязвимым под чужими взглядами.",
+        "trigger_conditions": [
+            {"dimension": "D35_VISIBILITY_TOLERANCE", "operator": "<=", "value": 40},
+            {"dimension": "D26_ACHIEVEMENT_ORIENTATION", "operator": ">=", "value": 60}
+        ],
+        "interpretation": "Вы создаете прекрасные результаты, но сматываете их в черновики, как только дело доходит до показа миру."
+    },
+    {
+        "id": "C04",
+        "code": "C4_ACHIEVEMENT_VS_SELF_PRESERVATION",
+        "type": "CONFLICT",
+        "name": "Достижения vs Самосохранение",
+        "description": "Гонка за высокими метриками вопреки физическому и эмоциональному истощению.",
+        "trigger_conditions": [
+            {"dimension": "D26_ACHIEVEMENT_ORIENTATION", "operator": ">=", "value": 70},
+            {"dimension": "D39_SOMATIC_DISCONNECT", "operator": ">=", "value": 60}
+        ],
+        "interpretation": "Ваши амбиции заставляют вас игнорировать стоп-сигналы собственного тела."
+    },
+    {
+        "id": "C05",
+        "code": "C5_CONTROL_VS_SPONTANEITY",
+        "type": "CONFLICT",
+        "name": "Контроль vs Спонтанность",
+        "description": "Мечта о легкости при неспособности ослабить хватку микроменеджмента.",
+        "trigger_conditions": [
+            {"dimension": "D15_CONTROL_RELIANCE", "operator": ">=", "value": 65},
+            {"dimension": "D16_PREDICTABILITY_NEED", "operator": ">=", "value": 60}
+        ],
+        "interpretation": "Вы хотите радоваться жизни, но не можете расслабиться без заранее прописанного сценария."
+    },
+    {
+        "id": "C06",
+        "code": "C6_AUTHENTICITY_VS_PROTECTION",
+        "type": "CONFLICT",
+        "name": "Искренность vs Самозащита",
+        "description": "Потребность в глубокой близости при запрете показывать свою уязвимость.",
+        "trigger_conditions": [
+            {"dimension": "D36_HYPER_INDEPENDENCE", "operator": ">=", "value": 60},
+            {"dimension": "D23_EMOTIONAL_EXPRESSION", "operator": "<=", "value": 40}
+        ],
+        "interpretation": "Вы ищете настоящих людей, но держите броню, не давая никому подойти близко."
+    }
+]
+
+patterns_out = os.path.join(dict_dir, "patterns.json")
+with open(patterns_out, "w", encoding="utf-8") as f:
+    json.dump(patterns_library, f, indent=2, ensure_ascii=False)
+
+print(f"Generated {len(patterns_library)} patterns/conflicts to {patterns_out}")

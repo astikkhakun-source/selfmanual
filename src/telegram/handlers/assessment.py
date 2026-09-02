@@ -23,6 +23,7 @@ from src.services.admin import (
     get_admin_stats, grant_user_entitlement, get_question_bank_summary, list_questions_by_phase
 )
 from src.domain.scoring.core_engine import calculate_core_signals, evaluate_core_conflicts
+from src.domain.scoring.full_engine import calculate_full_profile
 from src.domain.scoring.scales import calculate_primary_scales
 from src.domain.scoring.patterns import evaluate_full_patterns
 from src.domain.scoring.conflicts import evaluate_full_conflicts
@@ -469,16 +470,7 @@ async def render_free_core_report(message: Message, db, session):
 async def render_full_report_and_pdf(message: Message, db, session):
     """Generate FULL report via LLM and deliver PDF to Telegram chat."""
     answers_map = await get_session_answers_map(db, session.id)
-    scales = calculate_primary_scales(answers_map)
-    patterns = evaluate_full_patterns(scales)
-    conflicts = evaluate_full_conflicts(scales)
-
-    input_package = {
-        "meta": {"version": "1.3"},
-        "primary_scales": scales,
-        "patterns": patterns,
-        "conflicts": conflicts
-    }
+    input_package = calculate_full_profile(answers_map)
 
     status_msg = await message.answer("🔄 <i>Система генерирует ваш персональный отчёт и PDF-инструкцию...</i>", parse_mode="HTML")
 
