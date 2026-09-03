@@ -540,6 +540,8 @@ async def render_full_report_and_pdf(message: Message, db, session):
 @router.callback_query(F.data == "admin_fastforward")
 async def cq_admin_fastforward(callback: CallbackQuery):
     """Fast-forward test to completion for admins via inline button."""
+    await callback.answer() # Immediately answer to stop loading animation
+    
     async with AsyncSessionLocal() as db:
         user = await get_or_create_user(
             db,
@@ -548,13 +550,15 @@ async def cq_admin_fastforward(callback: CallbackQuery):
             username=callback.from_user.username
         )
         if not user.is_admin:
-            await callback.answer("У вас нет прав администратора.", show_alert=True)
+            await callback.message.answer("У вас нет прав администратора.")
             return
             
         session = await get_active_session(db, user.id)
         if not session:
-            await callback.answer("Нет активной сессии.", show_alert=True)
+            await callback.message.answer("Нет активной сессии.")
             return
+
+        status_msg = await callback.message.answer("⏩ <i>Прокручиваем 175 вопросов (это займет пару секунд)...</i>", parse_mode="HTML")
 
         answers_map = await get_session_answers_map(db, session.id)
         
@@ -568,9 +572,8 @@ async def cq_admin_fastforward(callback: CallbackQuery):
         session.phase = "ASSESSMENT_COMPLETED"
         await db.commit()
         
-        await callback.message.answer("⏩ Тест прокручен до конца. Формирую финальный отчет...")
+        await status_msg.edit_text("⏩ <b>Тест прокручен до конца.</b>\nФормирую финальный отчет LLM...", parse_mode="HTML")
         await render_full_report_and_pdf(callback.message, db, session)
-        await callback.answer()
 
 
 @router.message(Command("ff"))
