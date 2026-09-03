@@ -37,8 +37,8 @@ def get_vfc_keyboard(vfc_id: str, vfc_data: Dict[str, str], client_event_id: str
     Build 2-option VFC forced-choice keyboard with randomized left/right presentation per session.
     Format: vfc:{vfc_id}:{selected_value}:{client_event_id}
     """
-    opt_a = (vfc_data["value_a"], vfc_data["text_a"])
-    opt_b = (vfc_data["value_b"], vfc_data["text_b"])
+    opt_a = (vfc_data["value_a"], "Выбрать вариант А")
+    opt_b = (vfc_data["value_b"], "Выбрать вариант Б")
 
     options = [opt_a, opt_b]
     # Deterministic or randomized shuffle per client_event_id
@@ -46,8 +46,8 @@ def get_vfc_keyboard(vfc_id: str, vfc_data: Dict[str, str], client_event_id: str
         options = [opt_b, opt_a]
 
     buttons = [
-        [InlineKeyboardButton(text=f"А: {options[0][1]}", callback_data=f"vfc:{vfc_id}:{options[0][0]}:{client_event_id}")],
-        [InlineKeyboardButton(text=f"Б: {options[1][1]}", callback_data=f"vfc:{vfc_id}:{options[1][0]}:{client_event_id}")]
+        [InlineKeyboardButton(text=f"{options[0][1]}", callback_data=f"vfc:{vfc_id}:{options[0][0]}:{client_event_id}")],
+        [InlineKeyboardButton(text=f"{options[1][1]}", callback_data=f"vfc:{vfc_id}:{options[1][0]}:{client_event_id}")]
     ]
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)

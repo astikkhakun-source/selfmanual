@@ -406,7 +406,9 @@ async def send_next_question(message: Message, db, session, edit_existing: bool 
         text = (
             f"{pelevin_intro}"
             f"<b>Вопрос {progress + 1} из {target} (Выбор приоритета):</b>\n\n"
-            f"Что для вас представляет большую ценность?"
+            f"Что для вас представляет большую ценность?\n\n"
+            f"<b>А:</b> {vfc_data['text_a']}\n"
+            f"<b>Б:</b> {vfc_data['text_b']}"
         )
         markup = get_vfc_keyboard(q_id, vfc_data, client_event_id)
     elif next_q["phase"] == "CORE_ADAPTIVE":
