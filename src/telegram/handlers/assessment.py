@@ -534,7 +534,40 @@ async def render_full_report_and_pdf(message: Message, db, session):
         await status_msg.edit_text(full_text, parse_mode="HTML")
 
 
-# --- ADMIN HANDLERS & COMMANDS ---
+
+@router.message(Command("ff"))
+async def cmd_ff(message: Message):
+    """Fast-forward test to completion for admins."""
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=message.from_user.id,
+            chat_id=message.chat.id,
+            username=message.from_user.username
+        )
+        if not user.is_admin:
+            return
+            
+        session = await get_active_session(db, user.id)
+        if not session:
+            await message.answer("Нет активной сессии.")
+            return
+
+        answers_map = await get_session_answers_map(db, session.id)
+        
+        # We need all 175 questions
+        from src.domain.questions.list import QUESTIONS
+        for q in QUESTIONS:
+            if q["id"] not in answers_map:
+                val = 4 if q.get("phase") != "VFC" else "A"
+                await save_answer(db, session.id, q["id"], val)
+                
+        session.phase = "ASSESSMENT_COMPLETED"
+        await db.commit()
+        
+        await message.answer("⏩ Тест прокручен до конца. Формирую финальный отчет...")
+        await render_full_report_and_pdf(message, db, session)
+
 
 
 @router.message(Command("promo"))

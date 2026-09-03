@@ -235,8 +235,30 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#2b6cb0'), spaceAfter=12))
 
     chapters = report_data.get("chapters", {})
-    for ch_key, ch_text in chapters.items():
+    if isinstance(chapters, dict):
+        chapter_items = chapters.items()
+    elif isinstance(chapters, list):
+        # If it's a list of dicts like [{"title": "...", "text": "..."}]
+        chapter_items = []
+        for i, ch in enumerate(chapters):
+            if isinstance(ch, dict):
+                title = ch.get("title", ch.get("name", f"Глава {i+1}"))
+                text = ch.get("text", ch.get("content", str(ch)))
+                chapter_items.append((title, text))
+            else:
+                chapter_items.append((f"Глава {i+1}", str(ch)))
+    else:
+        chapter_items = []
+
+    for ch_key, ch_text in chapter_items:
         ch_title = CHAPTER_TITLES.get(ch_key, ch_key)
+        
+        # Ensure text is a string and escape XML tags
+        if isinstance(ch_text, dict):
+            ch_text = ch_text.get("text", ch_text.get("content", str(ch_text)))
+        ch_text = str(ch_text).replace('<', '&lt;').replace('>', '&gt;')
+        ch_title = str(ch_title).replace('<', '&lt;').replace('>', '&gt;')
+
         story.append(Paragraph(ch_title, heading_style))
         story.append(Paragraph(ch_text, body_style))
         story.append(Spacer(1, 4))
