@@ -31,57 +31,62 @@ TEXT_COLOR = '#EAEAEA'
 ACCENT_COLOR = '#C8B592'
 MUTED_TEXT = '#6B6B73'
 
-def draw_background(canvas, doc):
-    canvas.saveState()
-    w, h = 595.27, 841.89
-    bg_img = "c:/Sher_AI_Studio/projects/selfmanual/assets/images/onboarding.png"
-    import os
-    if os.path.exists(bg_img):
-        from reportlab.lib.utils import ImageReader
+def make_background_drawer(bg_img_name="onboarding.png", alpha=0.85):
+    def draw_background(canvas, doc):
+        canvas.saveState()
+        w, h = 595.27, 841.89
+        
+        # Build the correct absolute path to the images folder
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        bg_img = os.path.join(base_dir, "assets", "images", bg_img_name)
+        
+        if os.path.exists(bg_img):
+            from reportlab.lib.utils import ImageReader
+            try:
+                img = ImageReader(bg_img)
+                img_w, img_h = img.getSize()
+                img_aspect = img_w / float(img_h)
+                target_aspect = w / float(h)
+                if img_aspect > target_aspect:
+                    draw_h = h
+                    draw_w = draw_h * img_aspect
+                    x_offset = (w - draw_w) / 2
+                    y_offset = 0
+                else:
+                    draw_w = w
+                    draw_h = draw_w / img_aspect
+                    x_offset = 0
+                    y_offset = (h - draw_h) / 2
+                canvas.drawImage(bg_img, x_offset, y_offset, width=draw_w, height=draw_h, preserveAspectRatio=True)
+            except Exception as e:
+                logger.error(f"Failed to draw background image {bg_img}: {e}")
+                
+        from reportlab.lib import colors
+        canvas.setFillColor(colors.HexColor(BG_COLOR))
         try:
-            img = ImageReader(bg_img)
-            img_w, img_h = img.getSize()
-            img_aspect = img_w / float(img_h)
-            target_aspect = w / float(h)
-            if img_aspect > target_aspect:
-                draw_h = h
-                draw_w = draw_h * img_aspect
-                x_offset = (w - draw_w) / 2
-                y_offset = 0
-            else:
-                draw_w = w
-                draw_h = draw_w / img_aspect
-                x_offset = 0
-                y_offset = (h - draw_h) / 2
-            canvas.drawImage(bg_img, x_offset, y_offset, width=draw_w, height=draw_h, preserveAspectRatio=True)
-        except Exception:
+            canvas.setFillAlpha(alpha)
+        except AttributeError:
             pass
-            
-    from reportlab.lib import colors
-    canvas.setFillColor(colors.HexColor(BG_COLOR))
-    try:
-        canvas.setFillAlpha(0.90)
-    except AttributeError:
-        pass
-    canvas.rect(0, 0, w, h, fill=1, stroke=0)
-    try:
-        canvas.setFillAlpha(1.0)
-    except AttributeError:
-        pass
-    
-    canvas.setStrokeColor(colors.HexColor(ACCENT_COLOR))
-    canvas.setLineWidth(0.3)
-    margin = 40
-    canvas.line(margin, h - margin, w - margin, h - margin)
-    
-    canvas.setFont("Helvetica", 7)
-    canvas.setFillColor(colors.HexColor(MUTED_TEXT))
-    canvas.drawString(margin, h - margin + 8, "PRIVATE PSYCHOLOGICAL INTELLIGENCE REPORT")
-    canvas.drawRightString(w - margin, h - margin + 8, "ID: SC-99482A")
-    canvas.drawString(margin, margin - 15, f"PAGE {str(doc.page).zfill(2)}")
-    canvas.drawRightString(w - margin, margin - 15, "SELFCODE SYSTEM V1.3")
-    
-    canvas.restoreState()
+        canvas.rect(0, 0, w, h, fill=1, stroke=0)
+        try:
+            canvas.setFillAlpha(1.0)
+        except AttributeError:
+            pass
+        
+        canvas.setStrokeColor(colors.HexColor(ACCENT_COLOR))
+        canvas.setLineWidth(0.3)
+        margin = 40
+        canvas.line(margin, h - margin, w - margin, h - margin)
+        
+        canvas.setFont("Helvetica", 7)
+        canvas.setFillColor(colors.HexColor(MUTED_TEXT))
+        canvas.drawString(margin, h - margin + 8, "PRIVATE PSYCHOLOGICAL INTELLIGENCE REPORT")
+        canvas.drawRightString(w - margin, h - margin + 8, "ID: SC-99482A")
+        canvas.drawString(margin, margin - 15, f"PAGE {str(doc.page).zfill(2)}")
+        canvas.drawRightString(w - margin, margin - 15, "SELFCODE SYSTEM V1.3")
+        
+        canvas.restoreState()
+    return draw_background
 
 
 def _get_reportlab():
@@ -260,7 +265,8 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
     story.append(Spacer(1, 20))
     story.append(Paragraph("<font size=7 color='#a0aec0'>Документ сформирован системой «Инструкция к себе» V1.3. Не является медицинским диагнозом.</font>", meta_style))
 
-    doc.build(story, onFirstPage=draw_background, onLaterPages=draw_background)
+    bg_drawer = make_background_drawer("full_report.png", 0.85)
+    doc.build(story, onFirstPage=bg_drawer, onLaterPages=bg_drawer)
     return output_path
 
 
@@ -401,6 +407,7 @@ def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> st
     story.append(Paragraph("Мы уже видим несколько противоречий в ваших ответах. Но данных CORE недостаточно, чтобы определить, являются ли они случайными или образуют устойчивый внутренний конфликт.", body_style))
     story.append(Paragraph("Для этого нужен следующий уровень диагностики.", ParagraphStyle('B2', fontName=font_bold, fontSize=11, textColor=colors.HexColor(ACCENT_COLOR))))
 
-    doc.build(story, onFirstPage=draw_background, onLaterPages=draw_background)
+    bg_drawer = make_background_drawer("core_report.png", 0.85)
+    doc.build(story, onFirstPage=bg_drawer, onLaterPages=bg_drawer)
     return output_path
 

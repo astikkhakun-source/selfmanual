@@ -390,9 +390,21 @@ async def send_next_question(message: Message, db, session, edit_existing: bool 
     q_info = get_question_info(q_id)
     q_text = q_info.get("text_ru", f"Вопрос {q_id}")
 
+    # Pelevin-style milestone communication
+    pelevin_intro = ""
+    if progress == 50:
+        pelevin_intro = "👁 <i>Пятьдесят вопросов позади. Мы уже видим контуры вашей проекции. Не пытайтесь казаться лучше, алгоритм всё равно заметит склейки. Продолжаем.</i>\n\n"
+    elif progress == 100:
+        pelevin_intro = "⏳ <i>Сотня вопросов загружена. Эго начинает уставать удерживать фасад, и это прекрасно — именно сейчас сквозь трещины проступает настоящий код. Идём дальше.</i>\n\n"
+    elif progress == 148:
+        pelevin_intro = "🧬 <b>Базовые паттерны отсканированы.</b>\n\n<i>Ваш личностный каркас зафиксирован. Но любой каркас помещен в конкретное пространство. Следующие несколько вопросов замерят ваш текущий контекст и остаток ресурса. Как вы чувствуете себя прямо сейчас, в этой точке симуляции?</i>\n\n"
+    elif progress == 160:
+        pelevin_intro = "🚬 <b>Основной массив данных загружен.</b>\n\n<i>Любая система проверяется не в статике, а в моменты сбоя. Мы переходим к финальному этапу. Здесь нет градиентов и спасительной середины. Вам предстоит выбрать между двумя конфликтующими ценностями. Что для вас важнее, когда реальность заставляет платить по счетам?</i>\n\n"
+
     if next_q["phase"] == "VFC":
         vfc_data = next_q.get("vfc_data") or {"value_a": "A", "text_a": "Вариант А", "value_b": "B", "text_b": "Вариант Б"}
         text = (
+            f"{pelevin_intro}"
             f"<b>Вопрос {progress + 1} из {target} (Выбор приоритета):</b>\n\n"
             f"Что для вас представляет большую ценность?"
         )
@@ -400,6 +412,7 @@ async def send_next_question(message: Message, db, session, edit_existing: bool 
     elif next_q["phase"] == "CORE_ADAPTIVE":
         adaptive_idx = next_q.get("adaptive_index", 1)
         text = (
+            f"{pelevin_intro}"
             f"<b>Уточняющий вопрос {adaptive_idx} из 6 (Адаптивный блок CORE):</b>\n\n"
             f"«{q_text}»\n\n"
             f"<i>1 — полностью не согласен\n7 — полностью согласен</i>"
@@ -407,6 +420,7 @@ async def send_next_question(message: Message, db, session, edit_existing: bool 
         markup = get_likert_keyboard(q_id, client_event_id)
     else:
         text = (
+            f"{pelevin_intro}"
             f"<b>Вопрос {progress + 1} из {target}:</b>\n\n"
             f"«{q_text}»\n\n"
             f"<i>1 — полностью не согласен\n7 — полностью согласен</i>"
