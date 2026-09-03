@@ -546,37 +546,47 @@ async def cq_admin_fastforward(callback: CallbackQuery):
     """Fast-forward test to completion for admins via inline button."""
     await callback.answer() # Immediately answer to stop loading animation
     
-    async with AsyncSessionLocal() as db:
-        user = await get_or_create_user(
-            db,
-            telegram_user_id=callback.from_user.id,
-            chat_id=callback.message.chat.id,
-            username=callback.from_user.username
-        )
-        if not user.is_admin:
-            await callback.message.answer("У вас нет прав администратора.")
-            return
-            
-        session = await get_active_session(db, user.id)
-        if not session:
-            await callback.message.answer("Нет активной сессии.")
-            return
-
-        status_msg = await callback.message.answer("⏩ <i>Прокручиваем 175 вопросов (это займет пару секунд)...</i>", parse_mode="HTML")
-
-        answers_map = await get_session_answers_map(db, session.id)
-        
-        # We need all 175 questions. Fill the gaps in memory.
-        from src.domain.questions.list import QUESTIONS
-        for q in QUESTIONS:
-            if q["id"] not in answers_map:
-                answers_map[q["id"]] = 4 if q.get("phase") != "VFC" else "A"
+    try:
+        async with AsyncSessionLocal() as db:
+            user = await get_or_create_user(
+                db,
+                telegram_user_id=callback.from_user.id,
+                chat_id=callback.message.chat.id,
+                username=callback.from_user.username
+            )
+            if not user.is_admin:
+                await callback.message.answer("У вас нет прав администратора.")
+                return
                 
-        session.phase = "ASSESSMENT_COMPLETED"
-        await db.commit()
-        
-        await status_msg.edit_text("⏩ <b>Тест прокручен до конца.</b>\nФормирую финальный отчет LLM...", parse_mode="HTML")
-        await render_full_report_and_pdf(callback.message, db, session, precomputed_answers=answers_map)
+            session = await get_active_session(db, user.id)
+            if not session:
+                await callback.message.answer("Нет активной сессии.")
+                return
+
+            status_msg = await callback.message.answer("⏩ <i>Прокручиваем 175 вопросов (это займет пару секунд)...</i>", parse_mode="HTML")
+
+            answers_map = await get_session_answers_map(db, session.id)
+            
+            # We need all 175 questions. Fill the gaps in memory.
+            # q1-q160 are Likert (1-7), q161-q175 are VFC (A/B)
+            for i in range(1, 161):
+                q_id = f"q{i}"
+                if q_id not in answers_map:
+                    answers_map[q_id] = 4
+            for i in range(161, 176):
+                q_id = f"q{i}"
+                if q_id not in answers_map:
+                    answers_map[q_id] = "A"
+                    
+            session.phase = "ASSESSMENT_COMPLETED"
+            await db.commit()
+            
+            await status_msg.edit_text("⏩ <b>Тест прокручен до конца.</b>\nФормирую финальный отчет LLM...", parse_mode="HTML")
+            await render_full_report_and_pdf(callback.message, db, session, precomputed_answers=answers_map)
+    except Exception as e:
+        import traceback
+        err_str = traceback.format_exc()
+        await callback.message.answer(f"❌ ОШИБКА:\n<pre>{err_str[-1500:]}</pre>", parse_mode="HTML")
 
 
 @router.message(Command("ff"))
@@ -600,10 +610,14 @@ async def cmd_ff(message: Message):
         answers_map = await get_session_answers_map(db, session.id)
         
         # We need all 175 questions
-        from src.domain.questions.list import QUESTIONS
-        for q in QUESTIONS:
-            if q["id"] not in answers_map:
-                answers_map[q["id"]] = 4 if q.get("phase") != "VFC" else "A"
+        for i in range(1, 161):
+            q_id = f"q{i}"
+            if q_id not in answers_map:
+                answers_map[q_id] = 4
+        for i in range(161, 176):
+            q_id = f"q{i}"
+            if q_id not in answers_map:
+                answers_map[q_id] = "A"
                 
         session.phase = "ASSESSMENT_COMPLETED"
         await db.commit()
