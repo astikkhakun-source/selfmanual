@@ -506,9 +506,13 @@ async def render_free_core_report(message: Message, db, session):
         await message.answer(report_text, parse_mode="HTML", reply_markup=markup)
 
 
-async def render_full_report_and_pdf(message: Message, db, session):
+async def render_full_report_and_pdf(message: Message, db, session, precomputed_answers: dict = None):
     """Generate FULL report via LLM and deliver PDF to Telegram chat."""
-    answers_map = await get_session_answers_map(db, session.id)
+    if precomputed_answers is not None:
+        answers_map = precomputed_answers
+    else:
+        answers_map = await get_session_answers_map(db, session.id)
+        
     input_package = calculate_full_profile(answers_map)
 
     status_msg = await message.answer("🔄 <i>Система генерирует ваш персональный отчёт и PDF-инструкцию...</i>", parse_mode="HTML")
@@ -562,18 +566,17 @@ async def cq_admin_fastforward(callback: CallbackQuery):
 
         answers_map = await get_session_answers_map(db, session.id)
         
-        # We need all 175 questions
+        # We need all 175 questions. Fill the gaps in memory.
         from src.domain.questions.list import QUESTIONS
         for q in QUESTIONS:
             if q["id"] not in answers_map:
-                val = 4 if q.get("phase") != "VFC" else "A"
-                await save_answer(db, session.id, q["id"], val)
+                answers_map[q["id"]] = 4 if q.get("phase") != "VFC" else "A"
                 
         session.phase = "ASSESSMENT_COMPLETED"
         await db.commit()
         
         await status_msg.edit_text("⏩ <b>Тест прокручен до конца.</b>\nФормирую финальный отчет LLM...", parse_mode="HTML")
-        await render_full_report_and_pdf(callback.message, db, session)
+        await render_full_report_and_pdf(callback.message, db, session, precomputed_answers=answers_map)
 
 
 @router.message(Command("ff"))
@@ -600,14 +603,13 @@ async def cmd_ff(message: Message):
         from src.domain.questions.list import QUESTIONS
         for q in QUESTIONS:
             if q["id"] not in answers_map:
-                val = 4 if q.get("phase") != "VFC" else "A"
-                await save_answer(db, session.id, q["id"], val)
+                answers_map[q["id"]] = 4 if q.get("phase") != "VFC" else "A"
                 
         session.phase = "ASSESSMENT_COMPLETED"
         await db.commit()
         
         await message.answer("⏩ Тест прокручен до конца. Формирую финальный отчет...")
-        await render_full_report_and_pdf(message, db, session)
+        await render_full_report_and_pdf(message, db, session, precomputed_answers=answers_map)
 
 
 
