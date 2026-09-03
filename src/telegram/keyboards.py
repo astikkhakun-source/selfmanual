@@ -98,7 +98,8 @@ def get_admin_dashboard_keyboard() -> InlineKeyboardMarkup:
         [InlineKeyboardButton(text="📊 Статистика системы", callback_data="admin:stats")],
         [InlineKeyboardButton(text="📚 Просмотр банка вопросов", callback_data="admin:questions:CORE:1")],
         [InlineKeyboardButton(text="🔓 Выдать доступ пользователю", callback_data="admin:grant_prompt")],
-        [InlineKeyboardButton(text="🚀 Запустить этап DEEP", callback_data="admin_start_deep")]
+        [InlineKeyboardButton(text="🚀 Запустить этап DEEP", callback_data="admin_start_deep")],
+        [InlineKeyboardButton(text="⏩ Сгенерировать FULL отчет (тест)", callback_data="admin_fastforward")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 

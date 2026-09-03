@@ -535,6 +535,42 @@ async def render_full_report_and_pdf(message: Message, db, session):
 
 
 
+@router.callback_query(F.data == "admin_fastforward")
+async def cq_admin_fastforward(callback: CallbackQuery):
+    """Fast-forward test to completion for admins via inline button."""
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=callback.from_user.id,
+            chat_id=callback.message.chat.id,
+            username=callback.from_user.username
+        )
+        if not user.is_admin:
+            await callback.answer("У вас нет прав администратора.", show_alert=True)
+            return
+            
+        session = await get_active_session(db, user.id)
+        if not session:
+            await callback.answer("Нет активной сессии.", show_alert=True)
+            return
+
+        answers_map = await get_session_answers_map(db, session.id)
+        
+        # We need all 175 questions
+        from src.domain.questions.list import QUESTIONS
+        for q in QUESTIONS:
+            if q["id"] not in answers_map:
+                val = 4 if q.get("phase") != "VFC" else "A"
+                await save_answer(db, session.id, q["id"], val)
+                
+        session.phase = "ASSESSMENT_COMPLETED"
+        await db.commit()
+        
+        await callback.message.answer("⏩ Тест прокручен до конца. Формирую финальный отчет...")
+        await render_full_report_and_pdf(callback.message, db, session)
+        await callback.answer()
+
+
 @router.message(Command("ff"))
 async def cmd_ff(message: Message):
     """Fast-forward test to completion for admins."""
