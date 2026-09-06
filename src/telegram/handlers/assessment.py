@@ -572,11 +572,11 @@ async def cq_admin_fastforward(callback: CallbackQuery):
             for i in range(1, 161):
                 q_id = f"q{i}"
                 if q_id not in answers_map:
-                    answers_map[q_id] = 4
+                    answers_map[q_id] = 1 if i % 2 == 0 else 7
             for i in range(161, 176):
                 q_id = f"q{i}"
                 if q_id not in answers_map:
-                    answers_map[q_id] = "A"
+                    answers_map[q_id] = "A" if i % 2 == 0 else "B"
                     
             session.phase = "ASSESSMENT_COMPLETED"
             await db.commit()
@@ -613,11 +613,11 @@ async def cmd_ff(message: Message):
         for i in range(1, 161):
             q_id = f"q{i}"
             if q_id not in answers_map:
-                answers_map[q_id] = 4
+                answers_map[q_id] = 1 if i % 2 == 0 else 7
         for i in range(161, 176):
             q_id = f"q{i}"
             if q_id not in answers_map:
-                answers_map[q_id] = "A"
+                answers_map[q_id] = "A" if i % 2 == 0 else "B"
                 
         session.phase = "ASSESSMENT_COMPLETED"
         await db.commit()

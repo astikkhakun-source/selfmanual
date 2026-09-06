@@ -214,7 +214,7 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
     rule_style = ParagraphStyle(
         'RuleCard', parent=styles['Normal'],
         fontName=font_reg, fontSize=9.5, leading=13,
-        textColor=colors.HexColor('#2c5282'), spaceAfter=6
+        textColor=colors.HexColor('#63b3ed'), spaceAfter=6
     )
 
     story = []
