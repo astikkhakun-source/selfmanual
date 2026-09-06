@@ -568,15 +568,17 @@ async def cq_admin_fastforward(callback: CallbackQuery):
             answers_map = await get_session_answers_map(db, session.id)
             
             # We need all 175 questions. Fill the gaps in memory.
+            import random
+            random.seed(42)
             # q1-q160 are Likert (1-7), q161-q175 are VFC (A/B)
             for i in range(1, 161):
                 q_id = f"q{i}"
                 if q_id not in answers_map:
-                    answers_map[q_id] = 1 if i % 2 == 0 else 7
+                    answers_map[q_id] = random.choice([1, 2, 6, 7])
             for i in range(161, 176):
                 q_id = f"q{i}"
                 if q_id not in answers_map:
-                    answers_map[q_id] = "A" if i % 2 == 0 else "B"
+                    answers_map[q_id] = random.choice(["A", "B"])
                     
             session.phase = "ASSESSMENT_COMPLETED"
             await db.commit()
@@ -609,15 +611,17 @@ async def cmd_ff(message: Message):
 
         answers_map = await get_session_answers_map(db, session.id)
         
+        import random
+        random.seed(42)
         # We need all 175 questions
         for i in range(1, 161):
             q_id = f"q{i}"
             if q_id not in answers_map:
-                answers_map[q_id] = 1 if i % 2 == 0 else 7
+                answers_map[q_id] = random.choice([1, 2, 6, 7])
         for i in range(161, 176):
             q_id = f"q{i}"
             if q_id not in answers_map:
-                answers_map[q_id] = "A" if i % 2 == 0 else "B"
+                answers_map[q_id] = random.choice(["A", "B"])
                 
         session.phase = "ASSESSMENT_COMPLETED"
         await db.commit()

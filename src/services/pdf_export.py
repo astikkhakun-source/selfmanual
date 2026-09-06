@@ -256,7 +256,7 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
         # Ensure text is a string and escape XML tags
         if isinstance(ch_text, dict):
             ch_text = ch_text.get("text", ch_text.get("content", str(ch_text)))
-        ch_text = str(ch_text).replace('<', '&lt;').replace('>', '&gt;')
+        ch_text = str(ch_text).replace('<', '&lt;').replace('>', '&gt;').replace('\n', '<br/>')
         ch_title = str(ch_title).replace('<', '&lt;').replace('>', '&gt;')
 
         story.append(Paragraph(ch_title, heading_style))
