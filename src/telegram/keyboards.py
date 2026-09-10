@@ -57,6 +57,7 @@ def get_paywall_keyboard(payment_url: str) -> InlineKeyboardMarkup:
     """Paywall checkout keyboard."""
     buttons = [
         [InlineKeyboardButton(text="💳 ПОЛУЧИТЬ SELFCODE", url=payment_url)],
+        [InlineKeyboardButton(text="🎟 Ввести промокод", callback_data="prompt_promo")],
         [InlineKeyboardButton(text="🔄 Проверить оплату", callback_data="check_payment")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)

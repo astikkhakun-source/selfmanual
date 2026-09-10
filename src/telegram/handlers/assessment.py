@@ -39,7 +39,7 @@ from src.telegram.keyboards import (
     get_admin_questions_nav_keyboard, get_consultation_discount_keyboard,
     get_promo_menu_keyboard, get_promo_uses_keyboard, get_promo_duration_keyboard, get_promo_list_keyboard
 )
-from src.telegram.states import PromoCreateFSM
+from src.telegram.states import PromoCreateFSM, UserPromoFSM
 from src.services.promo_service import (
     create_promo_code, validate_and_use_promo_code, get_all_promo_codes,
     toggle_promo_code_status, generate_random_promo_code
@@ -166,7 +166,8 @@ async def btn_continue(message: Message):
                 payment_url = create_prodamus_payment_link(user_id=session.user_id, session_id=session.id)
                 await message.answer(
                     "🪞 <b>Ваша карта-отчет CORE уже готова!</b>\n\n"
-                    "Для продолжения исследования и перехода к 175 вопросам <b>Этапа 2 (DEEP)</b> откройте доступ по кнопке ниже:",
+                    "Для продолжения исследования и перехода к 175 вопросам <b>Этапа 2 (DEEP)</b> откройте доступ по кнопке ниже:\n\n"
+                    "🎟 <i>Есть промокод? Нажмите кнопку «🎟 Ввести промокод» или отправьте команду <code>/promo ВАШ_ПРОМОКОД</code>.</i>",
                     parse_mode="HTML",
                     reply_markup=get_paywall_keyboard(payment_url)
                 )
@@ -193,7 +194,8 @@ async def btn_pay_full_access(message: Message):
         payment_url = create_prodamus_payment_link(user_id=session.user_id, session_id=session.id)
         await message.answer(
             "🪞 <b>Доступ к Этапу 2 (DEEP)</b>\n\n"
-            "Оплатите доступ по ссылке ниже, чтобы разблокировать оставшиеся 145 вопросов и получить полный PDF-отчёт SelfCode.",
+            "Оплатите доступ по ссылке ниже, чтобы разблокировать оставшиеся 145 вопросов и получить полный PDF-отчёт SelfCode.\n\n"
+            "🎟 <i>Есть промокод? Нажмите кнопку «🎟 Ввести промокод» ниже или отправьте команду <code>/promo ВАШ_ПРОМОКОД</code>.</i>",
             parse_mode="HTML",
             reply_markup=get_paywall_keyboard(payment_url)
         )
@@ -815,6 +817,55 @@ async def cmd_ff(message: Message):
         await message.answer("⏩ Тест прокручен до конца. Формирую финальный отчет...")
         await render_full_report_and_pdf(message, db, session, precomputed_answers=answers_map)
 
+
+
+@router.callback_query(F.data == "prompt_promo")
+async def cb_prompt_promo(callback: CallbackQuery, state: FSMContext):
+    """Prompt user to enter their promo code."""
+    await state.set_state(UserPromoFSM.waiting_for_promo)
+    text = (
+        "🎟 <b>АКТИВАЦИЯ ПРОМОКОДА</b>\n\n"
+        "Отправьте ваш промокод простым текстовым сообщением в ответ на это сообщение "
+        "или укажите его командой:\n<code>/promo ВАШ_ПРОМОКОД</code>"
+    )
+    await callback.message.answer(text, parse_mode="HTML")
+    await callback.answer()
+
+
+@router.message(UserPromoFSM.waiting_for_promo)
+async def msg_user_promo_input(message: Message, state: FSMContext):
+    """Process user text input for promo code redemption."""
+    code = message.text.strip()
+    if code.startswith("/"):
+        parts = code.split(maxsplit=1)
+        code = parts[1].strip() if len(parts) > 1 else ""
+
+    if not code:
+        await message.answer("⚠️ Пожалуйста, введите корректный промокод.")
+        return
+
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=message.from_user.id,
+            chat_id=message.chat.id,
+            username=message.from_user.username
+        )
+        session = await get_active_session(db, user.id)
+        if not session:
+            session = await start_new_session(db, user.id)
+
+        success, msg, promo = await validate_and_use_promo_code(db, code, user.id, session.id)
+
+        if success:
+            await state.clear()
+            full_msg = (
+                f"{msg}\n\n"
+                "Нажмите «▶️ Продолжить диагностику», чтобы перейти к следующим вопросам."
+            )
+            await message.answer(full_msg, parse_mode="HTML")
+        else:
+            await message.answer(msg, parse_mode="HTML")
 
 
 @router.message(Command("promo"))
