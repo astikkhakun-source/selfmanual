@@ -1,6 +1,9 @@
 import asyncio
 import sys
 import os
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 from sqlalchemy import select, update, text
 
 # Add parent dir to sys.path
@@ -27,27 +30,19 @@ async def main():
     print(f"Target admin handles to verify/grant: {target_handles}")
 
     async with AsyncSessionLocal() as db:
-        # 1. Revoke is_admin for all users not in admin_ids_list
         allowed_ids = settings.admin_ids_list
-        await db.execute(
-            update(User)
-            .where(User.telegram_user_id.notin_(allowed_ids))
-            .values(is_admin=False)
-        )
-        print(f"Revoked admin rights for non-listed users. Allowed Admin IDs: {allowed_ids}")
+        allowed_usernames = settings.admin_usernames_list
 
-        # 2. Grant is_admin for allowed_ids
-        for admin_id in allowed_ids:
-            stmt = select(User).where(User.telegram_user_id == admin_id)
-            res = await db.execute(stmt)
-            user = res.scalars().first()
+        res = await db.execute(select(User))
+        all_users = res.scalars().all()
 
-            if not user:
-                print(f"[INFO] Admin Telegram ID {admin_id} not yet in DB (will auto-grant upon first interaction).")
-                continue
-
-            user.is_admin = True
-            print(f"[SUCCESS] User ID {user.telegram_user_id} (@{user.username or 'no_username'}) set to is_admin=True.")
+        for user in all_users:
+            is_adm = bool((user.telegram_user_id in allowed_ids) or (user.username and user.username.lower() in allowed_usernames))
+            if user.is_admin != is_adm:
+                user.is_admin = is_adm
+                print(f"[UPDATE] User ID {user.telegram_user_id} (@{user.username or 'no_username'}) -> is_admin={is_adm}")
+            elif is_adm:
+                print(f"[VERIFIED] Admin User ID {user.telegram_user_id} (@{user.username or 'no_username'}) is_admin=True")
 
             # Grant entitlement for active session if present
             stmt_sess = select(AssessmentSession).where(

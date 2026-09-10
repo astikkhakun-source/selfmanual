@@ -30,8 +30,8 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # Admin Users
-    ADMIN_USERNAMES: str = ""
-    ADMIN_IDS: str = "189246266,260669598"
+    ADMIN_USERNAMES: str = "astihakun,astikkhakun,sherlockdxb"
+    ADMIN_IDS: str = "189248266,189246266,260669598"
     TEST_GROUP_PROMO: str = "TESTGROUP2026"
 
     @property
