@@ -156,7 +156,7 @@ async def btn_continue(message: Message):
             res_ent = await db.execute(stmt_ent)
             has_ent = res_ent.scalars().first() is not None
 
-            if user.is_admin or has_ent:
+            if has_ent:
                 session.phase = "DEEP_IN_PROGRESS"
                 await db.commit()
                 await message.answer("🚀 <b>Переходим к Этапу 2 (DEEP)...</b>", parse_mode="HTML")
@@ -528,7 +528,7 @@ async def forward_report_to_admins(
 
 
 async def render_free_core_report(message: Message, db, session):
-    """Render the new 3-page PDF FREE report (SelfCore) and personalized Paywall."""
+    """Render the new 3-page PDF FREE report (SelfCode) and personalized Paywall."""
     answers_map = await get_session_answers_map(db, session.id)
     
     # Format answers for the scoring engine
@@ -538,7 +538,7 @@ async def render_free_core_report(message: Message, db, session):
         q_text = q_info.get("text_ru", f"Вопрос {q_id}")
         answers_text += f"{q_id}:\nQuestion: {q_text}\nAnswer: {ans}\n\n"
 
-    status_msg = await message.answer("🔄 <i>Формируем вашу персональную архитектуру SelfCore...</i>", parse_mode="HTML")
+    status_msg = await message.answer("🔄 <i>Формируем вашу персональную архитектуру SelfCode...</i>", parse_mode="HTML")
 
     # Call LLM logic
     report_data = await generate_core_report_llm(answers_text)
@@ -552,7 +552,7 @@ async def render_free_core_report(message: Message, db, session):
         await status_msg.edit_text("⚠️ Ошибка при формировании PDF. Попробуйте еще раз.")
         return
 
-    # Check if user is admin or entitled
+    # Check if user is entitled
     stmt_u = select(User).where(User.id == session.user_id)
     res_u = await db.execute(stmt_u)
     user = res_u.scalars().first()
@@ -563,31 +563,30 @@ async def render_free_core_report(message: Message, db, session):
     )
     res_ent = await db.execute(stmt_ent)
     has_ent = res_ent.scalars().first() is not None
-    is_admin = user.is_admin if user else False
 
     payment_url = create_prodamus_payment_link(user_id=session.user_id, session_id=session.id)
-    if is_admin or has_ent:
+    if has_ent:
         markup = get_admin_paywall_keyboard(payment_url)
     else:
         markup = get_paywall_keyboard(payment_url)
 
     report_text = (
-        "🪞 <b>ВАШ БЕСПЛАТНЫЙ ОТЧЕТ SELFCORE ГОТОВ</b>\n\n"
+        "🪞 <b>ВАШ БЕСПЛАТНЫЙ ОТЧЕТ SELFCODE ГОТОВ</b>\n\n"
         "PDF-документ сформирован и прикреплен ниже. В нем вы найдете свою первичную архитектуру, "
         "ключевые показатели, внутренний цикл и правила обращения с собой.\n\n"
         "<i>Мы уже видим несколько противоречий в ваших ответах. Но данных CORE недостаточно, чтобы определить, "
         "являются ли они случайными или образуют устойчивый внутренний конфликт. Для этого нужен следующий уровень диагностики (DEEP).</i>"
     )
 
-    if is_admin or has_ent:
-        report_text += "\n\n👑 <b>Административный доступ:</b> Вам разблокирован полный доступ к Этапу 2 (DEEP)."
+    if has_ent:
+        report_text += "\n\n🎉 <b>Полный доступ открыт:</b> Вам доступен переход к Этапу 2 (DEEP)."
 
     try:
         await status_msg.delete()
     except Exception:
         pass
 
-    pdf_file = FSInputFile(pdf_path, filename=f"SelfCore_{session.id[:8]}.pdf")
+    pdf_file = FSInputFile(pdf_path, filename=f"SelfCode_{session.id[:8]}.pdf")
     try:
         await message.answer_document(pdf_file, caption=report_text, parse_mode="HTML", reply_markup=markup)
     except Exception as doc_err:

@@ -16,8 +16,8 @@ async def _get_test_session():
 
 
 @pytest.mark.asyncio
-async def test_admin_auto_grant_and_entitlement():
-    """Test that configured admin usernames automatically get is_admin=True and active entitlement."""
+async def test_admin_auto_grant():
+    """Test that configured admin usernames automatically get is_admin=True."""
     session = await _get_test_session()
     async with session:
         # 1. Create user with admin handle @AstiHakun
@@ -28,21 +28,6 @@ async def test_admin_auto_grant_and_entitlement():
             username="AstiHakun"
         )
         assert user_asti.is_admin is True
-
-        # 2. Create active session and ensure entitlement is created
-        sess = await start_new_session(session, user_asti.id)
-        user_asti = await get_or_create_user(
-            session,
-            telegram_user_id=111111111,
-            chat_id=111111111,
-            username="AstiHakun"
-        )
-
-        stmt_ent = select(AccessEntitlement).where(AccessEntitlement.session_id == sess.id)
-        res_ent = await session.execute(stmt_ent)
-        ent = res_ent.scalars().first()
-        assert ent is not None
-        assert ent.source == "admin"
 
 
 @pytest.mark.asyncio

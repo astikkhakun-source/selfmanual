@@ -531,7 +531,7 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
 
 def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
     """
-    Generate 3-page CORE PDF report (SelfCore) using ReportLab (mobile-optimized font sizes).
+    Generate 3-page CORE PDF report (SelfCode) using ReportLab (mobile-optimized font sizes).
     """
     rl = _get_reportlab()
     A4 = rl["A4"]
@@ -547,7 +547,7 @@ def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> st
     font_reg, font_bold = _get_cyrillic_font(rl["pdfmetrics"], rl["TTFont"])
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    pdf_filename = f"SelfCore_Report_{session_id[:8]}_{int(datetime.now(timezone.utc).timestamp())}.pdf"
+    pdf_filename = f"SelfCode_Report_{session_id[:8]}_{int(datetime.now(timezone.utc).timestamp())}.pdf"
     output_path = os.path.join(OUTPUT_DIR, pdf_filename)
 
     doc = SimpleDocTemplate(
@@ -676,7 +676,7 @@ def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> st
 
 def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
     """
-    Generate 3-page CORE PDF report (SelfCore) using ReportLab.
+    Generate 3-page CORE PDF report (SelfCode) using ReportLab.
     """
     rl = _get_reportlab()
     A4 = rl["A4"]
@@ -692,7 +692,7 @@ def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> st
     font_reg, font_bold = _get_cyrillic_font(rl["pdfmetrics"], rl["TTFont"])
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    pdf_filename = f"SelfCore_Report_{session_id[:8]}_{int(datetime.now(timezone.utc).timestamp())}.pdf"
+    pdf_filename = f"SelfCode_Report_{session_id[:8]}_{int(datetime.now(timezone.utc).timestamp())}.pdf"
     output_path = os.path.join(OUTPUT_DIR, pdf_filename)
 
     doc = SimpleDocTemplate(
@@ -743,11 +743,11 @@ def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> st
     story = []
     report = report_data.get("report", {})
 
-    # PAGE 1: ВАШ SELFCORE
+    # PAGE 1: ВАШ SELFCODE
     story.append(Paragraph("SELFCODE", ParagraphStyle('Top', fontName=font_bold, fontSize=10, textColor=colors.HexColor(MUTED_TEXT), alignment=1)))
     story.append(Spacer(1, 15))
 
-    story.append(Paragraph("ВАШ SELFCORE", title_style))
+    story.append(Paragraph("ВАШ SELFCODE", title_style))
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor(ACCENT_COLOR), spaceAfter=25))
     
     if report.get("core_phrase"):
@@ -822,7 +822,7 @@ def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> st
     border = report.get("border_of_knowledge", {})
     story.append(Paragraph("Первые 30 вопросов позволяют увидеть базовую архитектуру вашей внутренней системы. Но они ещё не показывают, почему она сформировалась именно такой и как её элементы взаимодействуют между собой.", body_style))
     story.append(Spacer(1, 10))
-    story.append(Paragraph("В полном SelfCore исследуются:", ParagraphStyle('B', fontName=font_bold, fontSize=11, textColor=colors.HexColor(TEXT_COLOR), spaceAfter=5)))
+    story.append(Paragraph("В полном SelfCode исследуются:", ParagraphStyle('B', fontName=font_bold, fontSize=11, textColor=colors.HexColor(TEXT_COLOR), spaceAfter=5)))
     for unk in border.get("unknowns", []):
         story.append(Paragraph(f"• {unk}", list_style))
     

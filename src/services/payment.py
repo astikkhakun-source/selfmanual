@@ -9,7 +9,7 @@ from src.core.security import verify_prodamus_signature
 from src.db.models import User, AssessmentSession, Payment, AccessEntitlement
 
 
-def create_prodamus_payment_link(user_id: str, session_id: str, amount: float = 1990.0) -> str:
+def create_prodamus_payment_link(user_id: str, session_id: str, amount: float = 990.0) -> str:
     """
     Generate Prodamus checkout URL with session_id as order_id metadata.
     """
@@ -19,7 +19,6 @@ def create_prodamus_payment_link(user_id: str, session_id: str, amount: float = 
         "do": "pay",
         "order_id": order_id,
         "sum": f"{amount:.2f}",
-        "currency": "RUB",
         "customer_extra": session_id,
         "products[0][name]": "SelfCode полная диагностика",
         "products[0][price]": f"{amount:.2f}",
@@ -80,7 +79,7 @@ async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) ->
         payment = Payment(
             user_id=session.user_id,
             session_id=session.id,
-            amount=float(payload.get("sum", 1990.0)),
+            amount=float(payload.get("sum", 990.0)),
             status="PAID",
             prodamus_order_id=order_id,
             provider_payment_id=payload.get("payment_id"),

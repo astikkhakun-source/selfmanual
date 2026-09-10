@@ -53,33 +53,6 @@ async def get_or_create_user(
             updated = True
         if updated:
             await db.commit()
-
-    # Ensure admin gets full active entitlement for active session
-    if user.is_admin:
-        stmt_sess = select(AssessmentSession).where(
-            AssessmentSession.user_id == user.id,
-            AssessmentSession.status == "ACTIVE"
-        ).order_by(AssessmentSession.created_at.desc())
-        res_sess = await db.execute(stmt_sess)
-        active_sess = res_sess.scalars().first()
-
-        if active_sess:
-            stmt_ent = select(AccessEntitlement).where(
-                AccessEntitlement.session_id == active_sess.id,
-                AccessEntitlement.entitlement_type == "FULL_REPORT"
-            )
-            res_ent = await db.execute(stmt_ent)
-            if not res_ent.scalars().first():
-                ent = AccessEntitlement(
-                    user_id=user.id,
-                    session_id=active_sess.id,
-                    entitlement_type="FULL_REPORT",
-                    source="admin",
-                    status="ACTIVE"
-                )
-                db.add(ent)
-                await db.commit()
-
     return user
 
 
