@@ -101,9 +101,11 @@ def get_main_reply_keyboard(is_admin: bool = False, show_pay_button: bool = Fals
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
 
-def get_admin_dashboard_keyboard() -> InlineKeyboardMarkup:
+def get_admin_dashboard_keyboard(forwarding_enabled: bool = True) -> InlineKeyboardMarkup:
     """Inline control dashboard for admins."""
+    fwd_status = "🟢 ВКЛ" if forwarding_enabled else "🔴 ВЫКЛ"
     buttons = [
+        [InlineKeyboardButton(text=f"📫 Дублирование отчётов: {fwd_status}", callback_data="admin:toggle_forwarding")],
         [InlineKeyboardButton(text="🎟 Управление промокодами", callback_data="admin:promos")],
         [InlineKeyboardButton(text="📊 Статистика системы", callback_data="admin:stats")],
         [InlineKeyboardButton(text="📚 Просмотр банка вопросов", callback_data="admin:questions:CORE:1")],

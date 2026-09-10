@@ -2,6 +2,7 @@ import json
 import os
 import uuid
 import logging
+from typing import Optional
 from datetime import datetime, timezone
 from aiogram import Router, F
 from aiogram.filters import Command
@@ -11,7 +12,7 @@ from aiogram.fsm.context import FSMContext
 from sqlalchemy import select
 
 from src.db.base import AsyncSessionLocal
-from src.db.models import User, AccessEntitlement
+from src.db.models import User, AccessEntitlement, AssessmentSession
 from src.services.config_loader import (
     CORE_BASE_ITEMS, VFC_PAIRS, CONFIG_DIR, get_question_info
 )
@@ -42,6 +43,9 @@ from src.telegram.states import PromoCreateFSM
 from src.services.promo_service import (
     create_promo_code, validate_and_use_promo_code, get_all_promo_codes,
     toggle_promo_code_status, generate_random_promo_code
+)
+from src.services.settings_service import (
+    is_report_forwarding_enabled, toggle_report_forwarding
 )
 
 logger = logging.getLogger(__name__)
@@ -469,6 +473,58 @@ async def send_next_question(message: Message, db, session, edit_existing: bool 
     await message.answer(text, parse_mode="HTML", reply_markup=markup)
 
 
+async def forward_report_to_admins(
+    db,
+    bot,
+    user: User,
+    session: AssessmentSession,
+    report_type: str,
+    report_text: str = "",
+    pdf_path: Optional[str] = None
+):
+    """
+    If report forwarding to admins is enabled, send duplicate of the report with user details.
+    """
+    try:
+        if not await is_report_forwarding_enabled(db):
+            return
+
+        stmt_admins = select(User).where(User.is_admin == True)
+        res_admins = await db.execute(stmt_admins)
+        admins = res_admins.scalars().all()
+
+        if not admins:
+            return
+
+        user_name = user.username or f"User_{user.telegram_user_id}"
+        username_str = f"@{user.username}" if user.username else "нет username"
+        user_mention = f'<a href="tg://user?id={user.telegram_user_id}">{user_name}</a>'
+        now_str = datetime.now(timezone.utc).strftime("%d.%m.%Y %H:%M UTC")
+
+        header_text = (
+            f"📬 <b>ДУБЛИКАТ ОТЧЁТА ПОЛЬЗОВАТЕЛЯ ({report_type})</b>\n\n"
+            f"👤 <b>Пользователь:</b> {user_mention} ({username_str})\n"
+            f"🆔 <b>Telegram ID:</b> <code>{user.telegram_user_id}</code>\n"
+            f"📋 <b>Сессия:</b> <code>{session.id[:8]}</code>\n"
+            f"🕒 <b>Время:</b> {now_str}\n\n"
+            f"{report_text[:1000]}"
+        )
+
+        for admin in admins:
+            try:
+                target_chat = admin.chat_id or admin.telegram_user_id
+                if pdf_path and os.path.exists(pdf_path):
+                    doc_filename = f"SelfCode_{report_type.replace(' ', '_')}_{user_name}.pdf"
+                    pdf_file = FSInputFile(pdf_path, filename=doc_filename)
+                    await bot.send_document(chat_id=target_chat, document=pdf_file, caption=header_text, parse_mode="HTML")
+                else:
+                    await bot.send_message(chat_id=target_chat, text=header_text, parse_mode="HTML")
+            except Exception as send_err:
+                logger.error(f"Failed to forward report duplicate to admin {admin.telegram_user_id}: {send_err}")
+    except Exception as err:
+        logger.error(f"Error in forward_report_to_admins: {err}", exc_info=True)
+
+
 async def render_free_core_report(message: Message, db, session):
     """Render the new 3-page PDF FREE report (SelfCore) and personalized Paywall."""
     answers_map = await get_session_answers_map(db, session.id)
@@ -485,6 +541,7 @@ async def render_free_core_report(message: Message, db, session):
     # Call LLM logic
     report_data = await generate_core_report_llm(answers_text)
     
+    pdf_path = None
     try:
         # Generate PDF
         pdf_path = generate_core_pdf_report(session.id, report_data)
@@ -535,12 +592,20 @@ async def render_free_core_report(message: Message, db, session):
         logger.error(f"Failed to send CORE PDF document: {doc_err}")
         await message.answer(report_text, parse_mode="HTML", reply_markup=markup)
 
+    # Forward duplicate to admin monitoring if enabled
+    if user:
+        await forward_report_to_admins(db, message.bot, user, session, "CORE FREE", report_text=report_text, pdf_path=pdf_path)
+
     # Deliver consultation offer message with 20% discount button
     await send_consultation_offer(message)
 
 
 async def render_full_report_and_pdf(message: Message, db, session, precomputed_answers: dict = None):
     """Generate FULL report via LLM and deliver PDF to Telegram chat."""
+    stmt_u = select(User).where(User.id == session.user_id)
+    res_u = await db.execute(stmt_u)
+    user = res_u.scalars().first()
+
     if precomputed_answers is not None:
         answers_map = precomputed_answers
     else:
@@ -559,6 +624,7 @@ async def render_full_report_and_pdf(message: Message, db, session, precomputed_
         f"<b>Ключевые правила обращения с собой:</b>\n{rules_text}\n\n"
     )
 
+    pdf_path = None
     try:
         pdf_path = generate_pdf_report(session.id, llm_report)
         full_text += "📄 Ваш детальный 12-страничный PDF-отчет сформирован и прикреплен ниже."
@@ -572,6 +638,9 @@ async def render_full_report_and_pdf(message: Message, db, session, precomputed_
         full_text += "⚠️ <i>Не удалось сформировать PDF-документ, но ваш текстовый отчёт сгенерирован выше.</i>"
         await status_msg.edit_text(full_text, parse_mode="HTML")
 
+    # Forward duplicate to admin monitoring if enabled
+    if user:
+        await forward_report_to_admins(db, message.bot, user, session, "FULL DEEP", report_text=full_text, pdf_path=pdf_path)
 
     # Deliver consultation offer message with 20% discount button
     await send_consultation_offer(message)
@@ -1013,6 +1082,7 @@ async def cmd_admin(message: Message):
 
         stats = await get_admin_stats(db)
         q_summary = get_question_bank_summary()
+        fwd_enabled = await is_report_forwarding_enabled(db)
 
         text = (
             "👑 <b>ПАНЕЛЬ АДМИНИСТРАТОРА СИСТЕМЫ</b>\n\n"
@@ -1030,7 +1100,47 @@ async def cmd_admin(message: Message):
             f"• VFC Выбор ценностей: <b>{q_summary['vfc_count']}</b>\n\n"
             "Выберите нужное действие ниже:"
         )
-        await message.answer(text, parse_mode="HTML", reply_markup=get_admin_dashboard_keyboard())
+        await message.answer(text, parse_mode="HTML", reply_markup=get_admin_dashboard_keyboard(forwarding_enabled=fwd_enabled))
+
+
+@router.callback_query(F.data == "admin:toggle_forwarding")
+async def cb_admin_toggle_forwarding(callback: CallbackQuery):
+    """Toggle report forwarding to admins."""
+    async with AsyncSessionLocal() as db:
+        new_state = await toggle_report_forwarding(db)
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=callback.from_user.id,
+            chat_id=callback.message.chat.id,
+            username=callback.from_user.username
+        )
+        if not user.is_admin:
+            await callback.answer("У вас нет прав администратора.")
+            return
+
+        stats = await get_admin_stats(db)
+        q_summary = get_question_bank_summary()
+
+        text = (
+            "👑 <b>ПАНЕЛЬ АДМИНИСТРАТОРА СИСТЕМЫ</b>\n\n"
+            f"<b>Администратор:</b> @{user.username or user.telegram_user_id}\n\n"
+            f"📊 <b>Общая статистика:</b>\n"
+            f"• Пользователей в системе: <b>{stats['total_users']}</b> (Админов: <b>{stats['total_admins']}</b>)\n"
+            f"• Активных сессий: <b>{stats['active_sessions']}</b>\n"
+            f"• Активных доступов (Entitlements): <b>{stats['active_entitlements']}</b>\n"
+            f"• Оплаченных заказов: <b>{stats['successful_payments']}</b>\n"
+            f"• Сформировано SelfCode PDF: <b>{stats['pdf_exports']}</b>\n\n"
+            f"📚 <b>Банк вопросов ({q_summary['total_count']} всего):</b>\n"
+            f"• CORE Базовые: <b>{q_summary['core_base_count']}</b>\n"
+            f"• DEEP Шкалы (Traits): <b>{q_summary['deep_trait_count']}</b>\n"
+            f"• State/Context: <b>{q_summary['deep_state_context_count']}</b>\n"
+            f"• VFC Выбор ценностей: <b>{q_summary['vfc_count']}</b>\n\n"
+            "Выберите нужное действие ниже:"
+        )
+
+        status_str = "🟢 ВКЛ" if new_state else "🔴 ВЫКЛ"
+        await callback.message.edit_text(text, parse_mode="HTML", reply_markup=get_admin_dashboard_keyboard(forwarding_enabled=new_state))
+        await callback.answer(f"Дублирование отчётов: {status_str}")
 
 
 @router.callback_query(F.data == "admin:menu")
@@ -1048,6 +1158,8 @@ async def cb_admin_menu(callback: CallbackQuery):
             return
 
         stats = await get_admin_stats(db)
+        fwd_enabled = await is_report_forwarding_enabled(db)
+
         text = (
             "👑 <b>ПАНЕЛЬ АДМИНИСТРАТОРА СИСТЕМЫ</b>\n\n"
             f"<b>Администратор:</b> @{user.username or user.telegram_user_id}\n\n"
@@ -1059,7 +1171,7 @@ async def cb_admin_menu(callback: CallbackQuery):
             f"• Сформировано PDF: <b>{stats['pdf_exports']}</b>\n\n"
             "Выберите нужное действие ниже:"
         )
-        await callback.message.edit_text(text, parse_mode="HTML", reply_markup=get_admin_dashboard_keyboard())
+        await callback.message.edit_text(text, parse_mode="HTML", reply_markup=get_admin_dashboard_keyboard(forwarding_enabled=fwd_enabled))
 
 
 @router.callback_query(F.data == "admin:stats")
