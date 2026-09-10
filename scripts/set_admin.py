@@ -27,18 +27,27 @@ async def main():
     print(f"Target admin handles to verify/grant: {target_handles}")
 
     async with AsyncSessionLocal() as db:
-        for handle in target_handles:
-            clean_handle = handle.lstrip("@").lower()
-            stmt = select(User).where(User.username.ilike(clean_handle))
+        # 1. Revoke is_admin for all users not in admin_ids_list
+        allowed_ids = settings.admin_ids_list
+        await db.execute(
+            update(User)
+            .where(User.telegram_user_id.notin_(allowed_ids))
+            .values(is_admin=False)
+        )
+        print(f"Revoked admin rights for non-listed users. Allowed Admin IDs: {allowed_ids}")
+
+        # 2. Grant is_admin for allowed_ids
+        for admin_id in allowed_ids:
+            stmt = select(User).where(User.telegram_user_id == admin_id)
             res = await db.execute(stmt)
             user = res.scalars().first()
 
             if not user:
-                print(f"[INFO] User @{clean_handle} not yet registered in DB (will auto-grant admin upon first /start).")
+                print(f"[INFO] Admin Telegram ID {admin_id} not yet in DB (will auto-grant upon first interaction).")
                 continue
 
             user.is_admin = True
-            print(f"[SUCCESS] Updated user @{user.username} (ID: {user.telegram_user_id}) to is_admin=True.")
+            print(f"[SUCCESS] User ID {user.telegram_user_id} (@{user.username or 'no_username'}) set to is_admin=True.")
 
             # Grant entitlement for active session if present
             stmt_sess = select(AssessmentSession).where(

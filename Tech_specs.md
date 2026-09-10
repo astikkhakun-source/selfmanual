@@ -1,10 +1,10 @@
-ИНСТРУКЦИЯ К СЕБЕ
+SELFCODE
 
-MASTER DEVELOPER MEGAPROMPT \& PRODUCT/TECHNICAL SPECIFICATION
+MASTER DEVELOPER MEGAPROMPT & PRODUCT/TECHNICAL SPECIFICATION
 
 Telegram Product • Architecture V1.3 • Developer Handoff • 19 August 2026
 
-Единый мастер-промпт и техническое задание для разработчика/AI-coding-agent, который должен построить production-ready Telegram-продукт «Инструкция к себе».
+Единый мастер-промпт и техническое задание для разработчика/AI-coding-agent, который должен построить production-ready Telegram-продукт «SelfCode».
 
 0\. Роль разработчика
 
@@ -38,9 +38,9 @@ Telegram Product • Architecture V1.3 • Developer Handoff • 19 August 2026
 
 позиционировать продукт как медицинскую или психиатрическую диагностику.
 
-1\. Что строим
+1. Что строим
 
-«Инструкция к себе» — Telegram-продукт глубокой структурированной психологической самодиагностики и персонального самопонимания.
+«SelfCode» — Telegram-продукт глубокой структурированной психологической самодиагностики и персонального самопонимания.
 
 Пользователь должен получить не 46 процентов и не типологический ярлык, а синтез:
 
@@ -824,7 +824,7 @@ CF08: ТЫ ЗНАЕШЬ, ЧЕГО ХОЧЕШЬ. ТЫ ПРОСТО НЕ ВСЕГ�
 
 Короткая диагностика показала наиболее заметную конфигурацию.
 
-Полная «Инструкция к себе» показывает,
+Полный «SelfCode» показывает,
 
 как разные части твоей системы связаны между собой.
 
@@ -1818,7 +1818,7 @@ State modifiers and caution.
 
 3–5 cycles + function/cost + resources.
 
-12\. Твоя инструкция
+12. Твой SelfCode
 
 10 personal rules.
 
@@ -3526,11 +3526,11 @@ Psych logic — backend/config, не handlers.
 
 FINAL DEVELOPER DIRECTIVE
 
-Построй production-ready Telegram-систему «Инструкция к себе» V1.3 как двухступенчатый assessment-продукт. Короткий бесплатный CORE из 24 обязательных и 0–6 адаптивных вопросов должен детерминированно вычислять CORE signals, confidence, conflicts и resources, генерировать валидируемый FREE report и персонализированный paywall. После подтверждённой server-side оплаты пользователь получает DEEP-доступ, продолжает тот же master assessment без повторения уже отвеченных items, завершает master trait/state/context и VFC, после чего backend рассчитывает 46 primary scales, state/context/quality, patterns/conflicts/suppression/resources, строит 3–5 системных циклов, сравнивает CORE-гипотезу с FULL evidence, формирует 10 персональных правил и только затем передаёт structured package LLM для персонализированного русскоязычного отчёта. FULL должен быть доступен в Telegram и PDF. Платежи и jobs должны быть idempotent, психологические вычисления — versioned/reproducible, продукт — безопасен, наблюдаем, тестируем и готов к пилотной психометрической калибровке.
+Построй production-ready Telegram-систему «SelfCode» V1.3 как двухступенчатый assessment-продукт. Короткий бесплатный CORE из 24 обязательных и 0–6 адаптивных вопросов должен детерминированно вычислять CORE signals, confidence, conflicts и resources, генерировать валидируемый FREE report и персонализированный paywall. После подтверждённой server-side оплаты пользователь получает DEEP-доступ, продолжает тот же master assessment без повторения уже отвеченных items, завершает master trait/state/context и VFC, после чего backend рассчитывает 46 primary scales, state/context/quality, patterns/conflicts/suppression/resources, строит 3–5 системных циклов, сравнивает CORE-гипотезу с FULL evidence, формирует 10 персональных правил и только затем передаёт structured package LLM для персонализированного русскоязычного отчёта. FULL должен быть доступен в Telegram и PDF. Платежи и jobs должны быть idempotent, психологические вычисления — versioned/reproducible, продукт — безопасен, наблюдаем, тестируем и готов к пилотной психометрической калибровке.
 
 Не считать задачу выполненной, если создан просто Telegram quiz. Задача выполнена только тогда, когда существует end-to-end система:
 
-короткое узнавание → доверие → естественный paid deepening → полная структурированная карта → системный синтез → персональная инструкция → измеримая воронка → данные для психометрической калибровки.
+короткое узнавание → доверие → естественный paid deepening → полная структурированная карта → системный синтез → персональный SelfCode → измеримая воронка → данные для психометрической калибровки.
 
 
 

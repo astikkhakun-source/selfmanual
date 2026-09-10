@@ -160,9 +160,51 @@ def calculate_full_profile(answers_by_qid: Dict[str, int]) -> Dict[str, Any]:
                 "long_term_cost": item.get("long_term_cost", "")
             })
 
+    # 6-8 Key Profile Indicators for Visual PDF "Мой профиль"
+    indicator_defs = [
+        ("agency", "Автономия и субъектность", "Способность принимать независимые решения и опираться на собственную волю."),
+        ("uncertainty_tolerance", "Толерантность к неопределенности", "Готовность к действиям при отсутствии 100% гарантий и полной ясности."),
+        ("stable_self_worth", "Самоценность и критик", "Устойчивость внутренней опоры независимо от дневных результатов и ошибок."),
+        ("emotional_awareness", "Эмоциональная регуляция", "Способность замечать, называть и проживать эмоциональные состояния."),
+        ("control_need", "Потребность в контроле", "Стремление удерживать внешние процессы под упреждающим контролем."),
+        ("fear_of_evaluation", "Чувствительность к оценке", "Зависимость самоощущения и проявленности от мнения и реакций людей."),
+        ("boundary_assertiveness", "Защита личных границ", "Способность открыто обозначать личные пределы и защищать ресурсы."),
+        ("authentic_expression", "Проявленность и открытость", "Готовность без искажений транслировать свои ценности и результаты миру.")
+    ]
+
+    profile_indicators = []
+    for code, name_ru, default_desc in indicator_defs:
+        dim_data = dimensions_result.get(code, {})
+        score = dim_data.get("score", 50.0)
+        profile_indicators.append({
+            "code": code,
+            "name": name_ru,
+            "score": round(score, 1),
+            "explanation": default_desc
+        })
+
+    # Structured System Cycle for Visual PDF "Мой повторяющийся цикл"
+    system_cycle = {
+        "caption": "Предполагаемый цикл по вашим ответам",
+        "steps": [
+            {"id": "A", "label": "Большая задача", "order": 1},
+            {"id": "B", "label": "Гиперфокус и изоляция", "order": 2},
+            {"id": "C", "label": "Результат на пределе сил", "order": 3},
+            {"id": "D", "label": "Истощение и апатия", "order": 4},
+            {"id": "E", "label": "Обесценивание результата", "order": 5}
+        ],
+        "change_point": {
+            "target_step": "B",
+            "label": "Точка изменения: паузы и помощь до истощения"
+        }
+    }
+
     return {
         "dimensions": dimensions_result,
+        "profile_indicators": profile_indicators,
+        "system_cycle": system_cycle,
         "active_patterns": active_patterns,
         "active_conflicts": active_conflicts,
         "total_answered": len(answers_by_qid)
     }
+

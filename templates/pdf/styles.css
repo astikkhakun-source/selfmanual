@@ -2,7 +2,7 @@
     size: A4;
     margin: 20mm 15mm 20mm 15mm;
     @bottom-center {
-        content: "Инструкция к себе V1.3 • Стр. " counter(page) " из " counter(pages);
+        content: "SelfCode V1.3 • Стр. " counter(page) " из " counter(pages);
         font-size: 9pt;
         color: #718096;
         font-family: 'Helvetica Neue', Arial, sans-serif;

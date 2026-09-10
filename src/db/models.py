@@ -229,3 +229,20 @@ class AccessEntitlement(Base):
     granted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     user: Mapped["User"] = relationship("User", back_populates="entitlements")
+
+
+class PromoCode(Base):
+    __tablename__ = "promo_codes"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=generate_uuid)
+    code: Mapped[str] = mapped_column(String(50), unique=True, index=True, nullable=False)
+    max_uses: Mapped[int] = mapped_column(Integer, default=1)  # Max allowed activations (copies)
+    used_count: Mapped[int] = mapped_column(Integer, default=0)
+    duration_days: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # Days valid (None = unlimited)
+    expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_by_user_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    created_by: Mapped[Optional["User"]] = relationship("User")
+

@@ -20,7 +20,7 @@ CHAPTER_TITLES = {
     "ch09_money": "9. Что для тебя значат деньги (Регулятор безопасности)",
     "ch10_stress": "10. Ты под нагрузкой (Состояние и дискомфорт)",
     "ch11_cycles": "11. Твоя система (Системные циклы)",
-    "ch12_instruction": "12. Твоя инструкция (10 персональных правил)"
+    "ch12_instruction": "12. Твой SelfCode (10 персональных правил)"
 }
 
 # Asti Dark Style definitions
@@ -101,7 +101,7 @@ def _get_reportlab():
         from reportlab.lib.pagesizes import letter, A4
         from reportlab.lib import colors
         from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable, PageBreak
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable, PageBreak, Flowable
         from reportlab.pdfbase import pdfmetrics
         from reportlab.pdfbase.ttfonts import TTFont
         return {
@@ -114,6 +114,7 @@ def _get_reportlab():
             "Spacer": Spacer,
             "HRFlowable": HRFlowable,
             "PageBreak": PageBreak,
+            "Flowable": Flowable,
             "pdfmetrics": pdfmetrics,
             "TTFont": TTFont,
         }
@@ -154,6 +155,187 @@ def _get_cyrillic_font(pdfmetrics, TTFont):
     font_regular = reg_font or "Helvetica"
     font_bold = reg_bold or (reg_font if reg_font else "Helvetica-Bold")
     return font_regular, font_bold
+
+
+def _make_visual_flowables(rl):
+    """Factory creating ReportLab flowables for 'Мой профиль' and 'Мой повторяющийся цикл'."""
+    Flowable = rl["Flowable"]
+    colors = rl["colors"]
+
+    class ProfileIndicatorsFlowable(Flowable):
+        def __init__(self, indicators, font_reg, font_bold, width=531):
+            super().__init__()
+            self.indicators = indicators or []
+            self.font_reg = font_reg
+            self.font_bold = font_bold
+            self.width = width
+            self.row_height = 64
+            self.height = len(self.indicators) * self.row_height + 10
+
+        def wrap(self, availWidth, availHeight):
+            return self.width, self.height
+
+        def draw(self):
+            canvas = self.canv
+            canvas.saveState()
+            
+            y = self.height - 5
+            for idx, item in enumerate(self.indicators, start=1):
+                name = str(item.get("name", f"Показатель {idx}"))
+                score = float(item.get("score", 50.0))
+                explanation = str(item.get("explanation", ""))
+                
+                box_h = 56
+                box_y = y - box_h
+                
+                # Dark graphite backdrop card
+                canvas.setFillColor(colors.HexColor('#161822'))
+                canvas.setStrokeColor(colors.HexColor('#272B3A'))
+                canvas.setLineWidth(0.8)
+                canvas.roundRect(0, box_y, self.width, box_h, 5, fill=1, stroke=1)
+                
+                # Title
+                canvas.setFont(self.font_bold, 10)
+                canvas.setFillColor(colors.HexColor('#FFFFFF'))
+                canvas.drawString(12, box_y + box_h - 17, f"{idx}. {name}")
+                
+                # Score label (0-100 "баллы по шкале")
+                score_str = f"{int(round(score))} / 100 баллы по шкале"
+                canvas.setFont(self.font_bold, 9)
+                canvas.setFillColor(colors.HexColor('#70C8E2')) # Ice blue accent
+                canvas.drawRightString(self.width - 12, box_y + box_h - 17, score_str)
+                
+                # Horizontal bar track & fill
+                bar_x = 12
+                bar_y = box_y + box_h - 27
+                bar_w = self.width - 24
+                bar_h = 6
+                
+                canvas.setFillColor(colors.HexColor('#272A38'))
+                canvas.roundRect(bar_x, bar_y, bar_w, bar_h, 3, fill=1, stroke=0)
+                
+                fill_w = max(5.0, bar_w * (min(100.0, max(0.0, score)) / 100.0))
+                canvas.setFillColor(colors.HexColor('#70C8E2'))
+                canvas.roundRect(bar_x, bar_y, fill_w, bar_h, 3, fill=1, stroke=0)
+                
+                # Dual-aspect explanation text
+                canvas.setFont(self.font_reg, 8.5)
+                canvas.setFillColor(colors.HexColor('#CBD5E1'))
+                exp_text = explanation[:115] + ("..." if len(explanation) > 115 else "")
+                canvas.drawString(12, box_y + 9, exp_text)
+                
+                y -= self.row_height
+
+            canvas.restoreState()
+
+    class CycleDiagramFlowable(Flowable):
+        def __init__(self, system_cycle, font_reg, font_bold, width=531):
+            super().__init__()
+            self.system_cycle = system_cycle or {}
+            self.font_reg = font_reg
+            self.font_bold = font_bold
+            self.width = width
+            steps = self.system_cycle.get("steps", [])
+            self.height = len(steps) * 44 + 55
+
+        def wrap(self, availWidth, availHeight):
+            return self.width, self.height
+
+        def draw(self):
+            canvas = self.canv
+            canvas.saveState()
+            
+            steps = self.system_cycle.get("steps", [])
+            change_point = self.system_cycle.get("change_point", {})
+            caption = self.system_cycle.get("caption", "Предполагаемый цикл по вашим ответам")
+            
+            # Subdued dark card backdrop
+            canvas.setFillColor(colors.HexColor('#12141D'))
+            canvas.setStrokeColor(colors.HexColor('#232635'))
+            canvas.setLineWidth(1)
+            canvas.roundRect(0, 0, self.width, self.height, 8, fill=1, stroke=1)
+            
+            box_w = self.width * 0.52
+            box_x = 18
+            box_h = 30
+            y = self.height - 35
+            
+            for idx, step in enumerate(steps):
+                step_id = str(step.get("id", idx+1))
+                label = str(step.get("label", ""))
+                is_target = (change_point.get("target_step") == step_id)
+                
+                # Step box
+                canvas.setFillColor(colors.HexColor('#1B1D28'))
+                canvas.setStrokeColor(colors.HexColor('#70C8E2' if is_target else '#313547'))
+                canvas.setLineWidth(1.5 if is_target else 1.0)
+                canvas.roundRect(box_x, y - box_h, box_w, box_h, 5, fill=1, stroke=1)
+                
+                # Step title
+                canvas.setFont(self.font_bold, 9)
+                canvas.setFillColor(colors.HexColor('#FFFFFF'))
+                canvas.drawString(box_x + 10, y - box_h + 10, f"{step_id}. {label}")
+                
+                # Intervention point badge
+                if is_target and change_point.get("label"):
+                    cp_x = box_x + box_w + 22
+                    cp_w = self.width - cp_x - 14
+                    cp_h = 32
+                    cp_y = y - box_h - 1
+                    
+                    # Dashed connector line
+                    canvas.setStrokeColor(colors.HexColor('#70C8E2'))
+                    canvas.setLineWidth(1.2)
+                    canvas.setDash([3, 3], 0)
+                    canvas.line(box_x + box_w, y - box_h/2, cp_x, y - box_h/2)
+                    canvas.setDash([], 0)
+                    
+                    # Badge
+                    canvas.setFillColor(colors.HexColor('#132533'))
+                    canvas.setStrokeColor(colors.HexColor('#70C8E2'))
+                    canvas.roundRect(cp_x, cp_y, cp_w, cp_h, 5, fill=1, stroke=1)
+                    
+                    cp_text = str(change_point.get("label", ""))
+                    canvas.setFont(self.font_bold, 8)
+                    canvas.setFillColor(colors.HexColor('#70C8E2'))
+                    if len(cp_text) > 30:
+                        words = cp_text.split()
+                        mid = len(words) // 2
+                        canvas.drawString(cp_x + 6, cp_y + 17, " ".join(words[:mid]))
+                        canvas.drawString(cp_x + 6, cp_y + 6, " ".join(words[mid:]))
+                    else:
+                        canvas.drawString(cp_x + 6, cp_y + 10, cp_text)
+                
+                # Connector arrow
+                if idx < len(steps) - 1:
+                    arrow_x = box_x + 26
+                    arrow_y1 = y - box_h
+                    arrow_y2 = y - box_h - 14
+                    
+                    canvas.setStrokeColor(colors.HexColor('#70C8E2'))
+                    canvas.setLineWidth(1.2)
+                    canvas.line(arrow_x, arrow_y1, arrow_x, arrow_y2)
+                    
+                    p = canvas.beginPath()
+                    p.moveTo(arrow_x - 3, arrow_y2 + 4)
+                    p.lineTo(arrow_x, arrow_y2)
+                    p.lineTo(arrow_x + 3, arrow_y2 + 4)
+                    canvas.setFillColor(colors.HexColor('#70C8E2'))
+                    canvas.drawPath(p, fill=1, stroke=0)
+                    
+                    y -= (box_h + 14)
+                else:
+                    y -= box_h
+
+            # Caption
+            canvas.setFont(self.font_reg, 8.5)
+            canvas.setFillColor(colors.HexColor('#9CA3AF'))
+            canvas.drawString(18, 12, f"📌 {caption}")
+            
+            canvas.restoreState()
+
+    return ProfileIndicatorsFlowable, CycleDiagramFlowable
+
 
 
 def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
@@ -227,8 +409,9 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
 
     # Cover Page
     story.append(Spacer(1, 40))
-    story.append(Paragraph("ИНСТРУКЦИЯ К СЕБЕ", title_style))
+    story.append(Paragraph("SELFCODE", title_style))
     story.append(Paragraph("Персональная карта психологической архитектуры", subtitle_style))
+
     story.append(HRFlowable(width="80%", thickness=1, color=colors.HexColor(ACCENT_COLOR), spaceAfter=30))
     
     date_str = datetime.now(timezone.utc).strftime("%d.%m.%Y")
@@ -236,8 +419,31 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
     story.append(Paragraph(f"<b>Идентификатор сессии:</b> {session_id}", meta_style))
     story.append(PageBreak())
 
-    # Section I: Chapters
-    story.append(Paragraph("I. Архитектура и главы самопонимания", section_style))
+    # Visual Page 1: «Мой профиль» (Horizontal Bars)
+    story.append(Paragraph("I. Профиль психологической архитектуры («Мой профиль»)", section_style))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#2b6cb0'), spaceAfter=10))
+    story.append(Paragraph("График выраженности ключевых показателей вашей системы (0–100 баллы по шкале). Высокий показатель описывает устойчивый алгоритм функционирования и имеет как преимущества, так и особенности.", meta_style))
+    story.append(Spacer(1, 6))
+
+    profile_indicators = report_data.get("profile_indicators", [])
+    if not profile_indicators:
+        profile_indicators = [
+            {"name": "Автономия и субъектность", "score": 78, "explanation": "Самостоятельность помогает действовать активно, но в некоторых обстоятельствах затрудняет обращение за помощью."},
+            {"name": "Толерантность к неопределенности", "score": 42, "explanation": "Высокая потребность в ясности защищает от рисков, но может откладывать запуск новых решений."},
+            {"name": "Самоценность и критик", "score": 65, "explanation": "Требовательность к себе держит планку качества, но снижает удовольствие от достигнутого."},
+            {"name": "Эмоциональная регуляция", "score": 55, "explanation": "Перевод чувств в аналитику сохраняет хладнокровие, но копит физическую усталость."},
+            {"name": "Потребность в контроле", "score": 82, "explanation": "Контроль обеспечивает высокий стандарт результатов, но ведет к перегрузке в авралах."},
+            {"name": "Чувствительность к оценке", "score": 38, "explanation": "Опора на собственную экспертизу снижает зависимость от мнения окружающих."},
+            {"name": "Защита личных границ", "score": 70, "explanation": "Четкие границы сохраняют фокус и ресурсы, но иногда воспринимаются как отстраненность."},
+            {"name": "Проявленность и открытость", "score": 48, "explanation": "Избирательность в демонстрации себя защищает приватность, но сдерживает рост охвата."}
+        ]
+
+    ProfileIndicatorsFlowable, CycleDiagramFlowable = _make_visual_flowables(rl)
+    story.append(ProfileIndicatorsFlowable(profile_indicators, font_reg, font_bold, width=531))
+    story.append(PageBreak())
+
+    # Section II: Chapters
+    story.append(Paragraph("II. Архитектура и главы самопонимания", section_style))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#2b6cb0'), spaceAfter=14))
 
     chapters = report_data.get("chapters", {})
@@ -265,12 +471,34 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
         story.append(Paragraph(ch_title, heading_style))
         story.append(HRFlowable(width="100%", thickness=0.8, color=colors.HexColor('#2b6cb0'), spaceAfter=10))
         story.append(Paragraph(ch_text, body_style))
+
+        # Visual Component 2: «Мой повторяющийся цикл» inside Chapter 11 / System section
+        if ch_key == "ch11_cycles" or "Системные циклы" in ch_title or "Твоя система" in ch_title:
+            system_cycle = report_data.get("system_cycle") or {
+                "caption": "Предполагаемый цикл по вашим ответам",
+                "steps": [
+                    {"id": "A", "label": "Большая задача", "order": 1},
+                    {"id": "B", "label": "Гиперфокус и изоляция", "order": 2},
+                    {"id": "C", "label": "Результат на пределе сил", "order": 3},
+                    {"id": "D", "label": "Истощение и апатия", "order": 4},
+                    {"id": "E", "label": "Обесценивание результата", "order": 5}
+                ],
+                "change_point": {
+                    "target_step": "B",
+                    "label": "Точка изменения: паузы и помощь до истощения"
+                }
+            }
+            story.append(Spacer(1, 8))
+            story.append(Paragraph("Персональная схема вашего повторяющегося цикла", heading_style))
+            story.append(HRFlowable(width="100%", thickness=0.8, color=colors.HexColor('#2b6cb0'), spaceAfter=10))
+            story.append(CycleDiagramFlowable(system_cycle, font_reg, font_bold, width=531))
+
         story.append(Spacer(1, 14))
 
     story.append(PageBreak())
 
-    # Section II: 10 Personal Rules
-    story.append(Paragraph("II. 10 Персональных правил обращения с собой", section_style))
+    # Section III: 10 Personal Rules
+    story.append(Paragraph("III. 10 Персональных правил обращения с собой", section_style))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#2b6cb0'), spaceAfter=14))
 
     personal_rules = report_data.get("personal_rules", [])
@@ -279,8 +507,9 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
 
     story.append(Spacer(1, 20))
 
-    # Section III: Synthesis
-    story.append(Paragraph("III. Главный синтез вашей системы", section_style))
+    # Section IV: Synthesis
+    story.append(Paragraph("IV. Главный синтез вашей системы", section_style))
+
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#2b6cb0'), spaceAfter=14))
 
     synthesis = report_data.get("final_synthesis", {})
@@ -292,7 +521,8 @@ def generate_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
         story.append(Paragraph(str(synthesis), body_style))
 
     story.append(Spacer(1, 20))
-    story.append(Paragraph("<font size=9 color='#a0aec0'>Документ сформирован системой «Инструкция к себе» V1.3. Не является медицинским диагнозом.</font>", meta_style))
+    story.append(Paragraph("<font size=9 color='#a0aec0'>Документ сформирован системой «SelfCode» V1.3. Не является медицинским диагнозом.</font>", meta_style))
+
 
     bg_drawer = make_background_drawer("full_report.png", 0.85)
     doc.build(story, onFirstPage=bg_drawer, onLaterPages=bg_drawer)
@@ -370,8 +600,9 @@ def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> st
 
     # Cover Page
     story.append(Spacer(1, 40))
-    story.append(Paragraph("ИНСТРУКЦИЯ К СЕБЕ", title_style))
+    story.append(Paragraph("SELFCODE", title_style))
     story.append(Paragraph("Персональная карта психологической архитектуры", subtitle_style))
+
     story.append(HRFlowable(width="80%", thickness=1, color=colors.HexColor(ACCENT_COLOR), spaceAfter=30))
     
     date_str = datetime.now(timezone.utc).strftime("%d.%m.%Y")
@@ -435,11 +666,12 @@ def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> st
         story.append(Paragraph(str(synthesis), body_style))
 
     story.append(Spacer(1, 20))
-    story.append(Paragraph("<font size=7 color='#a0aec0'>Документ сформирован системой «Инструкция к себе» V1.3. Не является медицинским диагнозом.</font>", meta_style))
+    story.append(Paragraph("<font size=7 color='#a0aec0'>Документ сформирован системой «SelfCode» V1.3. Не является медицинским диагнозом.</font>", meta_style))
 
     bg_drawer = make_background_drawer("full_report.png", 0.85)
     doc.build(story, onFirstPage=bg_drawer, onLaterPages=bg_drawer)
     return output_path
+
 
 
 def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> str:
@@ -512,8 +744,9 @@ def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> st
     report = report_data.get("report", {})
 
     # PAGE 1: ВАШ SELFCORE
-    story.append(Paragraph("ИНСТРУКЦИЯ К СЕБЕ", ParagraphStyle('Top', fontName=font_bold, fontSize=10, textColor=colors.HexColor(MUTED_TEXT), alignment=1)))
+    story.append(Paragraph("SELFCODE", ParagraphStyle('Top', fontName=font_bold, fontSize=10, textColor=colors.HexColor(MUTED_TEXT), alignment=1)))
     story.append(Spacer(1, 15))
+
     story.append(Paragraph("ВАШ SELFCORE", title_style))
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor(ACCENT_COLOR), spaceAfter=25))
     
@@ -540,9 +773,27 @@ def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> st
     if loop.get("description"):
         story.append(Paragraph(loop["description"], body_style))
     
-    story.append(Spacer(1, 20))
+    system_cycle = report_data.get("system_cycle") or {
+        "caption": "Предполагаемый цикл по вашим ответам",
+        "steps": [
+            {"id": "A", "label": "Большая задача", "order": 1},
+            {"id": "B", "label": "Гиперфокус и изоляция", "order": 2},
+            {"id": "C", "label": "Результат на пределе сил", "order": 3},
+            {"id": "D", "label": "Истощение и апатия", "order": 4},
+            {"id": "E", "label": "Обесценивание результата", "order": 5}
+        ],
+        "change_point": {
+            "target_step": "B",
+            "label": "Точка изменения: паузы и помощь до истощения"
+        }
+    }
+    ProfileIndicatorsFlowable, CycleDiagramFlowable = _make_visual_flowables(rl)
+    story.append(CycleDiagramFlowable(system_cycle, font_reg, font_bold, width=515))
+
+    story.append(Spacer(1, 15))
     
     story.append(Paragraph("ЧТО ВАС УСИЛИВАЕТ", section_title))
+
     for res in report.get("resources", []):
         story.append(Paragraph(f"• {res}", list_style))
 

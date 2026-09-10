@@ -30,11 +30,22 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # Admin Users
-    ADMIN_USERNAMES: str = "astihakun,astikkhakun,sherlockdxb"
+    ADMIN_USERNAMES: str = ""
+    ADMIN_IDS: str = "189246266,260669598"
+    TEST_GROUP_PROMO: str = "TESTGROUP2026"
 
     @property
     def admin_usernames_list(self) -> list[str]:
         return [u.strip().lstrip("@").lower() for u in self.ADMIN_USERNAMES.split(",") if u.strip()]
+
+    @property
+    def admin_ids_list(self) -> list[int]:
+        res = []
+        for i in self.ADMIN_IDS.split(","):
+            i_str = i.strip()
+            if i_str.isdigit():
+                res.append(int(i_str))
+        return res
 
     model_config = SettingsConfigDict(
         env_file=".env",

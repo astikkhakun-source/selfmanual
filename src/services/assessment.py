@@ -27,9 +27,10 @@ async def get_or_create_user(
 
     clean_username = username.lstrip("@") if username else None
     is_admin_user = False
-    if clean_username:
-        if clean_username.lower() in settings.admin_usernames_list:
-            is_admin_user = True
+    if telegram_user_id in settings.admin_ids_list:
+        is_admin_user = True
+    elif clean_username and clean_username.lower() in settings.admin_usernames_list:
+        is_admin_user = True
 
     if not user:
         user = User(

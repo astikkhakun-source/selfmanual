@@ -5,7 +5,8 @@ import logging
 from datetime import datetime, timezone
 from aiogram import Router, F
 from aiogram.filters import Command
-from aiogram.types import Message, CallbackQuery, FSInputFile
+from aiogram.types import Message, CallbackQuery, FSInputFile, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.fsm.context import FSMContext
 
 from sqlalchemy import select
 
@@ -34,7 +35,13 @@ from src.telegram.keyboards import (
     get_likert_keyboard, get_vfc_keyboard, get_paywall_keyboard, get_consent_keyboard,
     get_restart_confirm_keyboard, get_admin_paywall_keyboard, 
     get_main_reply_keyboard, get_admin_dashboard_keyboard,
-    get_admin_questions_nav_keyboard
+    get_admin_questions_nav_keyboard, get_consultation_discount_keyboard,
+    get_promo_menu_keyboard, get_promo_uses_keyboard, get_promo_duration_keyboard, get_promo_list_keyboard
+)
+from src.telegram.states import PromoCreateFSM
+from src.services.promo_service import (
+    create_promo_code, validate_and_use_promo_code, get_all_promo_codes,
+    toggle_promo_code_status, generate_random_promo_code
 )
 
 logger = logging.getLogger(__name__)
@@ -43,6 +50,27 @@ router = Router()
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 ASSETS_IMAGES_DIR = os.path.join(ROOT_DIR, "assets", "images")
+
+CONSULTATION_OFFER_TEXT = (
+    "<b>Вы узнали больше о себе. Что дальше?</b>\n\n"
+    "Возможно, в этом отчёте вы узнали свои привычные реакции и увидели то, что давно мешает вам жить так, как хочется. "
+    "Теперь возникает вопрос: «Как с этим быть и с чего начать?»\n\n"
+    "На личной консультации со мной мы разберём ваши результаты в контексте вашей жизни: что сейчас создаёт больше всего трудностей, "
+    "как поддерживаются повторяющиеся сценарии и на что вы можете опереться, чтобы начать изменения. Вы сможете задать вопросы и определить конкретные следующие шаги.\n\n"
+    "🎁 <b>Для вас как участника SelfCode — персональная скидка 20% на личную консультацию.</b> "
+    "Предложение действует 3 дня с момента получения отчёта.\n\n"
+    "Чтобы воспользоваться скидкой, при записи нажмите кнопку ниже или отправьте слово «<b>SELFCODE</b>» в ответ на это сообщение!"
+)
+
+
+async def send_consultation_offer(message: Message):
+    """Send consultation offer message with 20% discount button after PDF delivery."""
+    try:
+        markup = get_consultation_discount_keyboard()
+        await message.answer(CONSULTATION_OFFER_TEXT, parse_mode="HTML", reply_markup=markup)
+    except Exception as err:
+        logger.error(f"Failed to send consultation offer message: {err}")
+
 
 
 @router.message(Command("start"))
@@ -75,11 +103,11 @@ async def cmd_start(message: Message):
         # Show Onboarding / Consent first if pending OR no answers yet
         if session.phase == "CONSENT_PENDING" or len(answers_map) == 0:
             welcome_text = (
-                "👁️ <b>Добро пожаловать в систему «Инструкция к себе» V1.3!</b>\n\n"
+                "👁️ <b>Добро пожаловать в систему SelfCode V1.3!</b>\n\n"
                 "Ваша личность — это не застывший набор мыслей, а живая система восприятия, постоянно редактирующая свой собственный код перед тем, как его заметит окружающая реальность.\n\n"
                 "<b>📌 Как устроено исследование:</b>\n"
                 "• <b>Этап 1 (CORE — Бесплатно):</b> 24 базовых + до 6 адаптивных вопросов. Алгоритм вскрывает вашу первичную архитектуру, ключевые опоры и главный парадокс вашей системы.\n"
-                "• <b>Этап 2 (DEEP — Полный отчёт):</b> Анализ 46 шкал личности, 12 профильных глав и персональная 12-страничная PDF-инструкция.\n\n"
+                "• <b>Этап 2 (DEEP — Полный отчёт):</b> Анализ 46 шкал личности, 12 профильных глав и персональный 12-страничный PDF-отчет SelfCode.\n\n"
                 "💡 <i>Здесь нет «правильных» или «угодных» ответов. Вы отвечаете не перед экзаменатором, а перед собственным проекционным аппаратом.</i>\n\n"
                 "Нажмите кнопку ниже, чтобы начать первый этап CORE."
             )
@@ -89,12 +117,13 @@ async def cmd_start(message: Message):
 
         # Resume session menu
         resume_text = (
-            "👁️ <b>Вы вернулись в меню системы «Инструкция к себе» V1.3.</b>\n\n"
+            "👁️ <b>Вы вернулись в меню системы SelfCode V1.3.</b>\n\n"
             f"Ваше исследование находится в процессе (отвечено вопросов: <b>{len(answers_map)}</b>).\n\n"
             "• Нажмите <b>«▶️ Продолжить диагностику»</b>, чтобы перейти к очередному вопросу.\n"
             "• Нажмите <b>«🔄 Начать заново»</b>, чтобы сбросить сессию и пройти онбординг с нуля."
         )
         await message.answer(resume_text, parse_mode="HTML", reply_markup=reply_kb)
+
 
 
 @router.message(F.text == "▶️ Продолжить диагностику")
@@ -160,7 +189,7 @@ async def btn_pay_full_access(message: Message):
         payment_url = create_prodamus_payment_link(user_id=session.user_id, session_id=session.id)
         await message.answer(
             "🪞 <b>Доступ к Этапу 2 (DEEP)</b>\n\n"
-            "Оплатите доступ по ссылке ниже, чтобы разблокировать оставшиеся 145 вопросов и получить полную PDF-инструкцию.",
+            "Оплатите доступ по ссылке ниже, чтобы разблокировать оставшиеся 145 вопросов и получить полный PDF-отчёт SelfCode.",
             parse_mode="HTML",
             reply_markup=get_paywall_keyboard(payment_url)
         )
@@ -199,13 +228,13 @@ async def btn_progress(message: Message):
 async def btn_info(message: Message):
     """Show information about system architecture."""
     info_text = (
-        "<b>🧠 О системе «Инструкция к себе» V1.3</b>\n\n"
+        "<b>🧠 О системе SelfCode V1.3</b>\n\n"
         "Система совмещает детерминированный математический скоринг 46 шкал личности и глубинный синтез смыслов.\n\n"
         "<b>Архитектура исследования:</b>\n"
         "• <b>CORE:</b> 24 базовых + адаптивные вопросы для первичного вскрытия алгоритмов восприятия.\n"
         "• <b>46 Primary Scales:</b> Измерение автономии, регуляции самоценности, близости, проявленности и работы с неопределенностью.\n"
         "• <b>10 Персональных правил:</b> Фундаментальные ориентиры взаимодействия с собственной психикой.\n"
-        "• <b>PDF Export:</b> Формирование персональной инструкции формата A4."
+        "• <b>PDF Export:</b> Формирование персонального отчета SelfCode формата A4."
     )
     await message.answer(info_text, parse_mode="HTML")
 
@@ -239,14 +268,15 @@ async def cb_confirm_restart(callback: CallbackQuery):
         
         reply_kb = get_main_reply_keyboard(is_admin=user.is_admin, show_pay_button=(session and session.phase == 'CORE_READY'))
         welcome_text = (
-            "👁️ <b>Добро пожаловать в систему «Инструкция к себе» V1.3!</b>\n\n"
+            "👁️ <b>Добро пожаловать в систему SelfCode V1.3!</b>\n\n"
             "Ваша личность — это не застывший набор мыслей, а живая система восприятия, постоянно редактирующая свой собственный код перед тем, как его заметит окружающая реальность.\n\n"
             "<b>📌 Как устроено исследование:</b>\n"
             "• <b>Этап 1 (CORE — Бесплатно):</b> 24 базовых + до 6 адаптивных вопросов. Алгоритм вскрывает вашу первичную архитектуру, ключевые опоры и главный парадокс вашей системы.\n"
-            "• <b>Этап 2 (DEEP — Полный отчёт):</b> Анализ 46 шкал личности, 12 профильных глав и персональная 12-страничная PDF-инструкция.\n\n"
+            "• <b>Этап 2 (DEEP — Полный отчёт):</b> Анализ 46 шкал личности, 12 профильных глав и персональный 12-страничный PDF-отчет SelfCode.\n\n"
             "💡 <i>Здесь нет «правильных» или «угодных» ответов. Вы отвечаете не перед экзаменатором, а перед собственным проекционным аппаратом.</i>\n\n"
             "Нажмите кнопку ниже, чтобы начать первый этап CORE."
         )
+
 
         onboarding_img = os.path.join(ASSETS_IMAGES_DIR, "onboarding.png")
         if os.path.exists(onboarding_img):
@@ -505,6 +535,9 @@ async def render_free_core_report(message: Message, db, session):
         logger.error(f"Failed to send CORE PDF document: {doc_err}")
         await message.answer(report_text, parse_mode="HTML", reply_markup=markup)
 
+    # Deliver consultation offer message with 20% discount button
+    await send_consultation_offer(message)
+
 
 async def render_full_report_and_pdf(message: Message, db, session, precomputed_answers: dict = None):
     """Generate FULL report via LLM and deliver PDF to Telegram chat."""
@@ -515,14 +548,14 @@ async def render_full_report_and_pdf(message: Message, db, session, precomputed_
         
     input_package = calculate_full_profile(answers_map)
 
-    status_msg = await message.answer("🔄 <i>Система генерирует ваш персональный отчёт и PDF-инструкцию...</i>", parse_mode="HTML")
+    status_msg = await message.answer("🔄 <i>Система генерирует ваш персональный отчёт SelfCode PDF...</i>", parse_mode="HTML")
 
     # Generate LLM Report & PDF
     llm_report = await generate_full_report_llm(input_package)
 
     rules_text = "\n".join([f"• {r}" for r in llm_report.get("personal_rules", [])[:5]])
     full_text = (
-        "<b>ПОЛНАЯ ИНСТРУКЦИЯ К СЕБЕ V1.3 ГОТОВА!</b>\n\n"
+        "<b>ПОЛНЫЙ ОТЧЕТ SELFCODE V1.3 ГОТОВ!</b>\n\n"
         f"<b>Ключевые правила обращения с собой:</b>\n{rules_text}\n\n"
     )
 
@@ -532,12 +565,96 @@ async def render_full_report_and_pdf(message: Message, db, session, precomputed_
         await status_msg.edit_text(full_text, parse_mode="HTML")
 
         # Send PDF document directly to Telegram chat
-        pdf_file = FSInputFile(pdf_path, filename=f"Инструкция_к_себе_{session.id[:8]}.pdf")
-        await message.answer_document(pdf_file, caption="Ваш персональный PDF-отчет «Инструкция к себе» V1.3")
+        pdf_file = FSInputFile(pdf_path, filename=f"SelfCode_{session.id[:8]}.pdf")
+        await message.answer_document(pdf_file, caption="Ваш персональный PDF-отчет SelfCode V1.3")
     except Exception as pdf_err:
         logger.error(f"Ошибка при генерации PDF: {pdf_err}", exc_info=True)
         full_text += "⚠️ <i>Не удалось сформировать PDF-документ, но ваш текстовый отчёт сгенерирован выше.</i>"
         await status_msg.edit_text(full_text, parse_mode="HTML")
+
+
+    # Deliver consultation offer message with 20% discount button
+    await send_consultation_offer(message)
+
+
+async def process_consultation_request(event, db, user):
+    """
+    Process consultation request for 20% discount:
+    - Send user confirmation message
+    - Send alert to all bot admins with user contact info and session ID
+    """
+    confirm_text = (
+        "✅ <b>Ваша заявка на личную консультацию со скидкой 20% получена!</b>\n\n"
+        "Персональная скидка по промокоду <b>SELFCODE</b> успешно зафиксирована за вашим аккаунтом. "
+        "Мы свяжемся с вами в ближайшее время для согласования удобного времени."
+    )
+    
+    session = await get_active_session(db, user.id)
+    session_id = session.id if session else f"demo_{user.telegram_user_id}"
+
+    user_tg = event.from_user
+    bot = event.bot
+
+    if isinstance(event, CallbackQuery):
+        try:
+            await event.answer("Заявка принята!")
+        except Exception:
+            pass
+        await event.message.answer(confirm_text, parse_mode="HTML")
+    else:
+        await event.answer(confirm_text, parse_mode="HTML")
+
+    user_name = user_tg.full_name or "Пользователь"
+    username_str = f"@{user_tg.username}" if user_tg.username else "нет username"
+    user_mention = f'<a href="tg://user?id={user_tg.id}">{user_name}</a>'
+    now_str = datetime.now().strftime("%d.%m.%Y %H:%M")
+
+    admin_alert_text = (
+        "🔔 <b>НОВАЯ ЗАЯВКА НА ЛИЧНУЮ КОНСУЛЬТАЦИЮ (СКИДКА 20% SELFCODE)!</b>\n\n"
+        f"• <b>Пользователь:</b> {user_mention} ({username_str})\n"
+        f"• <b>Telegram ID:</b> <code>{user_tg.id}</code>\n"
+        f"• <b>Промокод:</b> <code>SELFCODE</code> (Скидка 20%)\n"
+        f"• <b>Сессия:</b> <code>{session_id[:8]}</code>\n"
+        f"• <b>Дата заявки:</b> {now_str}"
+    )
+
+    # Broadcast notification to all registered admins
+    stmt_admins = select(User).where(User.is_admin == True)
+    res_admins = await db.execute(stmt_admins)
+    admin_users = res_admins.scalars().all()
+
+    for admin in admin_users:
+        try:
+            target_chat = admin.chat_id or admin.telegram_user_id
+            await bot.send_message(chat_id=target_chat, text=admin_alert_text, parse_mode="HTML")
+        except Exception as err:
+            logger.error(f"Failed to notify admin {admin.telegram_user_id}: {err}")
+
+
+@router.callback_query(F.data == "claim_consultation_discount")
+async def cb_claim_consultation_discount(callback: CallbackQuery):
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=callback.from_user.id,
+            chat_id=callback.message.chat.id,
+            username=callback.from_user.username
+        )
+        await process_consultation_request(callback, db, user)
+
+
+@router.message(Command("selfcode"))
+@router.message(F.text.icontains("SELFCODE"))
+async def msg_claim_consultation_discount(message: Message):
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=message.from_user.id,
+            chat_id=message.chat.id,
+            username=message.from_user.username
+        )
+        await process_consultation_request(message, db, user)
+
 
 
 
@@ -636,14 +753,10 @@ async def cmd_promo(message: Message):
     """Activate promo code for free access."""
     parts = message.text.split(maxsplit=1)
     if len(parts) < 2:
-        await message.answer("⚠️ Пожалуйста, укажите промокод. Пример:\n<code>/promo TESTGROUP2026</code>", parse_mode="HTML")
+        await message.answer("⚠️ Пожалуйста, укажите промокод. Пример:\n<code>/promo GIFT2026</code>", parse_mode="HTML")
         return
 
     code = parts[1].strip()
-    
-    if code.upper() != settings.TEST_GROUP_PROMO.upper():
-        await message.answer("❌ Неверный промокод.")
-        return
 
     async with AsyncSessionLocal() as db:
         user = await get_or_create_user(
@@ -656,35 +769,231 @@ async def cmd_promo(message: Message):
         if not session:
             session = await start_new_session(db, user.id)
 
-        # Grant access entitlement
-        stmt_ent = select(AccessEntitlement).where(
-            AccessEntitlement.session_id == session.id,
-            AccessEntitlement.entitlement_type == "FULL_REPORT"
-        )
-        res_ent = await db.execute(stmt_ent)
-        existing_ent = res_ent.scalars().first()
+        success, msg, promo = await validate_and_use_promo_code(db, code, user.id, session.id)
 
-        if not existing_ent:
-            ent = AccessEntitlement(
-                user_id=user.id,
-                session_id=session.id,
-                entitlement_type="FULL_REPORT",
-                source="promo",
-                status="ACTIVE"
+        if success:
+            full_msg = (
+                f"{msg}\n\n"
+                "Нажмите «▶️ Продолжить диагностику», чтобы перейти к следующим вопросам."
             )
-            db.add(ent)
-            
-        if session.phase == "CORE_READY":
-            session.phase = "DEEP_IN_PROGRESS"
-            
-        await db.commit()
+            await message.answer(full_msg, parse_mode="HTML")
+        else:
+            await message.answer(msg, parse_mode="HTML")
 
-        await message.answer(
-            "🎉 <b>Промокод успешно активирован!</b>\n\n"
-            "Вам предоставлен полный доступ к Этапу 2 (DEEP) и формированию PDF-инструкции.\n\n"
-            "Нажмите «▶️ Продолжить диагностику», чтобы перейти к следующим вопросам.",
+
+# ------------------------------------------------------------------
+# PROMO CODE ADMIN HANDLERS
+# ------------------------------------------------------------------
+
+@router.callback_query(F.data == "admin:promos")
+async def cb_admin_promos(callback: CallbackQuery, state: FSMContext):
+    """Promo code admin management menu."""
+    await state.clear()
+    text = (
+        "🎟 <b>УПРАВЛЕНИЕ ПРОМОКОДАМИ SELFCODE</b>\n\n"
+        "Здесь вы можете генерировать промокоды с настраиваемым лимитом копий "
+        "и временем действия, а также просматривать и деактивировать активные коды."
+    )
+    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=get_promo_menu_keyboard())
+    await callback.answer()
+
+
+@router.callback_query(F.data == "admin:promo:create")
+async def cb_admin_promo_create(callback: CallbackQuery, state: FSMContext):
+    """Step 1: Start promo creation, ask for code name."""
+    await state.set_state(PromoCreateFSM.waiting_for_code)
+    
+    random_code = generate_random_promo_code()
+    buttons = [
+        [InlineKeyboardButton(text=f"🎲 Использовать {random_code}", callback_data=f"use_code:{random_code}")],
+        [InlineKeyboardButton(text="❌ Отмена", callback_data="admin:promos")]
+    ]
+    
+    text = (
+        "➕ <b>СОЗДАНИЕ НОВОГО ПРОМОКОДА (Шаг 1 из 3)</b>\n\n"
+        "Отправьте название промокода текстом (например, <code>GIFT2026</code>) "
+        "или нажмите кнопку ниже для случайной генерации:"
+    )
+    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("use_code:"))
+async def cb_admin_use_random_code(callback: CallbackQuery, state: FSMContext):
+    """Handle choice of auto-generated code."""
+    code = callback.data.split(":", 1)[1]
+    await state.update_data(code=code)
+    await state.set_state(PromoCreateFSM.waiting_for_uses)
+    
+    text = (
+        f"🎫 Промокод: <code>{code}</code>\n\n"
+        "👥 <b>Укажите количество активаций (копий) (Шаг 2 из 3):</b>"
+    )
+    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=get_promo_uses_keyboard())
+    await callback.answer()
+
+
+@router.message(PromoCreateFSM.waiting_for_code)
+async def msg_admin_promo_code_input(message: Message, state: FSMContext):
+    """Handle text input for promo code name."""
+    code = message.text.strip().upper()
+    if len(code) < 3:
+        await message.answer("⚠️ Название промокода должно содержать минимум 3 символа.")
+        return
+        
+    await state.update_data(code=code)
+    await state.set_state(PromoCreateFSM.waiting_for_uses)
+    
+    text = (
+        f"🎫 Промокод: <code>{code}</code>\n\n"
+        "👥 <b>Укажите количество активаций (копий) (Шаг 2 из 3):</b>"
+    )
+    await message.answer(text, parse_mode="HTML", reply_markup=get_promo_uses_keyboard())
+
+
+@router.callback_query(F.data.startswith("promo_uses:"))
+async def cb_admin_promo_uses(callback: CallbackQuery, state: FSMContext):
+    """Handle choice for max uses."""
+    val = callback.data.split(":")[1]
+    if val == "custom":
+        await callback.message.edit_text(
+            "✏️ <b>Введите количество копий/активаций числом:</b>",
             parse_mode="HTML"
         )
+        await callback.answer()
+        return
+        
+    uses = int(val)
+    await state.update_data(max_uses=uses)
+    await state.set_state(PromoCreateFSM.waiting_for_duration)
+    
+    data = await state.get_data()
+    text = (
+        f"🎫 Промокод: <code>{data.get('code')}</code>\n"
+        f"👥 Количество активаций: <b>{uses}</b>\n\n"
+        "⏳ <b>Укажите срок действия (длительность) (Шаг 3 из 3):</b>"
+    )
+    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=get_promo_duration_keyboard())
+    await callback.answer()
+
+
+@router.message(PromoCreateFSM.waiting_for_uses)
+async def msg_admin_promo_uses_custom(message: Message, state: FSMContext):
+    """Handle custom integer input for max uses."""
+    if not message.text.isdigit() or int(message.text) <= 0:
+        await message.answer("⚠️ Пожалуйста, введите положительное целое число (например, 25).")
+        return
+        
+    uses = int(message.text)
+    await state.update_data(max_uses=uses)
+    await state.set_state(PromoCreateFSM.waiting_for_duration)
+    
+    data = await state.get_data()
+    text = (
+        f"🎫 Промокод: <code>{data.get('code')}</code>\n"
+        f"👥 Количество активаций: <b>{uses}</b>\n\n"
+        "⏳ <b>Укажите срок действия (длительность) (Шаг 3 из 3):</b>"
+    )
+    await message.answer(text, parse_mode="HTML", reply_markup=get_promo_duration_keyboard())
+
+
+@router.callback_query(F.data.startswith("promo_dur:"))
+async def cb_admin_promo_duration(callback: CallbackQuery, state: FSMContext):
+    """Final step: Handle duration choice and save promo code to DB."""
+    dur_days = int(callback.data.split(":")[1])
+    data = await state.get_data()
+    code = data.get("code")
+    max_uses = data.get("max_uses", 1)
+    
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=callback.from_user.id,
+            chat_id=callback.message.chat.id,
+            username=callback.from_user.username
+        )
+        promo = await create_promo_code(
+            db=db,
+            code=code,
+            max_uses=max_uses,
+            duration_days=dur_days if dur_days > 0 else None,
+            creator_user_id=user.id
+        )
+        
+    await state.clear()
+    
+    expiry_str = f"{dur_days} дн." if dur_days > 0 else "♾️ Без ограничений"
+    if promo.expires_at:
+        expiry_str += f" (до {promo.expires_at.strftime('%d.%m.%Y %H:%M')})"
+        
+    text = (
+        "🎉 <b>ПРОМОКОД УСПЕШНО СОЗДАН!</b>\n\n"
+        f"🎫 Код: <code>{promo.code}</code>\n"
+        f"👥 Лимит активаций: <b>{promo.max_uses}</b>\n"
+        f"⏳ Срок действия: <b>{expiry_str}</b>\n\n"
+        "Вы можете скопировать код нажатием на него и передать пользователю.\n"
+        "Пользователь активирует его в боте командой:\n"
+        f"<code>/promo {promo.code}</code>"
+    )
+    
+    buttons = [
+        [InlineKeyboardButton(text="➕ Создать ещё", callback_data="admin:promo:create")],
+        [InlineKeyboardButton(text="📋 К списку промокодов", callback_data="admin:promo:list")]
+    ]
+    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+    await callback.answer()
+
+
+@router.callback_query(F.data == "admin:promo:list")
+async def cb_admin_promo_list(callback: CallbackQuery):
+    """View active and expired promo codes."""
+    async with AsyncSessionLocal() as db:
+        promos = await get_all_promo_codes(db)
+        
+    if not promos:
+        text = "📋 <b>Список промокодов пуст.</b>\n\nНажмите кнопку ниже, чтобы создать ваш первый промокод."
+        buttons = [
+            [InlineKeyboardButton(text="➕ Создать промокод", callback_data="admin:promo:create")],
+            [InlineKeyboardButton(text="🔙 Назад", callback_data="admin:promos")]
+        ]
+        await callback.message.edit_text(text, parse_mode="HTML", reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+        await callback.answer()
+        return
+
+    lines = ["📋 <b>СПИСОК ПРОМОКОДОВ SELFCODE</b>\n"]
+    for p in promos:
+        icon = "🟢" if p.is_active else "🔴"
+        uses = f"{p.used_count}/{p.max_uses}"
+        dur = f"{p.duration_days} дн." if p.duration_days else "♾️"
+        lines.append(f"{icon} <code>{p.code}</code> | Использовано: <b>{uses}</b> | Срок: <b>{dur}</b>")
+        
+    lines.append("\nНажмите на код в списке ниже, чтобы включить/отключить его:")
+    text = "\n".join(lines)
+    
+    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=get_promo_list_keyboard(promos))
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("admin:promo:toggle:"))
+async def cb_admin_promo_toggle(callback: CallbackQuery):
+    """Toggle active/inactive status of promo code."""
+    promo_id = callback.data.split(":")[3]
+    async with AsyncSessionLocal() as db:
+        await toggle_promo_code_status(db, promo_id)
+        promos = await get_all_promo_codes(db)
+        
+    lines = ["📋 <b>СПИСОК ПРОМОКОДОВ SELFCODE</b>\n"]
+    for p in promos:
+        icon = "🟢" if p.is_active else "🔴"
+        uses = f"{p.used_count}/{p.max_uses}"
+        dur = f"{p.duration_days} дн." if p.duration_days else "♾️"
+        lines.append(f"{icon} <code>{p.code}</code> | Использовано: <b>{uses}</b> | Срок: <b>{dur}</b>")
+        
+    lines.append("\nНажмите на код в списке ниже, чтобы включить/отключить его:")
+    text = "\n".join(lines)
+    
+    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=get_promo_list_keyboard(promos))
+    await callback.answer("Статус промокода обновлён")
 
 
 @router.message(Command("admin"))
@@ -713,7 +1022,7 @@ async def cmd_admin(message: Message):
             f"• Активных сессий: <b>{stats['active_sessions']}</b>\n"
             f"• Активных доступов (Entitlements): <b>{stats['active_entitlements']}</b>\n"
             f"• Оплаченных заказов: <b>{stats['successful_payments']}</b>\n"
-            f"• Сформировано PDF-инструкций: <b>{stats['pdf_exports']}</b>\n\n"
+            f"• Сформировано SelfCode PDF: <b>{stats['pdf_exports']}</b>\n\n"
             f"📚 <b>Банк вопросов ({q_summary['total_count']} всего):</b>\n"
             f"• CORE Базовые: <b>{q_summary['core_base_count']}</b>\n"
             f"• DEEP Шкалы (Traits): <b>{q_summary['deep_trait_count']}</b>\n"

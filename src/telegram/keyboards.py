@@ -56,10 +56,19 @@ def get_vfc_keyboard(vfc_id: str, vfc_data: Dict[str, str], client_event_id: str
 def get_paywall_keyboard(payment_url: str) -> InlineKeyboardMarkup:
     """Paywall checkout keyboard."""
     buttons = [
-        [InlineKeyboardButton(text="💳 ПОЛУЧИТЬ ПОЛНУЮ ИНСТРУКЦИЮ", url=payment_url)],
+        [InlineKeyboardButton(text="💳 ПОЛУЧИТЬ SELFCODE", url=payment_url)],
         [InlineKeyboardButton(text="🔄 Проверить оплату", callback_data="check_payment")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def get_consultation_discount_keyboard() -> InlineKeyboardMarkup:
+    """Keyboard for claiming 20% consultation discount."""
+    buttons = [
+        [InlineKeyboardButton(text="🎁 Записаться со скидкой 20% (SELFCODE)", callback_data="claim_consultation_discount")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
 
 
 def get_consent_keyboard() -> InlineKeyboardMarkup:
@@ -95,12 +104,76 @@ def get_main_reply_keyboard(is_admin: bool = False, show_pay_button: bool = Fals
 def get_admin_dashboard_keyboard() -> InlineKeyboardMarkup:
     """Inline control dashboard for admins."""
     buttons = [
+        [InlineKeyboardButton(text="🎟 Управление промокодами", callback_data="admin:promos")],
         [InlineKeyboardButton(text="📊 Статистика системы", callback_data="admin:stats")],
         [InlineKeyboardButton(text="📚 Просмотр банка вопросов", callback_data="admin:questions:CORE:1")],
         [InlineKeyboardButton(text="🔓 Выдать доступ пользователю", callback_data="admin:grant_prompt")],
         [InlineKeyboardButton(text="🚀 Запустить этап DEEP", callback_data="admin_start_deep")],
         [InlineKeyboardButton(text="⏩ Сгенерировать FULL отчет (тест)", callback_data="admin_fastforward")]
     ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def get_promo_menu_keyboard() -> InlineKeyboardMarkup:
+    """Promo code admin management menu."""
+    buttons = [
+        [InlineKeyboardButton(text="➕ Создать промокод", callback_data="admin:promo:create")],
+        [InlineKeyboardButton(text="📋 Список промокодов", callback_data="admin:promo:list")],
+        [InlineKeyboardButton(text="🔙 В главное админ-меню", callback_data="admin:menu")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def get_promo_uses_keyboard() -> InlineKeyboardMarkup:
+    """Preset choices for promo max usages."""
+    buttons = [
+        [
+            InlineKeyboardButton(text="1 шт", callback_data="promo_uses:1"),
+            InlineKeyboardButton(text="5 шт", callback_data="promo_uses:5"),
+            InlineKeyboardButton(text="10 шт", callback_data="promo_uses:10")
+        ],
+        [
+            InlineKeyboardButton(text="50 шт", callback_data="promo_uses:50"),
+            InlineKeyboardButton(text="100 шт", callback_data="promo_uses:100"),
+            InlineKeyboardButton(text="✏️ Ввести число", callback_data="promo_uses:custom")
+        ],
+        [InlineKeyboardButton(text="❌ Отмена", callback_data="admin:promos")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def get_promo_duration_keyboard() -> InlineKeyboardMarkup:
+    """Preset choices for promo duration."""
+    buttons = [
+        [
+            InlineKeyboardButton(text="1 день", callback_data="promo_dur:1"),
+            InlineKeyboardButton(text="3 дня", callback_data="promo_dur:3"),
+            InlineKeyboardButton(text="7 дней", callback_data="promo_dur:7")
+        ],
+        [
+            InlineKeyboardButton(text="30 дней", callback_data="promo_dur:30"),
+            InlineKeyboardButton(text="♾️ Без ограничений", callback_data="promo_dur:0")
+        ],
+        [InlineKeyboardButton(text="❌ Отмена", callback_data="admin:promos")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def get_promo_list_keyboard(promos: list) -> InlineKeyboardMarkup:
+    """List of promo codes with status toggle buttons."""
+    buttons = []
+    for p in promos:
+        status_icon = "🟢" if p.is_active else "🔴"
+        action = "Деактивировать" if p.is_active else "Активировать"
+        uses = f"{p.used_count}/{p.max_uses}"
+        buttons.append([
+            InlineKeyboardButton(
+                text=f"{status_icon} {p.code} ({uses}) — {action}",
+                callback_data=f"admin:promo:toggle:{p.id}"
+            )
+        ])
+    buttons.append([InlineKeyboardButton(text="➕ Создать ещё", callback_data="admin:promo:create")])
+    buttons.append([InlineKeyboardButton(text="🔙 Назад в меню промокодов", callback_data="admin:promos")])
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 

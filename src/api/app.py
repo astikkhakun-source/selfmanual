@@ -9,7 +9,7 @@ logging.basicConfig(
 )
 
 app = FastAPI(
-    title="Инструкция к себе V1.3 Backend",
+    title="SelfCode V1.3 Backend",
     description="Психометрический бэкенд и API вебхуков",
     version="1.3.0"
 )
@@ -20,7 +20,8 @@ app.include_router(api_router)
 @app.get("/")
 async def root():
     return {
-        "title": "Инструкция к себе V1.3",
+        "title": "SelfCode V1.3",
         "status": "running",
         "docs": "/docs"
     }
+

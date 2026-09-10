@@ -14,8 +14,9 @@ FORBIDDEN_CLINICAL_TERMS = [
 ]
 
 FULL_REPORT_SYSTEM_PROMPT = """
-Ты — главный эксперт по созданию персональных отчетов системы «Инструкция к себе» V1.3.
+Ты — главный эксперт по созданию персональных отчетов системы SelfCode V1.3.
 Твоя задача — превратить строгие математические расчеты бэкенда (46 шкал личности, 37 паттернов, 12 конфликтов, 3-5 системных циклов) в глубокий, невероятно узнаваемый, детальный и живой персональный отчет.
+
 
 1. ДОСТУПНОСТЬ И ПРОСТОТА ЯЗЫКА (ДЛЯ ОБЫЧНОГО ЧЕЛОВЕКА):
 - Напиши выводы максимально понятно, детально и подробно.
@@ -290,7 +291,36 @@ async def generate_full_report_llm(input_package: Dict[str, Any]) -> Dict[str, A
         return get_fallback_mock_full_report(input_package)
 
 
+async def generate_core_report_llm(answers_text: str) -> Dict[str, Any]:
+    """
+    Generate CORE report via OpenAI API or fallback mock.
+    """
+    if not settings.OPENAI_API_KEY or settings.OPENAI_API_KEY.startswith("YOUR_"):
+        return get_fallback_mock_core_report()
+
+    client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+    user_prompt = f"Ответы пользователя для первичного отчета SelfCore:\n{answers_text}"
+
+    try:
+        response = await client.chat.completions.create(
+            model=settings.OPENAI_MODEL,
+            messages=[
+                {"role": "system", "content": CORE_REPORT_SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt}
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.7,
+            max_tokens=4000
+        )
+        content = response.choices[0].message.content
+        return json.loads(content)
+    except Exception as e:
+        logger.error(f"Error generating core report LLM: {e}")
+        return get_fallback_mock_core_report()
+
+
 def get_fallback_mock_full_report(input_package: Dict[str, Any] = None) -> Dict[str, Any]:
+
     """Fallback deterministic mock for FULL report with rich, highly realistic multi-paragraph content."""
     return {
         "chapters": {
@@ -370,8 +400,33 @@ def get_fallback_mock_full_report(input_package: Dict[str, Any] = None) -> Dict[
             "top_resource": "Глубокая автономия, мощный системный анализ и высокий уровень субъектности.",
             "top_trap": "Гиперконтроль, уход в изоляцию под нагрузкой и требование гарантий до первого шага.",
             "top_leverage": "Переход к действию при 70% готовности и эмоциональная открытость в близких контактах."
+        },
+        "profile_indicators": (input_package or {}).get("profile_indicators") or [
+            {"code": "agency", "name": "Автономия и субъектность", "score": 78.0, "explanation": "Самостоятельность помогает действовать активно, но в некоторых обстоятельствах затрудняет обращение за помощью."},
+            {"code": "uncertainty_tolerance", "name": "Толерантность к неопределенности", "score": 42.0, "explanation": "Высокая потребность в ясности защищает от рисков, но может откладывать запуск новых решений."},
+            {"code": "stable_self_worth", "name": "Самоценность и критик", "score": 65.0, "explanation": "Требовательность к себе держит планку качества, но снижает удовольствие от достигнутого."},
+            {"code": "emotional_awareness", "name": "Эмоциональная регуляция", "score": 55.0, "explanation": "Перевод чувств в аналитику сохраняет хладнокровие, но копит физическую усталость."},
+            {"code": "control_need", "name": "Потребность в контроле", "score": 82.0, "explanation": "Контроль обеспечивает высокий стандарт результатов, но ведет к перегрузке в авралах."},
+            {"code": "fear_of_evaluation", "name": "Чувствительность к оценке", "score": 38.0, "explanation": "Опора на собственную экспертизу снижает зависимость от мнения окружающих."},
+            {"code": "boundary_assertiveness", "name": "Защита личных границ", "score": 70.0, "explanation": "Четкие границы сохраняют фокус и ресурсы, но иногда воспринимаются как отстраненность."},
+            {"code": "authentic_expression", "name": "Проявленность и открытость", "score": 48.0, "explanation": "Избирательность в демонстрации себя защищает приватность, но сдерживает рост охвата."}
+        ],
+        "system_cycle": (input_package or {}).get("system_cycle") or {
+            "caption": "Предполагаемый цикл по вашим ответам",
+            "steps": [
+                {"id": "A", "label": "Большая задача", "order": 1},
+                {"id": "B", "label": "Гиперфокус и изоляция", "order": 2},
+                {"id": "C", "label": "Результат на пределе сил", "order": 3},
+                {"id": "D", "label": "Истощение и апатия", "order": 4},
+                {"id": "E", "label": "Обесценивание результата", "order": 5}
+            ],
+            "change_point": {
+                "target_step": "B",
+                "label": "Точка изменения: паузы и помощь до истощения"
+            }
         }
     }
+
 
 
 
