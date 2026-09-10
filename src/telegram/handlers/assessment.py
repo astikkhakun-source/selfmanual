@@ -76,7 +76,7 @@ async def cmd_start(message: Message):
         if session.phase == "CONSENT_PENDING" or len(answers_map) == 0:
             welcome_text = (
                 "👁️ <b>Добро пожаловать в систему «Инструкция к себе» V1.3!</b>\n\n"
-                "Ваша личность — это не застывший набор мыслей, а сложная операционная система восприятия, постоянно редактирующая свой собственный код перед тем, как его заметит окружающая реальность.\n\n"
+                "Ваша личность — это не застывший набор мыслей, а живая система восприятия, постоянно редактирующая свой собственный код перед тем, как его заметит окружающая реальность.\n\n"
                 "<b>📌 Как устроено исследование:</b>\n"
                 "• <b>Этап 1 (CORE — Бесплатно):</b> 24 базовых + до 6 адаптивных вопросов. Алгоритм вскрывает вашу первичную архитектуру, ключевые опоры и главный парадокс вашей системы.\n"
                 "• <b>Этап 2 (DEEP — Полный отчёт):</b> Анализ 46 шкал личности, 12 профильных глав и персональная 12-страничная PDF-инструкция.\n\n"
@@ -240,7 +240,7 @@ async def cb_confirm_restart(callback: CallbackQuery):
         reply_kb = get_main_reply_keyboard(is_admin=user.is_admin, show_pay_button=(session and session.phase == 'CORE_READY'))
         welcome_text = (
             "👁️ <b>Добро пожаловать в систему «Инструкция к себе» V1.3!</b>\n\n"
-            "Ваша личность — это не застывший набор мыслей, а сложная операционная система восприятия, постоянно редактирующая свой собственный код перед тем, как его заметит окружающая реальность.\n\n"
+            "Ваша личность — это не застывший набор мыслей, а живая система восприятия, постоянно редактирующая свой собственный код перед тем, как его заметит окружающая реальность.\n\n"
             "<b>📌 Как устроено исследование:</b>\n"
             "• <b>Этап 1 (CORE — Бесплатно):</b> 24 базовых + до 6 адаптивных вопросов. Алгоритм вскрывает вашу первичную архитектуру, ключевые опоры и главный парадокс вашей системы.\n"
             "• <b>Этап 2 (DEEP — Полный отчёт):</b> Анализ 46 шкал личности, 12 профильных глав и персональная 12-страничная PDF-инструкция.\n\n"
@@ -892,4 +892,42 @@ async def cb_admin_start_deep(callback: CallbackQuery):
 
         await callback.message.answer("🚀 <b>Этап 2: DEEP (Глубокое исследование) успешно разблокирован!</b>\n\nНачинаем диагностику шкал личности.", parse_mode="HTML")
         await send_next_question(callback.message, db, session)
+
+
+@router.callback_query(F.data == "admin_fastforward")
+async def cb_admin_fastforward(callback: CallbackQuery):
+    """Generate and send FULL PDF report directly to Admin user for instant testing."""
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=callback.from_user.id,
+            chat_id=callback.message.chat.id,
+            username=callback.from_user.username
+        )
+        if not user.is_admin:
+            await callback.answer("⛔ Отказано в доступе.")
+            return
+
+        await callback.answer("⏳ Генерируем полный тестовый PDF-отчет...")
+        await callback.message.answer("⏳ <b>Генерация полной 12-страничной инструкции к себе V1.3 (FULL)...</b>", parse_mode="HTML")
+
+        session = await get_active_session(db, user.id)
+        session_id = session.id if session else f"admin_demo_{user.telegram_user_id}"
+
+        # 1. Obtain full report data
+        full_data = await generate_full_report_llm({"session_id": session_id, "mode": "admin_demo"})
+
+        # 2. Export PDF
+        pdf_path = generate_pdf_report(session_id, full_data)
+
+        if os.path.exists(pdf_path):
+            doc_file = FSInputFile(pdf_path, filename="SelfManual_Full_Report_V1.3.pdf")
+            await callback.message.answer_document(
+                document=doc_file,
+                caption="📄 <b>Ваш тестовый полный PDF-отчет (12 глав + 10 правил + Синтез):</b>",
+                parse_mode="HTML"
+            )
+        else:
+            await callback.message.answer("❌ Ошибка при генерации PDF-файла.")
+
 
