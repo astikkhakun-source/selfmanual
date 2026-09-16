@@ -18,7 +18,7 @@ from src.services.config_loader import (
 )
 from src.services.assessment import (
     get_or_create_user, get_active_session, start_new_session,
-    save_answer, get_next_question_for_session, get_session_answers_map,
+    save_answer, delete_last_answer, get_next_question_for_session, get_session_answers_map,
     clear_session_answers_cache
 )
 from src.services.admin import (
@@ -406,6 +406,30 @@ async def cb_answer_vfc(callback: CallbackQuery):
         await send_next_question(callback.message, db, session, edit_existing=True)
 
 
+@router.callback_query(F.data == "step_back")
+async def cb_step_back(callback: CallbackQuery):
+    """Handle back button press to remove last answer and return to previous question."""
+    await callback.answer()
+
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=callback.from_user.id,
+            chat_id=callback.message.chat.id
+        )
+        session = await get_active_session(db, user.id)
+        if not session:
+            await callback.message.answer("Сессия не найдена. Нажмите /start.")
+            return
+
+        deleted_q_id = await delete_last_answer(db, session.id)
+        if not deleted_q_id:
+            await callback.answer("Нет предыдущих ответов для возврата.", show_alert=True)
+            return
+
+        await send_next_question(callback.message, db, session, edit_existing=True)
+
+
 async def send_next_question(message: Message, db, session, edit_existing: bool = False):
     """Determine next question and render to Telegram chat."""
     next_q = await get_next_question_for_session(db, session)
@@ -416,6 +440,9 @@ async def send_next_question(message: Message, db, session, edit_existing: bool 
         elif session.phase == "FULL_ASSESSMENT_COMPLETED":
             await render_full_report_and_pdf(message, db, session)
         return
+
+    answers_map = await get_session_answers_map(db, session.id)
+    show_back = len(answers_map) > 0
 
     q_id = next_q["question_id"]
     client_event_id = str(uuid.uuid4())[:12]
@@ -446,7 +473,7 @@ async def send_next_question(message: Message, db, session, edit_existing: bool 
             f"<b>А:</b> {vfc_data['text_a']}\n"
             f"<b>Б:</b> {vfc_data['text_b']}"
         )
-        markup = get_vfc_keyboard(q_id, vfc_data, client_event_id)
+        markup = get_vfc_keyboard(q_id, vfc_data, client_event_id, show_back=show_back)
     elif next_q["phase"] == "CORE_ADAPTIVE":
         adaptive_idx = next_q.get("adaptive_index", 1)
         text = (
@@ -455,7 +482,7 @@ async def send_next_question(message: Message, db, session, edit_existing: bool 
             f"«{q_text}»\n\n"
             f"<i>1 — полностью не согласен\n7 — полностью согласен</i>"
         )
-        markup = get_likert_keyboard(q_id, client_event_id)
+        markup = get_likert_keyboard(q_id, client_event_id, show_back=show_back)
     else:
         text = (
             f"{pelevin_intro}"
@@ -463,7 +490,7 @@ async def send_next_question(message: Message, db, session, edit_existing: bool 
             f"«{q_text}»\n\n"
             f"<i>1 — полностью не согласен\n7 — полностью согласен</i>"
         )
-        markup = get_likert_keyboard(q_id, client_event_id)
+        markup = get_likert_keyboard(q_id, client_event_id, show_back=show_back)
 
     if edit_existing:
         try:

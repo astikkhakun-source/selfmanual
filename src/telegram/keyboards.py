@@ -5,7 +5,7 @@ from aiogram.types import (
 )
 
 
-def get_likert_keyboard(q_id: str, client_event_id: str, show_change_last: bool = False) -> InlineKeyboardMarkup:
+def get_likert_keyboard(q_id: str, client_event_id: str, show_back: bool = False) -> InlineKeyboardMarkup:
     """
     Build 1..7 Likert Inline Keyboard for question.
     Format: ans:{q_id}:{score}:{client_event_id}
@@ -21,18 +21,18 @@ def get_likert_keyboard(q_id: str, client_event_id: str, show_change_last: bool 
         )
     buttons.append(row)
 
-    if show_change_last:
+    if show_back:
         buttons.append([
             InlineKeyboardButton(
-                text="↩️ Изменить последний ответ",
-                callback_data=f"change_last:{q_id}"
+                text="⬅️ Назад",
+                callback_data="step_back"
             )
         ])
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
-def get_vfc_keyboard(vfc_id: str, vfc_data: Dict[str, str], client_event_id: str) -> InlineKeyboardMarkup:
+def get_vfc_keyboard(vfc_id: str, vfc_data: Dict[str, str], client_event_id: str, show_back: bool = False) -> InlineKeyboardMarkup:
     """
     Build 2-option VFC forced-choice keyboard with randomized left/right presentation per session.
     Format: vfc:{vfc_id}:{selected_value}:{client_event_id}
@@ -49,6 +49,14 @@ def get_vfc_keyboard(vfc_id: str, vfc_data: Dict[str, str], client_event_id: str
         [InlineKeyboardButton(text=f"{options[0][1]}", callback_data=f"vfc:{vfc_id}:{options[0][0]}:{client_event_id}")],
         [InlineKeyboardButton(text=f"{options[1][1]}", callback_data=f"vfc:{vfc_id}:{options[1][0]}:{client_event_id}")]
     ]
+
+    if show_back:
+        buttons.append([
+            InlineKeyboardButton(
+                text="⬅️ Назад",
+                callback_data="step_back"
+            )
+        ])
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 

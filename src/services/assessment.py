@@ -265,3 +265,48 @@ async def get_next_question_for_session(db: AsyncSession, session: AssessmentSes
         return None
 
     return None
+
+
+async def delete_last_answer(db: AsyncSession, session_id: str) -> Optional[str]:
+    """
+    Delete the most recent answer for a session, evict it from RAM cache,
+    and revert session phase if necessary.
+    Returns the deleted question_id, or None if no answers exist.
+    """
+    stmt = select(Answer).where(Answer.session_id == session_id).order_by(Answer.created_at.desc())
+    res = await db.execute(stmt)
+    last_ans = res.scalars().first()
+    if not last_ans:
+        return None
+
+    q_id = last_ans.question_id
+
+    # 1. Remove from RAM cache
+    if session_id in _SESSION_ANSWERS_CACHE:
+        _SESSION_ANSWERS_CACHE[session_id].pop(q_id, None)
+
+    # 2. Delete from DB
+    await db.delete(last_ans)
+
+    # 3. Rollback session status if needed
+    stmt_s = select(AssessmentSession).where(AssessmentSession.id == session_id)
+    res_s = await db.execute(stmt_s)
+    session = res_s.scalars().first()
+
+    if session:
+        if session.phase == "CORE_READY":
+            session.phase = "CORE_IN_PROGRESS"
+            session.core_completed_at = None
+        elif session.phase == "FULL_ASSESSMENT_COMPLETED":
+            session.phase = "VFC_IN_PROGRESS"
+            session.deep_completed_at = None
+        elif session.phase == "VFC_IN_PROGRESS":
+            # Check if any VFC answers remain
+            answers_map = await get_session_answers_map(db, session_id)
+            has_vfc_answers = any(vfc_id in answers_map for vfc_id in VFC_ORDER)
+            if not has_vfc_answers:
+                session.phase = "DEEP_IN_PROGRESS"
+
+    await db.commit()
+    return q_id
+
