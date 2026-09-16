@@ -18,6 +18,17 @@ QUESTIONS_DICT = {q["question_id"]: q for q in _load_json("questions.json")}
 PATTERNS_DICT = _load_json("patterns.json")
 CONFLICTS_DICT = _load_json("conflicts.json")
 
+def _normalize_q_id(raw_qid: Any) -> str:
+    s = str(raw_qid).strip().upper()
+    if s.startswith("Q"):
+        num_part = s[1:]
+    else:
+        num_part = s
+    if num_part.isdigit():
+        return f"Q{int(num_part):03d}"
+    return s
+
+
 def calculate_full_profile(answers_by_qid: Dict[str, int]) -> Dict[str, Any]:
     """
     Scoring Engine SelfCode-160 v1.0:
@@ -30,7 +41,8 @@ def calculate_full_profile(answers_by_qid: Dict[str, int]) -> Dict[str, Any]:
     # Structure: dimension_code -> list of (norm_score, weight, cluster_id, context)
     dim_evidence: Dict[str, List[tuple]] = defaultdict(list)
     
-    for q_id, ans in answers_by_qid.items():
+    for raw_qid, ans in answers_by_qid.items():
+        q_id = _normalize_q_id(raw_qid)
         if q_id not in QUESTIONS_DICT:
             continue
             
@@ -39,8 +51,11 @@ def calculate_full_profile(answers_by_qid: Dict[str, int]) -> Dict[str, Any]:
         primary_dir = q_info.get("direction", "D")
         cluster_id = q_info.get("auto_evidence_cluster_id", "UNKNOWN")
         
-        if not (isinstance(ans, int) and 1 <= ans <= 7):
-            ans = 4 # Neutral default if invalid
+        if isinstance(ans, str) and ans.isdigit():
+            ans = int(ans)
+            
+        if not (isinstance(ans, (int, float)) and 1 <= ans <= 7):
+            ans = 4 # Neutral default if invalid or VFC answer
             
         # 1. Primary Mapping (Weight 1.0)
         if primary_dir == "D":
@@ -49,8 +64,6 @@ def calculate_full_profile(answers_by_qid: Dict[str, int]) -> Dict[str, Any]:
             primary_norm = ((7 - ans) / 6.0) * 100.0
             
         if primary_scale:
-            # We map it to the exact dimension code if it matches, otherwise we store it by its scale_id.
-            # In dimensions.json, code is usually the same as scale_id or name.
             dim_evidence[primary_scale.lower()].append((primary_norm, 1.0, cluster_id, "GENERAL"))
             
         # 2. Secondary Mappings (Variable weight)
@@ -160,27 +173,56 @@ def calculate_full_profile(answers_by_qid: Dict[str, int]) -> Dict[str, Any]:
                 "long_term_cost": item.get("long_term_cost", "")
             })
 
-    # 6-8 Key Profile Indicators for Visual PDF "Мой профиль"
+    # 8 Key Profile Indicators for Visual PDF "Мой профиль"
     indicator_defs = [
-        ("agency", "Автономия и субъектность", "Способность принимать независимые решения и опираться на собственную волю."),
-        ("uncertainty_tolerance", "Толерантность к неопределенности", "Готовность к действиям при отсутствии 100% гарантий и полной ясности."),
-        ("stable_self_worth", "Самоценность и критик", "Устойчивость внутренней опоры независимо от дневных результатов и ошибок."),
-        ("emotional_awareness", "Эмоциональная регуляция", "Способность замечать, называть и проживать эмоциональные состояния."),
-        ("control_need", "Потребность в контроле", "Стремление удерживать внешние процессы под упреждающим контролем."),
-        ("fear_of_evaluation", "Чувствительность к оценке", "Зависимость самоощущения и проявленности от мнения и реакций людей."),
-        ("boundary_assertiveness", "Защита личных границ", "Способность открыто обозначать личные пределы и защищать ресурсы."),
-        ("authentic_expression", "Проявленность и открытость", "Готовность без искажений транслировать свои ценности и результаты миру.")
+        ("agency", "D08_ACTION_AGENCY", "Автономия и субъектность", 
+         "Самостоятельность помогает действовать активно, но в некоторых обстоятельствах затрудняет обращение за помощью.",
+         "Стремление опираться на внешнюю поддержку помогает кооперироваться, но снижает личную автономность."),
+        ("uncertainty_tolerance", "D14_UNCERTAINTY_TOLERANCE", "Толерантность к неопределенности",
+         "Высокая готовность действовать при отсутствии 100% ясности ускоряет решения и помогает в быстро меняющейся среде.",
+         "Высокая потребность в абсолютной ясности защищает от рисков, но может откладывать запуск новых решений."),
+        ("stable_self_worth", "D02_SELF_WORTH_STABILITY", "Самоценность и критик",
+         "Устойчивая внутренняя опора сохраняет уверенность независимо от ситуативных ошибок и внешней критики.",
+         "Требовательность к себе и критик держат планку качества, но снижают удовольствие от достигнутого."),
+        ("emotional_awareness", "D20_EMOTIONAL_AWARENESS", "Эмоциональная регуляция",
+         "Развитый эмоциональный контакт помогает вовремя замечать усталость и регулировать нагрузку.",
+         "Перевод чувств в аналитику сохраняет хладнокровие, но копит физическую усталость."),
+        ("control_need", "D15_CONTROL_RELIANCE", "Потребность в контроле",
+         "Упреждающий контроль обеспечивает высокий стандарт результатов и точность систем.",
+         "Гибкость и передача полномочий снижают стресс, но требуют допущения чужих ошибок."),
+        ("fear_of_evaluation", "D32_REJECTION_SENSITIVITY", "Чувствительность к оценке",
+         "Внимание к социальной оценке заставляет глубоко прорабатывать качество подачи и детали.",
+         "Опора на собственную экспертизу снижает зависимость от мнения окружающих."),
+        ("boundary_assertiveness", "D31_BOUNDARY_FLEXIBILITY", "Защита личных границ",
+         "Четкое отстаивание границ сохраняет личные ресурсы и фокус на главных целях.",
+         "Гибкость границ облегчает компромиссы, но повышает риск уступчивости во вред себе."),
+        ("authentic_expression", "D23_EMOTIONAL_EXPRESSION", "Проявленность и открытость",
+         "Готовность открыто транслировать свои ценности ускоряет рост признания и охвата.",
+         "Избирательность в демонстрации себя защищает приватность, но сдерживает рост охвата.")
     ]
 
     profile_indicators = []
-    for code, name_ru, default_desc in indicator_defs:
-        dim_data = dimensions_result.get(code, {})
-        score = dim_data.get("score", 50.0)
+    for code, dim_code, name_ru, high_desc, low_desc in indicator_defs:
+        scores = dim_evidence.get(code.lower(), [])
+        if not scores:
+            scores = dim_evidence.get(dim_code.lower(), [])
+
+        if scores:
+            total_w = sum(s[1] for s in scores)
+            score = (sum(s[0] * s[1] for s in scores) / total_w) if total_w > 0 else 50.0
+        elif dim_code in dimensions_result:
+            score = dimensions_result[dim_code].get("score", 50.0)
+        else:
+            score = 50.0
+
+        score_val = round(score, 1)
+        explanation = high_desc if score_val >= 50.0 else low_desc
+
         profile_indicators.append({
             "code": code,
             "name": name_ru,
-            "score": round(score, 1),
-            "explanation": default_desc
+            "score": score_val,
+            "explanation": explanation
         })
 
     # Structured System Cycle for Visual PDF "Мой повторяющийся цикл"
@@ -207,4 +249,5 @@ def calculate_full_profile(answers_by_qid: Dict[str, int]) -> Dict[str, Any]:
         "active_conflicts": active_conflicts,
         "total_answered": len(answers_by_qid)
     }
+
 

@@ -283,6 +283,12 @@ async def generate_full_report_llm(input_package: Dict[str, Any]) -> Dict[str, A
             logger.warning(f"LLM output validation failed: {error_msg}. Using fallback mock.")
             return get_fallback_mock_full_report(input_package)
             
+        if isinstance(report_data, dict):
+            if "profile_indicators" not in report_data or not report_data["profile_indicators"]:
+                report_data["profile_indicators"] = input_package.get("profile_indicators", [])
+            if "system_cycle" not in report_data or not report_data["system_cycle"]:
+                report_data["system_cycle"] = input_package.get("system_cycle", {})
+
         return report_data
     except Exception as e:
         logger.error(f"Error generating full report LLM: {e}")
