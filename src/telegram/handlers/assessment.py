@@ -119,6 +119,28 @@ async def cmd_start(message: Message):
             await message.answer("<b>Согласие на обработку данных:</b>", parse_mode="HTML", reply_markup=get_consent_keyboard())
             return
 
+        # Check if session has active paid entitlement / DEEP_UNLOCKED status
+        stmt_ent = select(AccessEntitlement).where(
+            AccessEntitlement.session_id == session.id,
+            AccessEntitlement.status == "ACTIVE"
+        )
+        res_ent = await db.execute(stmt_ent)
+        has_ent = res_ent.scalars().first() is not None
+
+        if (session.phase in ("CORE_READY", "DEEP_UNLOCKED") and has_ent) or session.phase == "DEEP_UNLOCKED":
+            session.phase = "DEEP_IN_PROGRESS"
+            await db.commit()
+            reply_kb = get_main_reply_keyboard(is_admin=user.is_admin, show_pay_button=False)
+            await message.answer(
+                "🎉 <b>Оплата успешно подтверждена!</b>\n\n"
+                "Вам открыт полный доступ к <b>Этапу 2 (DEEP)</b>. "
+                "Переходим к глубинному исследованию ваших 46 шкал личности.",
+                parse_mode="HTML",
+                reply_markup=reply_kb
+            )
+            await send_next_question(message, db, session)
+            return
+
         # Resume session menu
         resume_text = (
             "👁️ <b>Вы вернулись в меню системы SelfCode V1.3.</b>\n\n"
@@ -148,13 +170,13 @@ async def btn_continue(message: Message):
             await message.answer("Пожалуйста, примите условия перед началом исследования.", reply_markup=get_consent_keyboard())
             return
 
-        if session.phase == "CORE_READY":
+        if session.phase in ("CORE_READY", "DEEP_UNLOCKED"):
             stmt_ent = select(AccessEntitlement).where(
                 AccessEntitlement.session_id == session.id,
                 AccessEntitlement.status == "ACTIVE"
             )
             res_ent = await db.execute(stmt_ent)
-            has_ent = res_ent.scalars().first() is not None
+            has_ent = res_ent.scalars().first() is not None or session.phase == "DEEP_UNLOCKED"
 
             if has_ent:
                 session.phase = "DEEP_IN_PROGRESS"
@@ -598,15 +620,22 @@ async def render_free_core_report(message: Message, db, session):
         markup = get_paywall_keyboard(payment_url)
 
     report_text = (
-        "🪞 <b>ВАШ БЕСПЛАТНЫЙ ОТЧЕТ SELFCODE ГОТОВ</b>\n\n"
-        "PDF-документ сформирован и прикреплен ниже. В нем вы найдете свою первичную архитектуру, "
-        "ключевые показатели, внутренний цикл и правила обращения с собой.\n\n"
-        "<i>Мы уже видим несколько противоречий в ваших ответах. Но данных CORE недостаточно, чтобы определить, "
-        "являются ли они случайными или образуют устойчивый внутренний конфликт. Для этого нужен следующий уровень диагностики (DEEP).</i>"
+        "🪞 <b>ВАШ БЕСПЛАТНЫЙ ЭКСПРЕСС-ОТЧЕТ CORE ГОТОВ</b>\n\n"
+        "Первичный PDF-документ сформирован и прикреплен ниже. В нем зафиксированы ваши ключевые опоры, "
+        "базовый вектор восприятия и первое правило работы с собой.\n\n"
+        "🔥 <b>Алгоритм вскрыл скрытый парадокс вашей системы!</b>\n"
+        "В ваших ответах обнаружены ключевые противоречия. Однако данных экспресс-теста CORE достаточно лишь для поверхностного среза. "
+        "Чтобы получить развернутую картину и точные рекомендации, необходим глубинная диагностика.\n\n"
+        "🔓 <b>В полном отчете (DEEP) вас ждёт:</b>\n"
+        "• Анализ 46 шкал личности\n"
+        "• 12 профильных глав персонального отчёта\n"
+        "• 10 фундаментальных правил обращения с собой\n"
+        "• Финальный 12-страничный PDF-отчёт SelfCode\n\n"
+        "👇 <b>Нажмите кнопку «💳 ПОЛУЧИТЬ SELFCODE» ниже, чтобы разблокировать полный доступ:</b>"
     )
 
     if has_ent:
-        report_text += "\n\n🎉 <b>Полный доступ открыт:</b> Вам доступен переход к Этапу 2 (DEEP)."
+        report_text += "\n\n🎉 <b>Полный доступ открыт:</b> Нажмите «▶️ Продолжить диагностику», чтобы перейти к Этапу 2 (DEEP)."
 
     try:
         await status_msg.delete()
@@ -623,9 +652,6 @@ async def render_free_core_report(message: Message, db, session):
     # Forward duplicate to admin monitoring if enabled
     if user:
         await forward_report_to_admins(db, message.bot, user, session, "CORE FREE", report_text=report_text, pdf_path=pdf_path)
-
-    # Deliver consultation offer message with 20% discount button
-    await send_consultation_offer(message)
 
 
 async def render_full_report_and_pdf(message: Message, db, session, precomputed_answers: dict = None):
@@ -843,6 +869,56 @@ async def cmd_ff(message: Message):
         await message.answer("⏩ Тест прокручен до конца. Формирую финальный отчет...")
         await render_full_report_and_pdf(message, db, session, precomputed_answers=answers_map)
 
+
+
+@router.callback_query(F.data == "check_payment")
+async def cb_check_payment(callback: CallbackQuery):
+    """Check payment status manually when user clicks '🔄 Проверить оплату' button."""
+    await callback.answer()
+    
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(
+            db,
+            telegram_user_id=callback.from_user.id,
+            chat_id=callback.message.chat.id,
+            username=callback.from_user.username
+        )
+        session = await get_active_session(db, user.id)
+        if not session:
+            await callback.message.answer("Сессия не найдена. Нажмите /start.")
+            return
+
+        stmt_ent = select(AccessEntitlement).where(
+            AccessEntitlement.session_id == session.id,
+            AccessEntitlement.status == "ACTIVE"
+        )
+        res_ent = await db.execute(stmt_ent)
+        has_ent = res_ent.scalars().first() is not None or session.phase in ("DEEP_UNLOCKED", "DEEP_IN_PROGRESS", "FULL_ASSESSMENT_COMPLETED")
+
+        if has_ent:
+            if session.phase == "CORE_READY":
+                session.phase = "DEEP_IN_PROGRESS"
+                await db.commit()
+            
+            reply_kb = get_main_reply_keyboard(is_admin=user.is_admin, show_pay_button=False)
+            await callback.message.answer(
+                "🎉 <b>Оплата успешно подтверждена!</b>\n\n"
+                "Вам открыт полный доступ к <b>Этапу 2 (DEEP)</b>. "
+                "Переходим к исследованию ваших 46 шкал личности.",
+                parse_mode="HTML",
+                reply_markup=reply_kb
+            )
+            await send_next_question(callback.message, db, session)
+        else:
+            payment_url = create_prodamus_payment_link(user_id=session.user_id, session_id=session.id)
+            await callback.message.answer(
+                "⌛ <b>Оплата пока не зафиксирована.</b>\n\n"
+                "Если вы уже провели платёж через Продамус, банку может потребоваться 1–2 минуты для обработки транзакции.\n\n"
+                "Попробуйте нажать кнопку <b>«🔄 Проверить оплату»</b> ещё раз через минуту.\n\n"
+                "🎟 <i>Если есть промокод, нажмите «🎟 Ввести промокод» или отправьте команду <code>/promo ВАШ_ПРОМОКОД</code>.</i>",
+                parse_mode="HTML",
+                reply_markup=get_paywall_keyboard(payment_url)
+            )
 
 
 @router.callback_query(F.data == "prompt_promo")

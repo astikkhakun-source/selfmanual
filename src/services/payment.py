@@ -1,3 +1,4 @@
+import logging
 import urllib.parse
 from datetime import datetime
 from typing import Dict, Any, Optional, Tuple
@@ -8,8 +9,10 @@ from src.core.config import settings
 from src.core.security import verify_prodamus_signature
 from src.db.models import User, AssessmentSession, Payment, AccessEntitlement
 
+logger = logging.getLogger(__name__)
 
-def create_prodamus_payment_link(user_id: str, session_id: str, amount: float = 990.0) -> str:
+
+def create_prodamus_payment_link(user_id: str, session_id: str, amount: float = 999.0) -> str:
     """
     Generate Prodamus checkout URL with session_id as order_id metadata.
     """
@@ -33,10 +36,14 @@ def create_prodamus_payment_link(user_id: str, session_id: str, amount: float = 
 async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) -> Tuple[bool, str]:
     """
     Idempotent Prodamus webhook callback handler.
-    Validates HMAC signature, records payment, grants entitlement, and unlocks DEEP phase.
+    Validates HMAC signature, records payment, grants entitlement, unlocks DEEP phase,
+    and sends an instant notification to the user in Telegram.
     """
+    logger.info(f"Received Prodamus webhook callback payload: {payload}")
+
     # 1. Verify signature
     if not verify_prodamus_signature(payload, settings.PRODAMUS_SECRET_KEY):
+        logger.warning(f"Prodamus signature verification failed for payload keys: {list(payload.keys())}")
         return False, "Invalid signature"
 
     payment_status = str(payload.get("payment_status", "")).lower()
@@ -44,10 +51,12 @@ async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) ->
     session_id = payload.get("customer_extra") or payload.get("customer_number")
 
     if not session_id:
+        logger.warning("Prodamus webhook payload missing customer_extra / session_id")
         return False, "Missing session_id in payload"
 
     # Only process successful payments
     if payment_status not in ("success", "paid", "1", "true"):
+        logger.info(f"Ignored non-success payment status: {payment_status}")
         return True, f"Ignored non-success status: {payment_status}"
 
     # Find assessment session
@@ -56,6 +65,7 @@ async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) ->
     session = res.scalars().first()
 
     if not session:
+        logger.error(f"Session {session_id} not found for Prodamus payment")
         return False, f"Session {session_id} not found"
 
     # 2. Check idempotent entitlement
@@ -67,7 +77,7 @@ async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) ->
     existing_ent = res_ent.scalars().first()
 
     if existing_ent:
-        # Entitlement already active, return idempotent success
+        logger.info(f"Entitlement already granted for session {session_id}")
         return True, "Entitlement already granted"
 
     # 3. Create or update payment record
@@ -79,7 +89,7 @@ async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) ->
         payment = Payment(
             user_id=session.user_id,
             session_id=session.id,
-            amount=float(payload.get("sum", 990.0)),
+            amount=float(payload.get("sum", 999.0)),
             status="PAID",
             prodamus_order_id=order_id,
             provider_payment_id=payload.get("payment_id"),
@@ -104,4 +114,30 @@ async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) ->
     session.paid_at = datetime.utcnow()
 
     await db.commit()
+    logger.info(f"Prodamus payment successfully verified for user {session.user_id}, session {session.id}")
+
+    # 6. Push real-time Telegram notification to user
+    try:
+        if settings.TELEGRAM_BOT_TOKEN:
+            from aiogram import Bot
+            from src.telegram.keyboards import get_main_reply_keyboard
+
+            stmt_u = select(User).where(User.id == session.user_id)
+            res_u = await db.execute(stmt_u)
+            user = res_u.scalars().first()
+            if user:
+                bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
+                target_chat = user.chat_id or user.telegram_user_id
+                reply_kb = get_main_reply_keyboard(is_admin=user.is_admin, show_pay_button=False)
+                pay_success_text = (
+                    "🎉 <b>Оплата успешно подтверждена!</b>\n\n"
+                    "Вам открыт полный доступ к <b>Этапу 2 (DEEP)</b>.\n"
+                    "Нажмите кнопку <b>«▶️ Продолжить диагностику»</b> ниже, чтобы перейти к исследованию ваших 46 шкал личности!"
+                )
+                await bot.send_message(chat_id=target_chat, text=pay_success_text, parse_mode="HTML", reply_markup=reply_kb)
+                await bot.session.close()
+    except Exception as notify_err:
+        logger.error(f"Failed to send Telegram notification after Prodamus webhook: {notify_err}")
+
     return True, "Payment verified and DEEP unlocked"
+

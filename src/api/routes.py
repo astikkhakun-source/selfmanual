@@ -29,6 +29,12 @@ async def prodamus_webhook(request: Request, db: AsyncSession = Depends(get_db))
             form_data = await request.form()
             payload = dict(form_data)
 
+        # Check HTTP headers for 'Sign' if missing in payload
+        if "sign" not in payload and "signature" not in payload:
+            header_sign = request.headers.get("Sign") or request.headers.get("sign") or request.headers.get("X-Sign")
+            if header_sign:
+                payload["sign"] = header_sign
+
         success, msg = await process_prodamus_webhook(db, payload)
 
         if not success:
