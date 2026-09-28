@@ -33,6 +33,23 @@ def create_prodamus_payment_link(user_id: str, session_id: str, amount: float = 
     return f"{base_url}/?{urllib.parse.urlencode(params)}"
 
 
+async def _send_payment_success_notification(target_chat: str, is_admin: bool):
+    try:
+        from aiogram import Bot
+        from src.telegram.keyboards import get_main_reply_keyboard
+        bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
+        reply_kb = get_main_reply_keyboard(is_admin=is_admin, show_pay_button=False)
+        pay_success_text = (
+            "🎉 <b>Оплата успешно подтверждена!</b>\n\n"
+            "Вам открыт полный доступ к <b>Этапу 2 (DEEP)</b>.\n"
+            "Нажмите кнопку <b>«▶️ Продолжить диагностику»</b> ниже, чтобы перейти к исследованию ваших 46 шкал личности!"
+        )
+        await bot.send_message(chat_id=target_chat, text=pay_success_text, parse_mode="HTML", reply_markup=reply_kb)
+        await bot.session.close()
+    except Exception as notify_err:
+        logger.error(f"Failed to send Telegram notification after Prodamus webhook: {notify_err}")
+
+
 async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) -> Tuple[bool, str]:
     """
     Idempotent Prodamus webhook callback handler.
@@ -116,28 +133,18 @@ async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) ->
     await db.commit()
     logger.info(f"Prodamus payment successfully verified for user {session.user_id}, session {session.id}")
 
-    # 6. Push real-time Telegram notification to user
+    # 6. Push real-time Telegram notification to user asynchronously
     try:
         if settings.TELEGRAM_BOT_TOKEN:
-            from aiogram import Bot
-            from src.telegram.keyboards import get_main_reply_keyboard
-
             stmt_u = select(User).where(User.id == session.user_id)
             res_u = await db.execute(stmt_u)
             user = res_u.scalars().first()
             if user:
-                bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
                 target_chat = user.chat_id or user.telegram_user_id
-                reply_kb = get_main_reply_keyboard(is_admin=user.is_admin, show_pay_button=False)
-                pay_success_text = (
-                    "🎉 <b>Оплата успешно подтверждена!</b>\n\n"
-                    "Вам открыт полный доступ к <b>Этапу 2 (DEEP)</b>.\n"
-                    "Нажмите кнопку <b>«▶️ Продолжить диагностику»</b> ниже, чтобы перейти к исследованию ваших 46 шкал личности!"
-                )
-                await bot.send_message(chat_id=target_chat, text=pay_success_text, parse_mode="HTML", reply_markup=reply_kb)
-                await bot.session.close()
+                if target_chat:
+                    import asyncio
+                    asyncio.create_task(_send_payment_success_notification(target_chat, user.is_admin))
     except Exception as notify_err:
-        logger.error(f"Failed to send Telegram notification after Prodamus webhook: {notify_err}")
+        logger.error(f"Failed to queue Telegram notification after Prodamus webhook: {notify_err}")
 
     return True, "Payment verified and DEEP unlocked"
-
