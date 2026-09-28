@@ -629,7 +629,7 @@ def generate_core_pdf_report(session_id: str, report_data: Dict[str, Any]) -> st
     if loop.get("description"):
         story.append(Paragraph(loop["description"], body_style))
     
-    system_cycle = report_data.get("system_cycle") or {
+    system_cycle = report.get("system_cycle") or report_data.get("system_cycle") or {
         "caption": "Предполагаемый цикл по вашим ответам",
         "steps": [
             {"id": "A", "label": "Большая задача", "order": 1},
