@@ -50,7 +50,9 @@ async def _send_payment_success_notification(target_chat: str, is_admin: bool):
         logger.error(f"Failed to send Telegram notification after Prodamus webhook: {notify_err}")
 
 
-async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) -> Tuple[bool, str]:
+from fastapi import BackgroundTasks
+
+async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any], background_tasks: BackgroundTasks = None) -> Tuple[bool, str]:
     """
     Idempotent Prodamus webhook callback handler.
     Validates HMAC signature, records payment, grants entitlement, unlocks DEEP phase,
@@ -142,8 +144,11 @@ async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any]) ->
             if user:
                 target_chat = user.chat_id or user.telegram_user_id
                 if target_chat:
-                    import asyncio
-                    asyncio.create_task(_send_payment_success_notification(target_chat, user.is_admin))
+                    if background_tasks:
+                        background_tasks.add_task(_send_payment_success_notification, target_chat, user.is_admin)
+                    else:
+                        import asyncio
+                        asyncio.create_task(_send_payment_success_notification(target_chat, user.is_admin))
     except Exception as notify_err:
         logger.error(f"Failed to queue Telegram notification after Prodamus webhook: {notify_err}")
 

@@ -1,6 +1,6 @@
 import logging
 from typing import Dict, Any
-from fastapi import APIRouter, Depends, Request, HTTPException, status
+from fastapi import APIRouter, Depends, Request, HTTPException, status, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.base import get_db
@@ -17,7 +17,7 @@ async def health_check():
 
 
 @router.post("/payment/prodamus/webhook")
-async def prodamus_webhook(request: Request, db: AsyncSession = Depends(get_db)):
+async def prodamus_webhook(request: Request, background_tasks: BackgroundTasks, db: AsyncSession = Depends(get_db)):
     """
     Handle Prodamus payment callback webhook.
     Form-encoded or JSON payload.
@@ -35,7 +35,7 @@ async def prodamus_webhook(request: Request, db: AsyncSession = Depends(get_db))
             if header_sign:
                 payload["sign"] = header_sign
 
-        success, msg = await process_prodamus_webhook(db, payload)
+        success, msg = await process_prodamus_webhook(db, payload, background_tasks)
 
         if not success:
             logger.warning(f"Prodamus webhook failed verification: {msg}")
