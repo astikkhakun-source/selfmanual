@@ -30,5 +30,4 @@ ENV PORT=8000
 
 EXPOSE 8000
 
-# Default command runs the bot (or fastAPI via docker-compose)
-CMD ["python", "run_bot.py"]
+CMD ["sh", "-c", "uvicorn src.api.app:app --host 0.0.0.0 --port ${PORT:-8000}"]
