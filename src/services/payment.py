@@ -144,11 +144,8 @@ async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any], ba
             if user:
                 target_chat = user.chat_id or user.telegram_user_id
                 if target_chat:
-                    if background_tasks:
-                        background_tasks.add_task(_send_payment_success_notification, target_chat, user.is_admin)
-                    else:
-                        import asyncio
-                        asyncio.create_task(_send_payment_success_notification(target_chat, user.is_admin))
+                    import asyncio
+                    asyncio.create_task(_send_payment_success_notification(target_chat, user.is_admin))
     except Exception as notify_err:
         logger.error(f"Failed to queue Telegram notification after Prodamus webhook: {notify_err}")
 
