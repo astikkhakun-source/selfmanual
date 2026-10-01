@@ -30,14 +30,22 @@ async def prodamus_webhook(request: Request, background_tasks: BackgroundTasks, 
         try:
             payload = json.loads(raw_body)
         except json.JSONDecodeError:
-            # Fallback to form-encoded data parsing manually to avoid python-multipart dependency issues
-            parsed_qs = urllib.parse.parse_qsl(raw_body.decode("utf-8"))
-            payload = dict(parsed_qs)
+            # Fallback to form-encoded data parsing manually
+            import prodamuspy
+            dummy_prodamus = prodamuspy.ProdamusPy("dummy")
+            try:
+                payload = dummy_prodamus.parse(raw_body.decode("utf-8"))
+            except ValueError:
+                # If strict_parsing fails, fallback to basic parsing
+                parsed_qs = urllib.parse.parse_qsl(raw_body.decode("utf-8"), keep_blank_values=True)
+                payload = dict(parsed_qs)
 
         # Check HTTP headers for 'Sign' if missing in payload
         if "sign" not in payload and "signature" not in payload:
             header_sign = request.headers.get("Sign") or request.headers.get("sign") or request.headers.get("X-Sign")
             if header_sign:
+                if header_sign.lower().startswith("sign: "):
+                    header_sign = header_sign[6:].strip()
                 payload["sign"] = header_sign
 
         success, msg = await process_prodamus_webhook(db, payload, background_tasks)
