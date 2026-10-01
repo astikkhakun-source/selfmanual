@@ -19,7 +19,7 @@ def verify_prodamus_signature(data: Dict[str, Any], secret_key: str) -> bool:
 
     try:
         import prodamuspy
-        prodamus = prodamuspy.PyProdamus(secret_key)
+        prodamus = prodamuspy.ProdamusPy(secret_key)
         return prodamus.verify(data, received_sign)
     except Exception as e:
         import logging
