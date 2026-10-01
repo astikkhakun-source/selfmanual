@@ -23,11 +23,16 @@ async def prodamus_webhook(request: Request, background_tasks: BackgroundTasks, 
     Form-encoded or JSON payload.
     """
     try:
-        if request.headers.get("content-type") == "application/json":
-            payload = await request.json()
-        else:
-            form_data = await request.form()
-            payload = dict(form_data)
+        import json
+        import urllib.parse
+        
+        raw_body = await request.body()
+        try:
+            payload = json.loads(raw_body)
+        except json.JSONDecodeError:
+            # Fallback to form-encoded data parsing manually to avoid python-multipart dependency issues
+            parsed_qs = urllib.parse.parse_qsl(raw_body.decode("utf-8"))
+            payload = dict(parsed_qs)
 
         # Check HTTP headers for 'Sign' if missing in payload
         if "sign" not in payload and "signature" not in payload:
