@@ -20,7 +20,10 @@ def verify_prodamus_signature(data: Dict[str, Any], secret_key: str) -> bool:
     try:
         import prodamuspy
         prodamus = prodamuspy.ProdamusPy(secret_key)
-        return prodamus.verify(data, received_sign)
+        
+        # prodamuspy does not automatically strip the sign/signature keys if they were injected
+        clean_data = {k: v for k, v in data.items() if k not in ("sign", "signature")}
+        return prodamus.verify(clean_data, received_sign)
     except Exception as e:
         import logging
         logging.getLogger(__name__).error(f"Failed to verify Prodamus signature: {e}")
