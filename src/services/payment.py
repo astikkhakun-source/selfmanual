@@ -65,88 +65,126 @@ async def process_prodamus_webhook(db: AsyncSession, payload: Dict[str, Any], ba
         logger.warning(f"Prodamus signature verification failed for payload keys: {list(payload.keys())}")
         return False, "Invalid signature"
 
-    payment_status = str(payload.get("payment_status", "")).lower()
-    order_id = payload.get("order_id") or payload.get("order_num")
-    session_id = payload.get("customer_extra") or payload.get("customer_number")
+    try:
+        payment_status = str(payload.get("payment_status", "")).lower()
+        order_id = str(payload.get("order_id") or payload.get("order_num") or "").strip()
+        session_id = str(payload.get("customer_extra") or payload.get("customer_number") or "").strip()
 
-    if not session_id:
-        logger.warning("Prodamus webhook payload missing customer_extra / session_id")
-        return False, "Missing session_id in payload"
+        # Extract order prefix from SELFMANUAL-<prefix>-<timestamp>
+        order_prefix = None
+        if order_id.startswith("SELFMANUAL-"):
+            parts = order_id.split("-")
+            if len(parts) >= 2 and parts[1]:
+                order_prefix = parts[1].strip()
 
-    # Only process successful payments
-    if payment_status not in ("success", "paid", "1", "true"):
-        logger.info(f"Ignored non-success payment status: {payment_status}")
-        return True, f"Ignored non-success status: {payment_status}"
+        target_prefix = session_id[:8] if session_id else order_prefix
 
-    # Find assessment session
-    stmt = select(AssessmentSession).where(AssessmentSession.id == session_id)
-    res = await db.execute(stmt)
-    session = res.scalars().first()
+        # Only process successful payments
+        if payment_status not in ("success", "paid", "1", "true"):
+            logger.info(f"Ignored non-success payment status: {payment_status}")
+            return True, f"Ignored non-success status: {payment_status}"
 
-    if not session:
-        logger.error(f"Session {session_id} not found for Prodamus payment")
-        return False, f"Session {session_id} not found"
+        # 2. Find assessment session with fallback matching
+        session = None
+        if session_id:
+            # Try exact UUID match
+            stmt = select(AssessmentSession).where(AssessmentSession.id == session_id)
+            res = await db.execute(stmt)
+            session = res.scalars().first()
 
-    # 2. Check idempotent entitlement
-    stmt_ent = select(AccessEntitlement).where(
-        AccessEntitlement.session_id == session.id,
-        AccessEntitlement.entitlement_type == "FULL_REPORT"
-    )
-    res_ent = await db.execute(stmt_ent)
-    existing_ent = res_ent.scalars().first()
+            if not session:
+                # Try prefix match (startswith)
+                stmt = select(AssessmentSession).where(AssessmentSession.id.startswith(session_id))
+                res = await db.execute(stmt)
+                session = res.scalars().first()
 
-    if existing_ent:
-        logger.info(f"Entitlement already granted for session {session_id}")
-        return True, "Entitlement already granted"
+        if not session and target_prefix:
+            # Fallback match by order prefix
+            stmt = select(AssessmentSession).where(AssessmentSession.id.startswith(target_prefix)).order_by(AssessmentSession.created_at.desc())
+            res = await db.execute(stmt)
+            session = res.scalars().first()
 
-    # 3. Create or update payment record
-    stmt_pay = select(Payment).where(Payment.prodamus_order_id == order_id)
-    res_pay = await db.execute(stmt_pay)
-    payment = res_pay.scalars().first()
+        if not session:
+            logger.error(f"Session '{session_id}' (order '{order_id}') not found for Prodamus payment")
+            return False, f"Session '{session_id or order_id}' not found"
 
-    if not payment:
-        payment = Payment(
+        # 3. Check idempotent entitlement
+        stmt_ent = select(AccessEntitlement).where(
+            AccessEntitlement.session_id == session.id,
+            AccessEntitlement.entitlement_type == "FULL_REPORT"
+        )
+        res_ent = await db.execute(stmt_ent)
+        existing_ent = res_ent.scalars().first()
+
+        if existing_ent:
+            logger.info(f"Entitlement already granted for session {session.id}")
+            return True, "Entitlement already granted"
+
+        # 4. Safe amount parsing
+        raw_sum = payload.get("sum")
+        try:
+            if isinstance(raw_sum, (int, float)):
+                amount_val = float(raw_sum)
+            elif isinstance(raw_sum, str):
+                amount_val = float(raw_sum.replace(",", ".").strip())
+            else:
+                amount_val = 999.0
+        except (ValueError, TypeError):
+            amount_val = 999.0
+
+        # 5. Create or update payment record
+        stmt_pay = select(Payment).where(Payment.prodamus_order_id == order_id)
+        res_pay = await db.execute(stmt_pay)
+        payment = res_pay.scalars().first()
+
+        if not payment:
+            payment = Payment(
+                user_id=session.user_id,
+                session_id=session.id,
+                amount=amount_val,
+                status="PAID",
+                prodamus_order_id=order_id if order_id else None,
+                provider_payment_id=payload.get("payment_id"),
+                payment_method=payload.get("payment_type")
+            )
+            db.add(payment)
+        else:
+            payment.status = "PAID"
+
+        # 6. Grant access entitlement
+        entitlement = AccessEntitlement(
             user_id=session.user_id,
             session_id=session.id,
-            amount=float(payload.get("sum", 999.0)),
-            status="PAID",
-            prodamus_order_id=order_id,
-            provider_payment_id=payload.get("payment_id"),
-            payment_method=payload.get("payment_type")
+            entitlement_type="FULL_REPORT",
+            source="payment",
+            status="ACTIVE"
         )
-        db.add(payment)
-    else:
-        payment.status = "PAID"
+        db.add(entitlement)
 
-    # 4. Grant access entitlement
-    entitlement = AccessEntitlement(
-        user_id=session.user_id,
-        session_id=session.id,
-        entitlement_type="FULL_REPORT",
-        source="payment",
-        status="ACTIVE"
-    )
-    db.add(entitlement)
+        # 7. Transition session phase to DEEP_UNLOCKED
+        session.phase = "DEEP_UNLOCKED"
+        session.paid_at = datetime.utcnow()
 
-    # 5. Transition session phase to DEEP_UNLOCKED
-    session.phase = "DEEP_UNLOCKED"
-    session.paid_at = datetime.utcnow()
+        await db.commit()
+        logger.info(f"Prodamus payment successfully verified for user {session.user_id}, session {session.id}")
 
-    await db.commit()
-    logger.info(f"Prodamus payment successfully verified for user {session.user_id}, session {session.id}")
+        # 8. Push real-time Telegram notification to user asynchronously
+        try:
+            if settings.TELEGRAM_BOT_TOKEN:
+                stmt_u = select(User).where(User.id == session.user_id)
+                res_u = await db.execute(stmt_u)
+                user = res_u.scalars().first()
+                if user:
+                    target_chat = user.chat_id or user.telegram_user_id
+                    if target_chat:
+                        import asyncio
+                        asyncio.create_task(_send_payment_success_notification(target_chat, user.is_admin))
+        except Exception as notify_err:
+            logger.error(f"Failed to queue Telegram notification after Prodamus webhook: {notify_err}")
 
-    # 6. Push real-time Telegram notification to user asynchronously
-    try:
-        if settings.TELEGRAM_BOT_TOKEN:
-            stmt_u = select(User).where(User.id == session.user_id)
-            res_u = await db.execute(stmt_u)
-            user = res_u.scalars().first()
-            if user:
-                target_chat = user.chat_id or user.telegram_user_id
-                if target_chat:
-                    import asyncio
-                    asyncio.create_task(_send_payment_success_notification(target_chat, user.is_admin))
-    except Exception as notify_err:
-        logger.error(f"Failed to queue Telegram notification after Prodamus webhook: {notify_err}")
+        return True, "Payment verified and DEEP unlocked"
 
-    return True, "Payment verified and DEEP unlocked"
+    except Exception as e:
+        logger.exception(f"Unexpected error in process_prodamus_webhook: {e}")
+        return False, f"Internal processing error: {str(e)}"
+

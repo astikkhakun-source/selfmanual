@@ -42,8 +42,15 @@ async def prodamus_webhook(request: Request, background_tasks: BackgroundTasks, 
 
         # Check HTTP headers for 'Sign' if missing in payload
         if "sign" not in payload and "signature" not in payload:
-            header_sign = request.headers.get("Sign") or request.headers.get("sign") or request.headers.get("X-Sign")
+            header_sign = (
+                request.headers.get("Sign")
+                or request.headers.get("sign")
+                or request.headers.get("X-Sign")
+                or request.headers.get("Signature")
+                or request.headers.get("signature")
+            )
             if header_sign:
+                header_sign = header_sign.strip()
                 if header_sign.lower().startswith("sign: "):
                     header_sign = header_sign[6:].strip()
                 payload["sign"] = header_sign
