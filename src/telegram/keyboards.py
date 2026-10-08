@@ -224,3 +224,36 @@ def get_restart_confirm_keyboard() -> InlineKeyboardMarkup:
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
+
+def get_about_system_keyboard() -> InlineKeyboardMarkup:
+    """Inline keyboard for 'About system' with Support button."""
+    buttons = [
+        [InlineKeyboardButton(text="💬 Написать в поддержку", callback_data="open_support_dialog")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def get_cancel_support_keyboard() -> InlineKeyboardMarkup:
+    """Inline cancel keyboard for support message input."""
+    buttons = [
+        [InlineKeyboardButton(text="❌ Отменить обращение", callback_data="cancel_support_dialog")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def get_admin_reply_support_keyboard(user_tg_id: int) -> InlineKeyboardMarkup:
+    """Admin inline keyboard to reply to a user support message."""
+    buttons = [
+        [InlineKeyboardButton(text="💬 Ответить пользователю", callback_data=f"admin_reply_user:{user_tg_id}")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def get_cancel_admin_reply_keyboard() -> InlineKeyboardMarkup:
+    """Inline cancel keyboard for admin reply input."""
+    buttons = [
+        [InlineKeyboardButton(text="❌ Отменить ответ", callback_data="cancel_admin_reply")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+

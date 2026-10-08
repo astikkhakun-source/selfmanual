@@ -37,9 +37,11 @@ from src.telegram.keyboards import (
     get_restart_confirm_keyboard, get_admin_paywall_keyboard, 
     get_main_reply_keyboard, get_admin_dashboard_keyboard,
     get_admin_questions_nav_keyboard, get_consultation_discount_keyboard,
-    get_promo_menu_keyboard, get_promo_uses_keyboard, get_promo_duration_keyboard, get_promo_list_keyboard
+    get_promo_menu_keyboard, get_promo_uses_keyboard, get_promo_duration_keyboard, get_promo_list_keyboard,
+    get_about_system_keyboard, get_cancel_support_keyboard, get_admin_reply_support_keyboard, get_cancel_admin_reply_keyboard
 )
-from src.telegram.states import PromoCreateFSM, UserPromoFSM
+from src.telegram.states import PromoCreateFSM, UserPromoFSM, SupportFSM, AdminReplyFSM
+
 from src.services.promo_service import (
     create_promo_code, validate_and_use_promo_code, get_all_promo_codes,
     toggle_promo_code_status, generate_random_promo_code
@@ -254,7 +256,7 @@ async def btn_progress(message: Message):
 
 @router.message(F.text == "❓ О системе")
 async def btn_info(message: Message):
-    """Show information about system architecture."""
+    """Show information about system architecture with Support button."""
     info_text = (
         "<b>🧠 О системе SelfCode V1.3</b>\n\n"
         "Система совмещает детерминированный математический скоринг 46 шкал личности и глубинный синтез смыслов.\n\n"
@@ -264,7 +266,170 @@ async def btn_info(message: Message):
         "• <b>10 Персональных правил:</b> Фундаментальные ориентиры взаимодействия с собственной психикой.\n"
         "• <b>PDF Export:</b> Формирование персонального отчета SelfCode формата A4."
     )
-    await message.answer(info_text, parse_mode="HTML")
+    await message.answer(info_text, parse_mode="HTML", reply_markup=get_about_system_keyboard())
+
+
+@router.callback_query(F.data == "open_support_dialog")
+async def cb_open_support_dialog(callback: CallbackQuery, state: FSMContext):
+    """Open support input mode for user."""
+    await callback.answer()
+    await state.set_state(SupportFSM.waiting_for_user_message)
+    support_prompt = (
+        "💬 <b>Написать в поддержку SelfCode</b>\n\n"
+        "Напишите ваше сообщение или вопрос ниже. Оно будет передано администратору, и вы получите ответ прямо здесь в боте.\n\n"
+        "<i>Вы можете отправить текст, фото, документ или голосовое сообщение.</i>"
+    )
+    await callback.message.answer(support_prompt, parse_mode="HTML", reply_markup=get_cancel_support_keyboard())
+
+
+@router.callback_query(F.data == "cancel_support_dialog")
+async def cb_cancel_support_dialog(callback: CallbackQuery, state: FSMContext):
+    """Cancel support dialog mode."""
+    await state.clear()
+    await callback.answer("Обращение отменено")
+    await callback.message.edit_text("❌ <b>Обращение в поддержку отменено.</b>", parse_mode="HTML")
+
+
+@router.message(SupportFSM.waiting_for_user_message)
+async def process_user_support_message(message: Message, state: FSMContext):
+    """
+    Process incoming message from user intended for support:
+    - Forwards / copies content to all Admin users
+    - Attaches inline keyboard with 'Reply to user' button
+    """
+    await state.clear()
+    user_tg = message.from_user
+    user_name = user_tg.full_name or "Пользователь"
+    username_str = f"@{user_tg.username}" if user_tg.username else "без username"
+    user_mention = f'<a href="tg://user?id={user_tg.id}">{user_name}</a>'
+    now_str = datetime.now().strftime("%d.%m.%Y %H:%M")
+
+    admin_header = (
+        "📩 <b>НОВОЕ ОБРАЩЕНИЕ В ПОДДЕРЖКУ</b>\n\n"
+        f"• <b>От:</b> {user_mention} ({username_str})\n"
+        f"• <b>Telegram ID:</b> <code>{user_tg.id}</code>\n"
+        f"• <b>Время:</b> {now_str}\n\n"
+        "<b>Сообщение пользователя:</b>"
+    )
+
+    async with AsyncSessionLocal() as db:
+        stmt_admins = select(User).where(User.is_admin == True)
+        res_admins = await db.execute(stmt_admins)
+        admins = res_admins.scalars().all()
+
+        reply_kb = get_admin_reply_support_keyboard(user_tg.id)
+
+        for admin in admins:
+            try:
+                target_chat = admin.chat_id or admin.telegram_user_id
+                await message.bot.send_message(chat_id=target_chat, text=admin_header, parse_mode="HTML")
+                await message.copy_to(chat_id=target_chat, reply_markup=reply_kb)
+            except Exception as send_err:
+                logger.error(f"Failed to send support message to admin {admin.telegram_user_id}: {send_err}")
+
+    confirm_text = (
+        "✅ <b>Ваше сообщение успешно отправлено в поддержку!</b>\n\n"
+        "Администратор рассмотрит его и ответит вам прямо в этом чате. Ожидайте уведомления."
+    )
+    await message.answer(confirm_text, parse_mode="HTML")
+
+
+@router.callback_query(F.data.startswith("admin_reply_user:"))
+async def cb_admin_reply_user(callback: CallbackQuery, state: FSMContext):
+    """Initiate admin reply to a specific user."""
+    await callback.answer()
+    parts = callback.data.split(":")
+    if len(parts) < 2:
+        return
+    user_tg_id = int(parts[1])
+
+    await state.set_state(AdminReplyFSM.waiting_for_admin_reply)
+    await state.update_data(target_user_id=user_tg_id)
+
+    prompt_text = (
+        f"✏️ <b>Ответ пользователю (ID: <code>{user_tg_id}</code>):</b>\n\n"
+        "Отправьте ваш ответ ниже (текст, фото, документ или аудио).\n"
+        "Он будет переслан пользователю в боте."
+    )
+    await callback.message.answer(prompt_text, parse_mode="HTML", reply_markup=get_cancel_admin_reply_keyboard())
+
+
+@router.callback_query(F.data == "cancel_admin_reply")
+async def cb_cancel_admin_reply(callback: CallbackQuery, state: FSMContext):
+    """Cancel admin reply mode."""
+    await state.clear()
+    await callback.answer("Ответ отменен")
+    await callback.message.edit_text("❌ <b>Отправка ответа пользователю отменена.</b>", parse_mode="HTML")
+
+
+async def send_reply_to_user(message: Message, target_user_id: int):
+    """Deliver admin reply to user's chat in bot."""
+    bot = message.bot
+    header = "💬 <b>Ответ от поддержки SelfCode:</b>\n\n"
+
+    try:
+        if message.text:
+            await bot.send_message(chat_id=target_user_id, text=f"{header}{message.text}", parse_mode="HTML")
+        else:
+            orig_caption = message.caption or ""
+            new_caption = f"{header}{orig_caption}".strip()
+            await message.copy_to(chat_id=target_user_id, caption=new_caption, parse_mode="HTML")
+
+        await message.answer(
+            f"✅ <b>Ответ успешно отправлен пользователю!</b>\n"
+            f"🆔 <b>Telegram ID:</b> <code>{target_user_id}</code>",
+            parse_mode="HTML"
+        )
+    except Exception as err:
+        logger.error(f"Failed to deliver admin reply to user {target_user_id}: {err}")
+        await message.answer(
+            f"⚠️ <b>Не удалось доставить сообщение пользователю</b> (ID: <code>{target_user_id}</code>).\n"
+            f"Возможно, пользователь заблокировал бота.\n\n<i>Ошибка: {err}</i>",
+            parse_mode="HTML"
+        )
+
+
+@router.message(AdminReplyFSM.waiting_for_admin_reply)
+async def process_admin_reply_fsm(message: Message, state: FSMContext):
+    """Process admin reply message to user when in FSM state."""
+    data = await state.get_data()
+    target_user_id = data.get("target_user_id")
+    if not target_user_id:
+        await message.answer("⚠️ Ошибка: ID пользователя не найден. Попробуйте нажать кнопку «Ответить пользователю» еще раз.")
+        await state.clear()
+        return
+
+    await send_reply_to_user(message, target_user_id)
+    await state.clear()
+
+
+@router.message(F.reply_to_message)
+async def process_admin_native_reply(message: Message, state: FSMContext):
+    """
+    Handle native Telegram reply by Admin to forwarded support message or notification message.
+    Automatically detects user Telegram ID from replied message.
+    """
+    async with AsyncSessionLocal() as db:
+        user = await get_or_create_user(db, message.from_user.id, message.chat.id)
+        if not user.is_admin:
+            return  # Ignore native replies from non-admin users
+
+    replied = message.reply_to_message
+    target_user_id = None
+
+    if replied.text or replied.caption:
+        content = replied.text or replied.caption
+        import re
+        match = re.search(r"Telegram ID:?\s*<code>?(\d+)</code>?", content, re.IGNORECASE)
+        if match:
+            target_user_id = int(match.group(1))
+
+    if not target_user_id and replied.forward_from:
+        target_user_id = replied.forward_from.id
+
+    if target_user_id:
+        await send_reply_to_user(message, target_user_id)
+
 
 
 @router.message(F.text == "🔄 Начать заново")

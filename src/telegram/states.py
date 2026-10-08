@@ -9,3 +9,12 @@ class PromoCreateFSM(StatesGroup):
 
 class UserPromoFSM(StatesGroup):
     waiting_for_promo = State()
+
+
+class SupportFSM(StatesGroup):
+    waiting_for_user_message = State()
+
+
+class AdminReplyFSM(StatesGroup):
+    waiting_for_admin_reply = State()
+
